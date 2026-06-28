@@ -33,6 +33,7 @@ import {
   User,
   Users,
   Wallet,
+  Webhook,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ROLE } from '@/lib/roles'
@@ -142,6 +143,12 @@ export function useSidebarData(): SidebarData {
             title: t('Subscriptions'),
             url: '/subscriptions',
             icon: CreditCard,
+          },
+          {
+            // FORK: 自定义钩子管理入口
+            title: t('Hooks'),
+            url: '/hooks',
+            icon: Webhook,
           },
           {
             title: t('System Info'),
