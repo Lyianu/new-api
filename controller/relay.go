@@ -20,6 +20,7 @@ import (
 	relaycommon "github.com/QuantumNous/new-api/relay/common"
 	relayconstant "github.com/QuantumNous/new-api/relay/constant"
 	"github.com/QuantumNous/new-api/relay/helper"
+	"github.com/QuantumNous/new-api/relay/hook" // FORK: 自定义钩子
 	"github.com/QuantumNous/new-api/service"
 	"github.com/QuantumNous/new-api/setting"
 	"github.com/QuantumNous/new-api/setting/operation_setting"
@@ -120,6 +121,11 @@ func Relay(c *gin.Context, relayFormat types.RelayFormat) {
 	relayInfo, err := relaycommon.GenRelayInfo(c, relayFormat, request, ws)
 	if err != nil {
 		newAPIError = types.NewError(err, types.ErrorCodeGenRelayInfoFailed)
+		return
+	}
+
+	// FORK: 自定义钩子——request.received 阶段(扣费前)运行审计/归档钩子,可阻断放行。
+	if newAPIError = hook.DispatchRequestReceived(c, relayInfo); newAPIError != nil {
 		return
 	}
 

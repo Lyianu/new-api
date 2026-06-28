@@ -21,6 +21,7 @@ import (
 	"github.com/QuantumNous/new-api/oauth"
 	perfmetrics "github.com/QuantumNous/new-api/pkg/perf_metrics"
 	"github.com/QuantumNous/new-api/relay"
+	"github.com/QuantumNous/new-api/relay/hook" // FORK: 自定义钩子
 	"github.com/QuantumNous/new-api/router"
 	"github.com/QuantumNous/new-api/service"
 	"github.com/QuantumNous/new-api/service/authz"
@@ -315,6 +316,9 @@ func InitResources() error {
 	if err != nil {
 		return err
 	}
+
+	// FORK: 自定义钩子——加载 DB 配置并启动版本轮询(需在 InitDB / Redis 之后)
+	hook.Init()
 
 	perfmetrics.Init()
 

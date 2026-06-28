@@ -299,6 +299,7 @@ func migrateDB() error {
 		&SystemTaskLock{},
 		&CasbinRule{},
 		&AuthzRole{},
+		&HookConfig{}, // FORK: 自定义钩子配置
 	)
 	if err != nil {
 		return err
@@ -351,6 +352,7 @@ func migrateDBFast() error {
 		{&SystemInstance{}, "SystemInstance"},
 		{&SystemTask{}, "SystemTask"},
 		{&SystemTaskLock{}, "SystemTaskLock"},
+		{&HookConfig{}, "HookConfig"}, // FORK: 自定义钩子配置
 	}
 	// 动态计算migration数量，确保errChan缓冲区足够大
 	errChan := make(chan error, len(migrations))
