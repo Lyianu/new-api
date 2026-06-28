@@ -110,11 +110,11 @@ func NewBaseHook(s Spec) BaseHook {
 	}
 }
 
-func (b *BaseHook) Name() string             { return b.name }
-func (b *BaseHook) Type() string             { return b.typ }
-func (b *BaseHook) Events() []HookEvent      { return b.events }
-func (b *BaseHook) Mode() ExecMode           { return b.mode }
-func (b *BaseHook) FailMode() FailMode       { return b.failMode }
-func (b *BaseHook) Priority() int            { return b.priority }
-func (b *BaseHook) Timeout() time.Duration   { return b.timeout }
+func (b *BaseHook) Name() string               { return b.name }
+func (b *BaseHook) Type() string               { return b.typ }
+func (b *BaseHook) Events() []HookEvent        { return b.events }
+func (b *BaseHook) Mode() ExecMode             { return b.mode }
+func (b *BaseHook) FailMode() FailMode         { return b.failMode }
+func (b *BaseHook) Priority() int              { return b.priority }
+func (b *BaseHook) Timeout() time.Duration     { return b.timeout }
 func (b *BaseHook) Match(hc *HookContext) bool { return b.matcher.Match(hc) }

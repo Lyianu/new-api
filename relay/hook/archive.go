@@ -28,9 +28,9 @@ type archiveConfig struct {
 	BatchSize  int               `json:"batchSize,omitempty"`
 	FlushMs    int               `json:"flushMs,omitempty"`
 	SpillDir   string            `json:"spillDir,omitempty"`
-	MaxBodyKB  int               `json:"maxBodyKB,omitempty"`  // 单条 body 上限,超出截断
-	SampleN    int               `json:"sampleN,omitempty"`    // >1 时每 N 条留 1 条
-	IncludeRsp bool              `json:"includeResponse"`      // 是否在 completed 事件附带响应
+	MaxBodyKB  int               `json:"maxBodyKB,omitempty"` // 单条 body 上限,超出截断
+	SampleN    int               `json:"sampleN,omitempty"`   // >1 时每 N 条留 1 条
+	IncludeRsp bool              `json:"includeResponse"`     // 是否在 completed 事件附带响应
 }
 
 type archiveHook struct {
