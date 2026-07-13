@@ -39,6 +39,8 @@ export const usageLogSchema = z.object({
   is_stream: z.boolean().default(false),
   channel: z.number().default(0),
   channel_name: z.string().nullish().default(''),
+  // 对下游用户脱敏展示的供应商名（后端按 UserVisibleChannel 开关填充）。
+  vendor_name: z.string().nullish().default(''),
   token_id: z.number().default(0),
   group: z.string().default(''),
   ip: z.string().default(''),

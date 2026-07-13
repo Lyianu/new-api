@@ -35,6 +35,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { useStatus } from '@/hooks/use-status'
 import { getUserAvatarFallback, getUserAvatarStyle } from '@/lib/avatar'
 import { formatBillingCurrencyFromUSD } from '@/lib/currency'
 import { formatLogQuota, formatTimestampToDate } from '@/lib/format'
@@ -290,6 +291,8 @@ function buildTypeDetailSegments(
 
 export function useCommonLogsColumns(isAdmin: boolean): ColumnDef<UsageLog>[] {
   const { t } = useTranslation()
+  const { status } = useStatus()
+  const userVisibleChannel = Boolean(status?.user_visible_channel)
   const columns: ColumnDef<UsageLog>[] = [
     {
       accessorKey: 'created_at',
@@ -538,6 +541,20 @@ export function useCommonLogsColumns(isAdmin: boolean): ColumnDef<UsageLog>[] {
         },
       }
     )
+  }
+
+  // 非管理员：开关开启时展示“供应商(Provider)”脱敏列（后端派生的 vendor_name，非物理渠道）。
+  if (!isAdmin && userVisibleChannel) {
+    columns.push({
+      id: 'vendor',
+      header: t('Provider'),
+      accessorFn: (row) => row.vendor_name ?? '',
+      cell: ({ row }) => {
+        const name = row.original.vendor_name
+        if (!name) return null
+        return <span className='text-muted-foreground text-sm'>{name}</span>
+      },
+    })
   }
 
   columns.push({
