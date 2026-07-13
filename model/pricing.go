@@ -52,9 +52,10 @@ var (
 	lastGetPricingTime   time.Time
 	updatePricingLock    sync.Mutex
 
-	// 缓存映射：模型名 -> 启用分组 / 计费类型
+	// 缓存映射：模型名 -> 启用分组 / 计费类型 / 供应商
 	modelEnableGroups     = make(map[string][]string)
 	modelQuotaTypeMap     = make(map[string]int)
+	modelVendorMap        = make(map[string]int)
 	modelEnableGroupsLock = sync.RWMutex{}
 )
 
@@ -418,9 +419,11 @@ func updatePricing() {
 	modelEnableGroupsLock.Lock()
 	modelEnableGroups = make(map[string][]string)
 	modelQuotaTypeMap = make(map[string]int)
+	modelVendorMap = make(map[string]int)
 	for _, p := range pricingMap {
 		modelEnableGroups[p.ModelName] = p.EnableGroup
 		modelQuotaTypeMap[p.ModelName] = p.QuotaType
+		modelVendorMap[p.ModelName] = p.VendorID
 	}
 	modelEnableGroupsLock.Unlock()
 
@@ -430,4 +433,19 @@ func updatePricing() {
 // GetSupportedEndpointMap 返回全局端点到路径的映射
 func GetSupportedEndpointMap() map[string]common.EndpointInfo {
 	return supportedEndpointMap
+}
+
+// GetModelVendorID 返回模型对应的供应商(vendor)ID；未知模型返回 0。
+// 复用定价缓存的刷新/失效生命周期（1 分钟 TTL），供计费热路径按 vendor 解析客户折扣。
+func GetModelVendorID(modelName string) int {
+	if modelName == "" {
+		return 0
+	}
+	// 触发一次惰性刷新（若缓存过期）
+	if time.Since(lastGetPricingTime) > time.Minute*1 || len(pricingMap) == 0 {
+		GetPricing()
+	}
+	modelEnableGroupsLock.RLock()
+	defer modelEnableGroupsLock.RUnlock()
+	return modelVendorMap[modelName]
 }

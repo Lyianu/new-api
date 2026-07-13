@@ -9,6 +9,7 @@ import (
 	"github.com/QuantumNous/new-api/model"
 	"github.com/QuantumNous/new-api/pkg/billingexpr"
 	relaycommon "github.com/QuantumNous/new-api/relay/common"
+	"github.com/QuantumNous/new-api/service"
 	"github.com/QuantumNous/new-api/setting/billing_setting"
 	"github.com/QuantumNous/new-api/setting/operation_setting"
 	"github.com/QuantumNous/new-api/setting/ratio_setting"
@@ -67,6 +68,26 @@ func HandleGroupRatio(ctx *gin.Context, relayInfo *relaycommon.RelayInfo) types.
 	}
 
 	return groupRatioInfo
+}
+
+// applyCustomerDiscount 解析并注入客户级折扣（按 vendor 维度）。
+// 折扣以 otherRatio("customer_discount") 形式再乘在分组价之上；
+// 查不到规则时 DiscountRatio=1.0，不注入（等价无折扣）。
+func applyCustomerDiscount(info *relaycommon.RelayInfo, priceData *types.PriceData) {
+	if info == nil || priceData == nil {
+		return
+	}
+	vendorId := model.GetModelVendorID(info.OriginModelName)
+	policy := service.GetPolicyResolver().Resolve(service.PolicyContext{
+		UserId:    info.UserId,
+		Group:     info.UsingGroup,
+		VendorId:  vendorId,
+		ChannelId: info.ChannelId,
+		ModelName: info.OriginModelName,
+	})
+	if policy.DiscountRatio > 0 && policy.DiscountRatio != 1.0 {
+		priceData.AddOtherRatio("customer_discount", policy.DiscountRatio)
+	}
 }
 
 func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens int, meta *types.TokenCountMeta) (types.PriceData, error) {
@@ -163,6 +184,9 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 		CacheCreation1hRatio: cacheCreationRatio1h,
 		QuotaToPreConsume:    preConsumedQuota,
 	}
+	// 客户级折扣（按 vendor，再乘在分组价之上）。作为 otherRatio 注入，
+	// 预扣(usePrice分支)与结算(text_quota)共用同一乘子，保证不对账。
+	applyCustomerDiscount(info, &priceData)
 	if usePrice {
 		for name, ratio := range meta.BillingRatios {
 			priceData.AddOtherRatio(name, ratio)

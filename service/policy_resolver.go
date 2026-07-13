@@ -142,9 +142,22 @@ type TablePolicyResolver struct {
 
 var defaultPolicyResolver = &TablePolicyResolver{}
 
-// GetPolicyResolver 返回全局默认解析器（可在启动时替换为其他实现）。
+// activeResolver 是当前生效的解析器，默认表驱动，可在启动时或测试中替换为其他实现
+// （表达式 / 外部服务等），从而不改动计费/限流调用点即可切换折扣计算方式。
+var activeResolver PolicyResolver = defaultPolicyResolver
+
+// GetPolicyResolver 返回当前生效的解析器。
 func GetPolicyResolver() PolicyResolver {
-	return defaultPolicyResolver
+	return activeResolver
+}
+
+// SetPolicyResolver 替换当前生效的解析器（传 nil 则回退默认表驱动实现）。
+func SetPolicyResolver(r PolicyResolver) {
+	if r == nil {
+		activeResolver = defaultPolicyResolver
+		return
+	}
+	activeResolver = r
 }
 
 // InvalidatePolicyCache 在策略写入后调用，下次 Resolve 时重建缓存。
