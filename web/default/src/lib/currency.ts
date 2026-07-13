@@ -22,12 +22,16 @@ For commercial licensing, please contact support@quantumnous.com
  * ============================================================================
  *
  * This module provides currency formatting utilities that handle the conversion
- * between system USD amounts, local currency, and token displays based on
- * admin-configured settings.
+ * between the system base-currency amount, local currency, and token displays
+ * based on admin-configured settings.
+ *
+ * ⚠️ CERBERUS 记账本位为 CNY（人民币）。历史函数名保留 "FromUSD" 字样，但其入参
+ * “基础金额”现在等于 quota / quotaPerUnit，即人民币金额，不再是美元。美元只是按
+ * usdExchangeRate 派生的展示货币（见 getDisplayMeta）。后续可择机重命名以消除歧义。
  *
  * ## Key Concepts
  *
- * 1. **System USD**: Internal currency unit used throughout the system (e.g., 10 USD)
+ * 1. **Base amount (CNY)**: Internal accounting unit == quota / quotaPerUnit == 人民币金额
  * 2. **Local Currency**: Admin-configured display currency (e.g., CNY, custom currency)
  * 3. **Exchange Rate (usdExchangeRate)**: Conversion rate from USD to local currency
  *    - Example: usdExchangeRate = 7 means 1 USD = 7 CNY
@@ -185,19 +189,24 @@ function getConfig(): CurrencyConfig {
 }
 
 function getDisplayMeta(config: CurrencyConfig): DisplayMeta {
+  // Cerberus 记账本位为 CNY：基础金额 = quota / quotaPerUnit 直接就是人民币。
+  // 因此 CNY 展示汇率为 1；美元/自定义币种由人民币按 usdExchangeRate 派生（除以汇率）。
+  // usdExchangeRate 语义：1 USD = usdExchangeRate 元人民币（getConfig 保证 > 0）。
+  const usdRate = config.usdExchangeRate > 0 ? config.usdExchangeRate : 1
   switch (config.quotaDisplayType) {
     case 'CNY':
       return {
         kind: 'currency',
         symbol: '¥',
         currencyCode: 'CNY',
-        exchangeRate: config.usdExchangeRate,
+        exchangeRate: 1,
       }
     case 'CUSTOM':
       return {
         kind: 'custom',
         symbol: config.customCurrencySymbol,
-        exchangeRate: config.customCurrencyExchangeRate,
+        // 自定义币种沿用「相对美元」语义：先派生美元(÷汇率)再乘自定义汇率。
+        exchangeRate: config.customCurrencyExchangeRate / usdRate,
       }
     case 'TOKENS':
       return {
@@ -210,7 +219,7 @@ function getDisplayMeta(config: CurrencyConfig): DisplayMeta {
         kind: 'currency',
         symbol: '$',
         currencyCode: 'USD',
-        exchangeRate: 1,
+        exchangeRate: 1 / usdRate,
       }
   }
 }
@@ -218,10 +227,11 @@ function getDisplayMeta(config: CurrencyConfig): DisplayMeta {
 function getBillingDisplayMeta(config: CurrencyConfig): DisplayMeta {
   const meta = getDisplayMeta(config)
   if (meta.kind === 'tokens') {
+    // 计费展示从不显示 tokens；CNY 本位下回退为人民币（基础金额即人民币，汇率 1）。
     return {
       kind: 'currency',
-      symbol: '$',
-      currencyCode: 'USD',
+      symbol: '¥',
+      currencyCode: 'CNY',
       exchangeRate: 1,
     }
   }

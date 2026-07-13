@@ -385,20 +385,21 @@ func genStripeLink(referenceId string, customerId string, email string, amount i
 	return result.URL, nil
 }
 
+// GetChargedAmount 返回 Stripe 订单入账的人民币额度基数（含充值分组赠送倍率）。
+// 入账 quota = 该值 × QuotaPerUnit（见 model.Recharge）。CNY 本位下先把展示金额折算为人民币。
 func GetChargedAmount(count float64, user model.User) float64 {
 	topUpGroupRatio := common.GetTopupGroupRatio(user.Group)
 	if topUpGroupRatio == 0 {
 		topUpGroupRatio = 1
 	}
-
-	return count * topUpGroupRatio
+	cny := topupAmountToCny(int64(count)).InexactFloat64()
+	return cny * topUpGroupRatio
 }
 
+// getStripePayMoney 计算前端预览的应付金额（真实扣款以 Stripe Price 对象为准）。
 func getStripePayMoney(amount float64, group string) float64 {
 	originalAmount := amount
-	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		amount = amount / common.QuotaPerUnit
-	}
+	cny := topupAmountToCny(int64(amount)).InexactFloat64()
 	// Using float64 for monetary calculations is acceptable here due to the small amounts involved
 	topupGroupRatio := common.GetTopupGroupRatio(group)
 	if topupGroupRatio == 0 {
@@ -411,7 +412,7 @@ func getStripePayMoney(amount float64, group string) float64 {
 			discount = ds
 		}
 	}
-	payMoney := amount * setting.StripeUnitPrice * topupGroupRatio * discount
+	payMoney := cny * setting.StripeUnitPrice * topupGroupRatio * discount
 	return payMoney
 }
 

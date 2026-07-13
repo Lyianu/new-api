@@ -83,14 +83,17 @@ func formatWaffoAmount(amount float64, currency string) string {
 	return fmt.Sprintf("%.2f", amount)
 }
 
-// getWaffoPayMoney converts the user-facing amount to USD for Waffo payment.
-// Waffo only accepts USD, so this function handles the conversion from different
-// display types (USD/CNY/TOKENS) to the actual USD amount to charge.
+// getWaffoPayMoney 计算 Waffo 应收美元金额。
+// CNY 本位下：先把展示金额折算为人民币额度，再按汇率换成美元（Waffo 仅收美元）。
+// WaffoUnitPrice 作为可配置的美元侧系数（默认 1.0，可用于加价/促销）。
 func getWaffoPayMoney(amount float64, group string) float64 {
 	originalAmount := amount
-	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		amount = amount / common.QuotaPerUnit
+	cny := topupAmountToCny(int64(amount)).InexactFloat64()
+	usdRate := operation_setting.USDExchangeRate
+	if usdRate <= 0 {
+		usdRate = 1
 	}
+	usd := cny / usdRate
 	topupGroupRatio := common.GetTopupGroupRatio(group)
 	if topupGroupRatio == 0 {
 		topupGroupRatio = 1
@@ -101,7 +104,7 @@ func getWaffoPayMoney(amount float64, group string) float64 {
 			discount = ds
 		}
 	}
-	return amount * setting.WaffoUnitPrice * topupGroupRatio * discount
+	return usd * setting.WaffoUnitPrice * topupGroupRatio * discount
 }
 
 type WaffoPayRequest struct {
@@ -208,13 +211,10 @@ func RequestWaffoPay(c *gin.Context) {
 	merchantOrderId := fmt.Sprintf("WAFFO-%d-%d-%s", id, time.Now().UnixMilli(), randstr.String(6))
 	paymentRequestId := merchantOrderId
 
-	// Token 模式下归一化 Amount（存等价美元/CNY 数量，避免 RechargeWaffo 双重放大）
-	amount := req.Amount
-	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		amount = int64(float64(req.Amount) / common.QuotaPerUnit)
-		if amount < 1 {
-			amount = 1
-		}
+	// 存人民币额度（记账本位）：RechargeWaffo 按 Amount × QuotaPerUnit 入账 quota。
+	amount := topupCreditCnyAmount(req.Amount)
+	if amount < 1 {
+		amount = 1
 	}
 
 	// 创建本地订单

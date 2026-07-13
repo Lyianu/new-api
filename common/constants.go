@@ -59,7 +59,15 @@ func ThemeAwarePath(suffix string) string {
 
 // var ChatLink = ""
 // var ChatLink2 = ""
-var QuotaPerUnit = 500 * 1000.0 // $0.002 / 1K tokens
+
+// BaseCurrency 是 Cerberus 的记账本位币。系统内一切记账（quota、扣费、充值入账、
+// 模型倍率基准）均以人民币(CNY)为标的；美元等其他币种仅为按可配置汇率派生的展示货币。
+const BaseCurrency = "CNY"
+
+// QuotaPerUnit 是记账锚：QuotaPerUnit 个 quota == 1 元人民币(¥1)。
+// 由此推得倍率基准：ModelRatio=1 时，1000 tokens = 1000 quota = ¥0.002 / 1K tokens。
+// 注意：本值定义了 quota 与 CNY 的唯一换算关系，是全系统记账的单一真源。
+var QuotaPerUnit = 500 * 1000.0 // ¥0.002 / 1K tokens（CNY 本位）
 // 保留旧变量以兼容历史逻辑，实际展示由 general_setting.quota_display_type 控制
 var DisplayInCurrencyEnabled = true
 var DisplayTokenStatEnabled = true

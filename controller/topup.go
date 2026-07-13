@@ -146,14 +146,30 @@ func GetEpayClient() *epay.Client {
 	return withUrl
 }
 
-func getPayMoney(amount int64, group string) float64 {
+// topupAmountToCny 把用户按当前展示类型输入的充值金额换算为人民币（记账本位）。
+// - CNY: 直接就是人民币
+// - USD: amount 美元 × 汇率 → 人民币
+// - TOKENS: amount tokens ÷ QuotaPerUnit → 人民币
+// - CUSTOM: 先按自定义汇率折美元再折人民币
+func topupAmountToCny(amount int64) decimal.Decimal {
 	dAmount := decimal.NewFromInt(amount)
-	// 充值金额以“展示类型”为准：
-	// - USD/CNY: 前端传 amount 为金额单位；TOKENS: 前端传 tokens，需要换成 USD 金额
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		dQuotaPerUnit := decimal.NewFromFloat(common.QuotaPerUnit)
-		dAmount = dAmount.Div(dQuotaPerUnit)
+		return dAmount.Div(decimal.NewFromFloat(common.QuotaPerUnit))
 	}
+	cny := operation_setting.DisplayCurrencyToCny(dAmount.InexactFloat64())
+	return decimal.NewFromFloat(cny)
+}
+
+// topupCreditCnyAmount 返回充值订单应入账的人民币额度（整数），供 TopUp.Amount 存储。
+// webhook 处再按 Amount × QuotaPerUnit 折算 quota，保证收款与入账在 CNY 本位一致。
+func topupCreditCnyAmount(displayAmount int64) int64 {
+	return topupAmountToCny(displayAmount).IntPart()
+}
+
+// getPayMoney 计算实际应收人民币金额 = 人民币额度 × 收款系数(Price) × 充值分组倍率 × 金额折扣。
+// 注意：这些都是收款侧系数，用户到账 quota 始终按额度足额（见 topupAmountToQuota）。
+func getPayMoney(amount int64, group string) float64 {
+	dCny := topupAmountToCny(amount)
 
 	topupGroupRatio := common.GetTopupGroupRatio(group)
 	if topupGroupRatio == 0 {
@@ -171,7 +187,7 @@ func getPayMoney(amount int64, group string) float64 {
 	}
 	dDiscount := decimal.NewFromFloat(discount)
 
-	payMoney := dAmount.Mul(dPrice).Mul(dTopupGroupRatio).Mul(dDiscount)
+	payMoney := dCny.Mul(dPrice).Mul(dTopupGroupRatio).Mul(dDiscount)
 
 	return payMoney.InexactFloat64()
 }
@@ -239,12 +255,8 @@ func RequestEpay(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "拉起支付失败"})
 		return
 	}
-	amount := req.Amount
-	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		dAmount := decimal.NewFromInt(int64(amount))
-		dQuotaPerUnit := decimal.NewFromFloat(common.QuotaPerUnit)
-		amount = dAmount.Div(dQuotaPerUnit).IntPart()
-	}
+	// 存人民币额度（记账本位）：webhook 按 Amount × QuotaPerUnit 入账 quota。
+	amount := topupCreditCnyAmount(req.Amount)
 	topUp := &model.TopUp{
 		UserId:          id,
 		Amount:          amount,

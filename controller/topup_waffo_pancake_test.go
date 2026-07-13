@@ -35,14 +35,18 @@ func TestGetWaffoPancakePayMoney(t *testing.T) {
 		originalDiscounts[k] = v
 	}
 	originalTopupGroupRatio := common.TopupGroupRatio2JSONString()
+	originalUsdRate := operation_setting.USDExchangeRate
 
 	t.Cleanup(func() {
 		setting.WaffoPancakeUnitPrice = originalUnitPrice
 		operation_setting.GetGeneralSetting().QuotaDisplayType = originalQuotaDisplayType
 		operation_setting.GetPaymentSetting().AmountDiscount = originalDiscounts
+		operation_setting.USDExchangeRate = originalUsdRate
 		require.NoError(t, common.UpdateTopupGroupRatioByJSONString(originalTopupGroupRatio))
 	})
 
+	// CNY 本位：USD 展示金额先按汇率折算为人民币额度，再乘单价系数收款。
+	operation_setting.USDExchangeRate = 7.3
 	setting.WaffoPancakeUnitPrice = 2.5
 	operation_setting.GetPaymentSetting().AmountDiscount = map[int]float64{
 		10:                           0.8,
@@ -59,24 +63,27 @@ func TestGetWaffoPancakePayMoney(t *testing.T) {
 		expected         float64
 	}{
 		{
-			name:             "currency display applies unit price group ratio and discount",
+			// USD 展示：$10 × 7.3 = ¥73；×2.5 × 1.2(vip) × 0.8(discount) = 175.2
+			name:             "usd display converts to cny before pricing",
 			amount:           10,
 			group:            "vip",
 			quotaDisplayType: operation_setting.QuotaDisplayTypeUSD,
-			expected:         24,
+			expected:         175.2,
 		},
 		{
-			name:             "tokens display converts quota to display units before pricing",
+			// tokens 展示：QuotaPerUnit*3 tokens = ¥3；×2.5 × 1.2 × 0.5 = 4.5
+			name:             "tokens display converts quota to cny before pricing",
 			amount:           int64(common.QuotaPerUnit * 3),
 			group:            "vip",
 			quotaDisplayType: operation_setting.QuotaDisplayTypeTokens,
 			expected:         4.5,
 		},
 		{
-			name:             "non-positive discount falls back to no discount",
+			// CNY 展示直接计价 + discount=0 回退为 1：¥20 × 2.5 × 1(default) × 1 = 50
+			name:             "cny display prices directly and non-positive discount falls back",
 			amount:           20,
 			group:            "default",
-			quotaDisplayType: operation_setting.QuotaDisplayTypeUSD,
+			quotaDisplayType: operation_setting.QuotaDisplayTypeCNY,
 			expected:         50,
 		},
 	}

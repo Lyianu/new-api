@@ -1,6 +1,9 @@
 package operation_setting
 
-import "github.com/QuantumNous/new-api/setting/config"
+import (
+	"github.com/QuantumNous/new-api/common"
+	"github.com/QuantumNous/new-api/setting/config"
+)
 
 // 额度展示类型
 const (
@@ -23,11 +26,12 @@ type GeneralSetting struct {
 }
 
 // 默认配置
+// Cerberus 记账本位为 CNY，默认额度展示即人民币。
 var generalSetting = GeneralSetting{
 	DocsLink:                   "https://docs.newapi.pro",
 	PingIntervalEnabled:        false,
 	PingIntervalSeconds:        60,
-	QuotaDisplayType:           QuotaDisplayTypeUSD,
+	QuotaDisplayType:           QuotaDisplayTypeCNY,
 	CustomCurrencySymbol:       "¤",
 	CustomCurrencyExchangeRate: 1.0,
 }
@@ -87,5 +91,66 @@ func GetUsdToCurrencyRate(usdToCny float64) float64 {
 		return 1
 	default:
 		return 1
+	}
+}
+
+// ---- CNY 本位换算（单一真源）----
+// 记账本位为 CNY：cny = quota / QuotaPerUnit。其余展示货币由可配置汇率派生。
+// USDExchangeRate 语义：1 USD = USDExchangeRate 元人民币。
+
+// usdExchangeRate 返回有效的 1USD=?CNY 汇率（<=0 时回落 1，避免除零）。
+func usdExchangeRate() float64 {
+	if USDExchangeRate > 0 {
+		return USDExchangeRate
+	}
+	return 1
+}
+
+// QuotaToCny 把 quota 换算为人民币金额（记账本位）。
+func QuotaToCny(quota float64) float64 {
+	return quota / common.QuotaPerUnit
+}
+
+// CnyToQuota 把人民币金额换算为 quota（充值入账用）。
+func CnyToQuota(cny float64) float64 {
+	return cny * common.QuotaPerUnit
+}
+
+// QuotaToDisplayCurrency 按当前展示类型把 quota 换算为 (符号, 金额)。
+// TOKENS 展示类型由调用方单独处理。
+func QuotaToDisplayCurrency(quota float64) (string, float64) {
+	cny := QuotaToCny(quota)
+	switch generalSetting.QuotaDisplayType {
+	case QuotaDisplayTypeUSD:
+		return "$", cny / usdExchangeRate()
+	case QuotaDisplayTypeCustom:
+		rate := generalSetting.CustomCurrencyExchangeRate
+		if rate <= 0 {
+			rate = 1
+		}
+		symbol := generalSetting.CustomCurrencySymbol
+		if symbol == "" {
+			symbol = "¤"
+		}
+		// 自定义币种沿用「相对美元」语义：先派生美元，再乘自定义汇率。
+		return symbol, (cny / usdExchangeRate()) * rate
+	default: // CNY（本位）
+		return "¥", cny
+	}
+}
+
+// DisplayCurrencyToCny 把某展示类型下用户输入的金额换算回人民币（充值下单用）。
+func DisplayCurrencyToCny(amount float64) float64 {
+	switch generalSetting.QuotaDisplayType {
+	case QuotaDisplayTypeUSD:
+		return amount * usdExchangeRate()
+	case QuotaDisplayTypeCustom:
+		rate := generalSetting.CustomCurrencyExchangeRate
+		if rate <= 0 {
+			rate = 1
+		}
+		return (amount / rate) * usdExchangeRate()
+	default: // CNY
+		return amount
 	}
 }

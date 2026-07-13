@@ -13,8 +13,15 @@ var PayAddress = ""
 var CustomCallbackAddress = ""
 var EpayId = ""
 var EpayKey = ""
-var Price = 7.3
+
+// Price 收款系数：每 1 元人民币额度实际收取的人民币金额。
+// CNY 本位下默认 1.0（足额收款）；可配置为 <1 做促销、>1 做溢价。
+// 注意：这是收款侧折扣，不影响入账 quota（用户始终按额度足额到账）。
+var Price = 1.0
 var MinTopUp = 1
+
+// USDExchangeRate 对外展示汇率：1 USD = USDExchangeRate 元人民币，可后台配置。
+// 仅用于把 CNY 本位金额派生为美元展示（如模型页“元/刀”），不参与真实记账。
 var USDExchangeRate = 7.3
 
 var PayMethods = []map[string]string{

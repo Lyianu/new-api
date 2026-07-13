@@ -2,6 +2,7 @@ package ratio_setting
 
 import (
 	"strings"
+	"sync"
 
 	"github.com/QuantumNous/new-api/common"
 	"github.com/QuantumNous/new-api/setting/operation_setting"
@@ -9,10 +10,16 @@ import (
 )
 
 // from songquanpeng/one-api
+//
+// Cerberus 记账本位为 CNY（见 common.QuotaPerUnit）。下方 default* 价格表沿用上游
+// 以美元锚定的历史数值（裸数字项基准 $0.002/1K；带 *RMB / *USD 的项为显式货币换算）。
+// 载入时会在 InitRatioSettings 中统一乘 USD2RMB，把整张表平移到 CNY 本位，
+// 从而保持每个模型的真实价格不变、仅改用人民币表达（裸数字项、*RMB 项、*USD 项一致缩放）。
 const (
-	USD2RMB = 7.3 // 暂定 1 USD = 7.3 RMB
-	USD     = 500 // $0.002 = 1 -> $1 = 500
-	RMB     = USD / USD2RMB
+	USD2RMB = 7.3 // 名义种子汇率 1 USD = 7.3 RMB（仅用于把历史美元种子价平移到 CNY 本位；
+	// 对外展示汇率另由可配置的 operation_setting.USDExchangeRate 控制）
+	USD = 500 // $0.002 = 1 -> $1 = 500
+	RMB = USD / USD2RMB
 )
 
 // modelRatio
@@ -20,8 +27,8 @@ const (
 // https://cloud.baidu.com/doc/WENXINWORKSHOP/s/Blfmc9dlf
 // https://openai.com/pricing
 // TODO: when a new api is enabled, check the pricing here
-// 1 === $0.002 / 1K tokens
-// 1 === ￥0.014 / 1k tokens
+// 缩放前(美元种子): 1 === $0.002 / 1K tokens
+// 缩放后(CNY本位):  1 === ￥0.002 / 1K tokens（种子表整体 ×USD2RMB 后，真实价格不变）
 
 var defaultModelRatio = map[string]float64{
 	//"midjourney":                50,
@@ -332,8 +339,27 @@ var defaultCompletionRatio = map[string]float64{
 	"gpt-image-1":    8,
 }
 
+// scaleSeedToBaseCurrencyOnce 把以美元锚定的历史种子价格表平移到 CNY 本位。
+// 仅缩放「货币计价」的两张表：defaultModelRatio（$/1K 基准锚）与 defaultModelPrice（按次美元价）。
+// 无量纲倍率表（completion/cache/image/audio）是相对比例，绝不缩放。
+// 用 sync.Once 保证幂等，避免重复缩放导致价格翻倍。
+var scaleSeedOnce sync.Once
+
+func scaleSeedToBaseCurrency() {
+	scaleSeedOnce.Do(func() {
+		for k, v := range defaultModelRatio {
+			defaultModelRatio[k] = v * USD2RMB
+		}
+		for k, v := range defaultModelPrice {
+			defaultModelPrice[k] = v * USD2RMB
+		}
+	})
+}
+
 // InitRatioSettings initializes all model related settings maps
 func InitRatioSettings() {
+	// 先把美元种子表平移到 CNY 本位，再载入运行时 map。
+	scaleSeedToBaseCurrency()
 	modelPriceMap.AddAll(defaultModelPrice)
 	modelRatioMap.AddAll(defaultModelRatio)
 	completionRatioMap.AddAll(defaultCompletionRatio)
