@@ -28,6 +28,7 @@ import {
   ShieldAlert,
   Link2,
   CreditCard,
+  SlidersHorizontal,
 } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -49,6 +50,7 @@ import {
 import { UserSubscriptionsDialog } from '@/features/subscriptions/components/dialogs/user-subscriptions-dialog'
 
 import { manageUser, resetUserPasskey, resetUserTwoFA } from '../api'
+import { CustomerPolicyDialog } from './dialogs/customer-policy-dialog'
 import {
   USER_STATUS,
   USER_ROLE,
@@ -72,6 +74,8 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const [resetTwoFAOpen, setResetTwoFAOpen] = useState(false)
   const [bindingDialogOpen, setBindingDialogOpen] = useState(false)
   const [subscriptionsDialogOpen, setSubscriptionsDialogOpen] = useState(false)
+  const [customerPolicyDialogOpen, setCustomerPolicyDialogOpen] =
+    useState(false)
 
   const handleEdit = () => {
     setCurrentRow(user)
@@ -222,6 +226,18 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           </DropdownMenuShortcut>
         </DropdownMenuItem>
 
+        <DropdownMenuItem
+          onSelect={(event) => {
+            event.preventDefault()
+            setCustomerPolicyDialogOpen(true)
+          }}
+        >
+          {t('Customer Policies')}
+          <DropdownMenuShortcut>
+            <SlidersHorizontal size={16} />
+          </DropdownMenuShortcut>
+        </DropdownMenuItem>
+
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
@@ -300,6 +316,13 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         onOpenChange={setSubscriptionsDialogOpen}
         user={{ id: user.id, username: user.username }}
         onSuccess={triggerRefresh}
+      />
+
+      <CustomerPolicyDialog
+        open={customerPolicyDialogOpen}
+        onOpenChange={setCustomerPolicyDialogOpen}
+        userId={user.id}
+        username={user.username}
       />
     </div>
   )

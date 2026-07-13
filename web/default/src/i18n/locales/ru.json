@@ -5179,6 +5179,21 @@
     "Zhipu": "Zhipu",
     "Zhipu V4": "Zhipu V4",
     "Zoom": "Zoom",
-    "Exchange rate: {{rate}} CNY / USD": "Курс: {{rate}} CNY / USD"
+    "Exchange rate: {{rate}} CNY / USD": "Курс: {{rate}} CNY / USD",
+    "Customer Policies": "Customer Policies",
+    "Per-customer discount (by vendor) and concurrency / RPM limits (by channel). 0 / empty / * = any; model supports prefix like claude-*.": "Per-customer discount (by vendor) and concurrency / RPM limits (by channel). 0 / empty / * = any; model supports prefix like claude-*.",
+    "Existing policies": "Existing policies",
+    "No policies configured": "No policies configured",
+    "Add policy": "Add policy",
+    "Vendor ID": "Vendor ID",
+    "Max Concurrency": "Max Concurrency",
+    "RPM Limit": "RPM Limit",
+    "Policy added": "Policy added",
+    "Policy deleted": "Policy deleted",
+    "Failed to load policies": "Failed to load policies",
+    "Failed to add policy": "Failed to add policy",
+    "Failed to delete policy": "Failed to delete policy",
+    "Discount must be between 0 and 10": "Discount must be between 0 and 10",
+    "0 = any": "0 = any"
   }
 }

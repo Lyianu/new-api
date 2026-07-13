@@ -5179,6 +5179,21 @@
     "Zhipu": "智谱",
     "Zhipu V4": "智谱 V4",
     "Zoom": "缩放",
-    "Exchange rate: {{rate}} CNY / USD": "汇率：{{rate}} 元/刀"
+    "Exchange rate: {{rate}} CNY / USD": "汇率：{{rate}} 元/刀",
+    "Customer Policies": "客户策略",
+    "Per-customer discount (by vendor) and concurrency / RPM limits (by channel). 0 / empty / * = any; model supports prefix like claude-*.": "按客户配置折扣（按供应商）与并发/RPM 限制（按渠道）。0 / 空 / * 表示任意；模型支持前缀如 claude-*。",
+    "Existing policies": "现有策略",
+    "No policies configured": "尚未配置策略",
+    "Add policy": "新增策略",
+    "Vendor ID": "供应商 ID",
+    "Max Concurrency": "最大并发",
+    "RPM Limit": "每分钟请求上限",
+    "Policy added": "策略已新增",
+    "Policy deleted": "策略已删除",
+    "Failed to load policies": "加载策略失败",
+    "Failed to add policy": "新增策略失败",
+    "Failed to delete policy": "删除策略失败",
+    "Discount must be between 0 and 10": "折扣必须在 0 到 10 之间",
+    "0 = any": "0 = 任意"
   }
 }
