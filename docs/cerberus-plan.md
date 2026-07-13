@@ -3,6 +3,19 @@
 > 本文档为 `PRD.md` 的落地实施方案。Cerberus 是 new-api 的商用 fork，对外销售各类模型 API，页面语义对齐 OpenRouter。
 > Claude 模型由 `../cc-bridge` 提供，涉及上游能力的功能需协同改动其代码。
 
+## 实施进度（cerberus 分支）
+
+| 阶段 | 状态 | 说明 |
+| --- | --- | --- |
+| P1 CNY 记账本位 | ✅ 完成 | 锚翻转+价格表缩放+展示反转+全网关(易支付/Stripe/Waffo/Pancake/Creem)+前端基座，含单测 |
+| P1b 模型页 Provider 分组 | ✅ 完成 | 按 vendor 分组罗列 + 元/刀汇率徽章 + i18n |
+| P2 客户折扣(PolicyResolver) | ✅ 后端完成 | 模型+Resolver+计费注入(已验证对账一致)+CRUD API+单测；**剩管理端UI** |
+| P3 用户级并发+RPM | ✅ 后端完成 | in-flight信号量+RPM(Redis/内存双模式)+中间件挂载+单测；配置复用P2 CRUD；**剩管理端UI** |
+| P4 Vendor 对外展示 | ✅ 后端完成 | UserVisibleChannel开关+日志vendor脱敏派生；**剩前端日志列** |
+| P5 上游验签 | ✅ 设计文档 | 见 `docs/upstream-verification.md`，下期实现 |
+| P6 全量测试 | ⏳ 进行中 | 各单元已带单测；待端到端联调 |
+| 管理端策略矩阵 UI | ⏳ 待做 | P2/P3 共享的前端编辑器 |
+
 ## 0. 决策基线（已确认）
 
 | 项 | 决策 |
