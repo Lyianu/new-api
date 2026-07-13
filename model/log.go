@@ -9,6 +9,7 @@ import (
 
 	"github.com/QuantumNous/new-api/common"
 	"github.com/QuantumNous/new-api/logger"
+	"github.com/QuantumNous/new-api/setting/operation_setting"
 	"github.com/QuantumNous/new-api/types"
 
 	"github.com/gin-gonic/gin"
@@ -72,6 +73,8 @@ type Log struct {
 	IsStream          bool   `json:"is_stream"`
 	ChannelId         int    `json:"channel" gorm:"index"`
 	ChannelName       string `json:"channel_name" gorm:"->"`
+	// VendorName 为对下游用户脱敏展示的“供应商”名（非持久化，按 UserVisibleChannel 开关填充）。
+	VendorName string `json:"vendor_name,omitempty" gorm:"-"`
 	TokenId           int    `json:"token_id" gorm:"default:0;index"`
 	Group             string `json:"group" gorm:"index"`
 	Ip                string `json:"ip" gorm:"index;default:''"`
@@ -114,8 +117,13 @@ func assignDisplayLogIds(logs []*Log, startIdx int) {
 }
 
 func formatUserLogs(logs []*Log, startIdx int) {
+	userVisibleChannel := operation_setting.UserVisibleChannel
 	for i := range logs {
+		// 物理渠道名始终对用户隐藏；开关开启时改为展示由模型派生的 vendor 脱敏名。
 		logs[i].ChannelName = ""
+		if userVisibleChannel {
+			logs[i].VendorName = GetModelVendorName(logs[i].ModelName)
+		}
 		var otherMap map[string]interface{}
 		otherMap, _ = common.StrToMap(logs[i].Other)
 		if otherMap != nil {

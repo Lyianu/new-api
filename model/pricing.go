@@ -56,6 +56,7 @@ var (
 	modelEnableGroups     = make(map[string][]string)
 	modelQuotaTypeMap     = make(map[string]int)
 	modelVendorMap        = make(map[string]int)
+	vendorNameById        = make(map[int]string)
 	modelEnableGroupsLock = sync.RWMutex{}
 )
 
@@ -420,6 +421,10 @@ func updatePricing() {
 	modelEnableGroups = make(map[string][]string)
 	modelQuotaTypeMap = make(map[string]int)
 	modelVendorMap = make(map[string]int)
+	vendorNameById = make(map[int]string)
+	for _, v := range vendorsList {
+		vendorNameById[v.ID] = v.Name
+	}
 	for _, p := range pricingMap {
 		modelEnableGroups[p.ModelName] = p.EnableGroup
 		modelQuotaTypeMap[p.ModelName] = p.QuotaType
@@ -433,6 +438,24 @@ func updatePricing() {
 // GetSupportedEndpointMap 返回全局端点到路径的映射
 func GetSupportedEndpointMap() map[string]common.EndpointInfo {
 	return supportedEndpointMap
+}
+
+// GetModelVendorName 返回模型对应的供应商(vendor)展示名；未知返回空串。
+// 用于对下游用户脱敏展示“供应商”而非物理渠道（见 UserVisibleChannel 开关）。
+func GetModelVendorName(modelName string) string {
+	if modelName == "" {
+		return ""
+	}
+	if time.Since(lastGetPricingTime) > time.Minute*1 || len(pricingMap) == 0 {
+		GetPricing()
+	}
+	modelEnableGroupsLock.RLock()
+	defer modelEnableGroupsLock.RUnlock()
+	vendorId, ok := modelVendorMap[modelName]
+	if !ok || vendorId == 0 {
+		return ""
+	}
+	return vendorNameById[vendorId]
 }
 
 // GetModelVendorID 返回模型对应的供应商(vendor)ID；未知模型返回 0。

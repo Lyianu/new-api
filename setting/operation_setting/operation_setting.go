@@ -5,6 +5,10 @@ import "strings"
 var DemoSiteEnabled = false
 var SelfUseModeEnabled = false
 
+// UserVisibleChannel 是否向下游用户展示“供应商(vendor)”脱敏名（日志/模型页）。
+// 默认关闭；开启也仅暴露 vendor 名，物理渠道(ChannelId/ChannelName)始终仅管理员可见。
+var UserVisibleChannel = false
+
 var AutomaticDisableKeywords = []string{
 	"Your credit balance is too low",
 	"This organization has been disabled.",
