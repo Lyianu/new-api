@@ -9,13 +9,14 @@
 | --- | --- | --- |
 | P1 CNY 记账本位 | ✅ 完成 | 锚翻转+价格表缩放+展示反转+全网关(易支付/Stripe/Waffo/Pancake/Creem)+前端基座，含单测 |
 | P1b 模型页 Provider 分组 | ✅ 完成 | 按 vendor 分组罗列 + 元/刀汇率徽章 + i18n |
-| P2 客户折扣(PolicyResolver) | ✅ 后端完成 | 模型+Resolver+计费注入(已验证对账一致)+CRUD API+单测；**剩管理端UI** |
-| P3 用户级并发+RPM | ✅ 后端完成 | in-flight信号量+RPM(Redis/内存双模式)+中间件挂载+单测；配置复用P2 CRUD；**剩管理端UI** |
-| P4 Vendor 对外展示 | ✅ 后端完成 | UserVisibleChannel开关+日志vendor脱敏派生；**剩前端日志列** |
+| P2 客户折扣(PolicyResolver) | ✅ 完成 | 模型+Resolver+计费注入(已验证对账一致)+CRUD API+**管理端UI**+单测 |
+| P3 用户级并发+RPM | ✅ 完成 | in-flight信号量+RPM(Redis/内存双模式)+中间件挂载+单测；配置复用P2策略UI |
+| P4 Vendor 对外展示 | ✅ 完成 | UserVisibleChannel开关+日志vendor脱敏派生+**前端日志Provider列** |
 | P5 上游验签 | ✅ 设计文档 | 见 `docs/upstream-verification.md`，下期实现 |
-| P6 全量测试 | ✅ 完成 | 后端 30 包全绿；抓到并修复计费 nil-DB panic（hasPolicies 快路径）。根 main 包因前端 dist 未构建的环境问题无法编译（非代码问题） |
-| 管理端策略矩阵 UI | ⏳ 待做 | P2/P3 共享的前端编辑器。**需前端工具链**：新增 TanStack 路由要重新生成 `routeTree.gen.ts`，且需可视化验证，宜在能跑 dev server 的会话完成。后端 CRUD API `/api/customer-policy` 已就绪 |
-| P4 前端日志 vendor 列 | ⏳ 待做 | 后端已在日志 JSON 输出 `vendor_name`；前端 usage-logs 加用户可见列（开关开启时）。属可视化验证的小收尾 |
+| P6 全量测试 | ✅ 完成 | 后端 30 包全绿；抓到并修复计费 nil-DB panic（hasPolicies 快路径）。前端 tsgo/oxlint 通过。根 main 包因前端 dist 未构建的环境问题无法编译（非代码问题） |
+| 管理端策略矩阵 UI | ✅ 完成 | 集成进 users 行操作“客户策略”对话框(列出/增/删,折扣+并发+RPM)，免新路由；i18n 7语种 |
+
+**本期 PRD 功能项全部实现。** 剩余仅 P5 上游验签的编码（下期，设计文档已就绪）。
 
 ## 0. 决策基线（已确认）
 
