@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next'
 
 import { PublicLayout } from '@/components/layout'
 import { PageTransition } from '@/components/page-transition'
+import { getCurrencyDisplay } from '@/lib/currency'
 
 import {
   LoadingSkeleton,
@@ -29,7 +30,7 @@ import {
   PricingTable,
   PricingSidebar,
   PricingToolbar,
-  ModelCardGrid,
+  ModelCardGrouped,
   ModelDetailsDrawer,
 } from './components'
 import { EXCLUDED_GROUPS, VIEW_MODES } from './constants'
@@ -110,6 +111,14 @@ export function Pricing() {
     clearSearch()
   }, [clearFilters, clearSearch])
 
+  // “元/刀”汇率徽章：CNY 本位下价格以人民币展示，附带 ¥/$ 汇率便于对照。
+  const cnyPerUsd = useMemo(() => {
+    const { config } = getCurrencyDisplay()
+    if (config.quotaDisplayType !== 'CNY') return null
+    const rate = usdExchangeRate ?? config.usdExchangeRate
+    return rate > 0 ? rate : null
+  }, [usdExchangeRate])
+
   const renderPricingContent = () => {
     if (filteredModels.length === 0) {
       return (
@@ -122,8 +131,9 @@ export function Pricing() {
     }
 
     if (viewMode === VIEW_MODES.CARD) {
+      // 卡片视图按 Provider(供应商) 分组罗列（OpenRouter 风格）。
       return (
-        <ModelCardGrid
+        <ModelCardGrouped
           models={filteredModels}
           onModelClick={handleModelClick}
           priceRate={priceRate}
@@ -186,6 +196,15 @@ export function Pricing() {
                 count: models?.length || 0,
               })}
             </p>
+            {cnyPerUsd != null && (
+              <p className='mt-2 flex justify-center'>
+                <span className='text-muted-foreground bg-muted/60 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium'>
+                  {t('Exchange rate: {{rate}} CNY / USD', {
+                    rate: cnyPerUsd,
+                  })}
+                </span>
+              </p>
+            )}
             <p className='text-muted-foreground/60 mx-auto mt-2 max-w-2xl text-xs leading-relaxed sm:text-sm'>
               {t(
                 'Discover curated AI models, compare pricing and capabilities, and choose the right model for every scenario.'
