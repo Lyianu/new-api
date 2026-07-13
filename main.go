@@ -331,6 +331,9 @@ func InitResources() error {
 	// Initialize options, should after model.InitDB()
 	model.InitOptionMap()
 
+	// 预热客户策略缓存（DB 就绪后），使 hasPolicies 反映真实状态。
+	service.WarmupPolicyCache()
+
 	// 清理旧的磁盘缓存文件
 	common.CleanupOldCacheFiles()
 

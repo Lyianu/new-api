@@ -3,9 +3,25 @@ package service
 import (
 	"strings"
 	"sync"
+	"sync/atomic"
 
 	"github.com/QuantumNous/new-api/model"
 )
+
+// hasPolicies 标记系统内是否存在任何客户策略。计费/限流热路径先读它（纯原子、无 DB），
+// 仅当为 true 时才走 DB 支持的解析，避免在无策略场景引入 DB 依赖与开销，
+// 也保证早期/测试环境（DB 未就绪）不会 panic。
+var hasPolicies atomic.Bool
+
+// HasCustomerPolicies 返回是否存在任何客户策略（供调用方快路径判断）。
+func HasCustomerPolicies() bool {
+	return hasPolicies.Load()
+}
+
+// WarmupPolicyCache 在启动、DB 就绪后调用一次，使 hasPolicies 反映真实状态。
+func WarmupPolicyCache() {
+	defaultPolicyResolver.ensureLoaded()
+}
 
 // PolicyContext 是策略解析的输入上下文，字段均可从 RelayInfo 取得。
 type PolicyContext struct {
@@ -160,12 +176,14 @@ func SetPolicyResolver(r PolicyResolver) {
 	activeResolver = r
 }
 
-// InvalidatePolicyCache 在策略写入后调用，下次 Resolve 时重建缓存。
+// InvalidatePolicyCache 在策略写入后调用：重置并立即重建缓存，
+// 使 hasPolicies 立刻反映最新状态（管理端写操作触发，频率低）。
 func InvalidatePolicyCache() {
 	defaultPolicyResolver.mu.Lock()
 	defaultPolicyResolver.loaded = false
 	defaultPolicyResolver.byUser = nil
 	defaultPolicyResolver.mu.Unlock()
+	defaultPolicyResolver.ensureLoaded()
 }
 
 func (r *TablePolicyResolver) ensureLoaded() {
@@ -190,6 +208,7 @@ func (r *TablePolicyResolver) ensureLoaded() {
 	}
 	r.byUser = byUser
 	r.loaded = true
+	hasPolicies.Store(len(byUser) > 0)
 }
 
 func (r *TablePolicyResolver) Resolve(ctx PolicyContext) ResolvedPolicy {

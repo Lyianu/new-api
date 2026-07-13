@@ -47,13 +47,20 @@ func DeleteCustomerPolicy(id int) error {
 
 // GetCustomerPoliciesByUser 返回某用户的全部策略规则。
 func GetCustomerPoliciesByUser(userId int) ([]*CustomerPolicy, error) {
+	if DB == nil {
+		return nil, nil
+	}
 	var policies []*CustomerPolicy
 	err := DB.Where("user_id = ?", userId).Find(&policies).Error
 	return policies, err
 }
 
 // GetAllCustomerPolicies 返回全部策略规则（供缓存构建 / 管理端列表）。
+// DB 未就绪时返回空集，保证解析器在早期/测试环境下不 panic。
 func GetAllCustomerPolicies() ([]*CustomerPolicy, error) {
+	if DB == nil {
+		return nil, nil
+	}
 	var policies []*CustomerPolicy
 	err := DB.Order("user_id asc, priority desc, id asc").Find(&policies).Error
 	return policies, err

@@ -22,6 +22,11 @@ func UserPolicyLimit() gin.HandlerFunc {
 			c.Next()
 			return
 		}
+		// 快路径：无任何客户策略时直接放行，零开销。
+		if !service.HasCustomerPolicies() {
+			c.Next()
+			return
+		}
 		channelId := common.GetContextKeyInt(c, constant.ContextKeyChannelId)
 		modelName := c.GetString("original_model")
 		group := common.GetContextKeyString(c, constant.ContextKeyUserGroup)

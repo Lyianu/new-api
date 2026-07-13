@@ -443,7 +443,7 @@ func GetSupportedEndpointMap() map[string]common.EndpointInfo {
 // GetModelVendorName 返回模型对应的供应商(vendor)展示名；未知返回空串。
 // 用于对下游用户脱敏展示“供应商”而非物理渠道（见 UserVisibleChannel 开关）。
 func GetModelVendorName(modelName string) string {
-	if modelName == "" {
+	if modelName == "" || DB == nil {
 		return ""
 	}
 	if time.Since(lastGetPricingTime) > time.Minute*1 || len(pricingMap) == 0 {
@@ -461,7 +461,8 @@ func GetModelVendorName(modelName string) string {
 // GetModelVendorID 返回模型对应的供应商(vendor)ID；未知模型返回 0。
 // 复用定价缓存的刷新/失效生命周期（1 分钟 TTL），供计费热路径按 vendor 解析客户折扣。
 func GetModelVendorID(modelName string) int {
-	if modelName == "" {
+	// DB 未就绪（如单测 / 启动早期）时优雅降级，避免计费路径 panic。
+	if modelName == "" || DB == nil {
 		return 0
 	}
 	// 触发一次惰性刷新（若缓存过期）

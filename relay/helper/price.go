@@ -77,6 +77,10 @@ func applyCustomerDiscount(info *relaycommon.RelayInfo, priceData *types.PriceDa
 	if info == nil || priceData == nil {
 		return
 	}
+	// 快路径：无任何客户策略时直接返回，避免 DB/定价缓存依赖与开销。
+	if !service.HasCustomerPolicies() {
+		return
+	}
 	vendorId := model.GetModelVendorID(info.OriginModelName)
 	policy := service.GetPolicyResolver().Resolve(service.PolicyContext{
 		UserId:    info.UserId,
