@@ -447,6 +447,31 @@ func GetDefaultModelRatioMap() map[string]float64 {
 	return defaultModelRatio
 }
 
+// GetOfficialUSDModelRatio 返回模型的官方美元锚倍率（ratio×2 = $/1M）。
+// 种子表在初始化时被 scaleSeedToBaseCurrency 平移到了 CNY 本位，
+// 这里除回 USD2RMB 还原美元锚，供「元/刀」倍率展示使用。
+// 模型不在种子表中时返回 false（自定义模型无官方价）。
+func GetOfficialUSDModelRatio(name string) (float64, bool) {
+	scaleSeedToBaseCurrency()
+	name = FormatMatchingModelName(name)
+	ratio, ok := defaultModelRatio[name]
+	if !ok {
+		return 0, false
+	}
+	return ratio / USD2RMB, true
+}
+
+// GetOfficialUSDModelPrice 返回按次计费模型的官方美元单价，语义同 GetOfficialUSDModelRatio。
+func GetOfficialUSDModelPrice(name string) (float64, bool) {
+	scaleSeedToBaseCurrency()
+	name = FormatMatchingModelName(name)
+	price, ok := defaultModelPrice[name]
+	if !ok {
+		return 0, false
+	}
+	return price / USD2RMB, true
+}
+
 func GetDefaultModelPriceMap() map[string]float64 {
 	return defaultModelPrice
 }

@@ -38,3 +38,19 @@ func TestScaleSeedIdempotent(t *testing.T) {
 		t.Fatalf("scale not idempotent: before=%v after=%v", before, after)
 	}
 }
+
+// 官方美元锚还原：缩放后的种子值除回 USD2RMB 应恢复上游美元倍率，
+// 且不受运行时 modelRatioMap 被管理员改价影响。
+func TestGetOfficialUSDModelRatio(t *testing.T) {
+	usd, ok := GetOfficialUSDModelRatio("gpt-4o")
+	if !ok {
+		t.Fatal("gpt-4o should exist in seed table")
+	}
+	if math.Abs(usd-1.25) > 1e-6 {
+		t.Fatalf("official USD ratio for gpt-4o = %v, want 1.25", usd)
+	}
+
+	if _, ok := GetOfficialUSDModelRatio("totally-custom-model-not-in-seed"); ok {
+		t.Fatal("custom model must not have an official USD ratio")
+	}
+}

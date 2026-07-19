@@ -36,6 +36,10 @@ type Pricing struct {
 	BillingMode            string                  `json:"billing_mode,omitempty"`
 	BillingExpr            string                  `json:"billing_expr,omitempty"`
 	PricingVersion         string                  `json:"pricing_version,omitempty"`
+	// 官方美元锚（来自种子价格表，管理员改价不影响），用于前端展示「元/刀」倍率。
+	// 自定义模型不在种子表中时为 nil。
+	OfficialUSDRatio *float64 `json:"official_usd_ratio,omitempty"`
+	OfficialUSDPrice *float64 `json:"official_usd_price,omitempty"`
 }
 
 type PricingVendor struct {
@@ -379,11 +383,17 @@ func updatePricing() {
 		if findPrice {
 			pricing.ModelPrice = modelPrice
 			pricing.QuotaType = 1
+			if officialPrice, ok := ratio_setting.GetOfficialUSDModelPrice(model); ok {
+				pricing.OfficialUSDPrice = &officialPrice
+			}
 		} else {
 			modelRatio, _, _ := ratio_setting.GetModelRatio(model)
 			pricing.ModelRatio = modelRatio
 			pricing.CompletionRatio = ratio_setting.GetCompletionRatio(model)
 			pricing.QuotaType = 0
+			if officialRatio, ok := ratio_setting.GetOfficialUSDModelRatio(model); ok {
+				pricing.OfficialUSDRatio = &officialRatio
+			}
 		}
 		if cacheRatio, ok := ratio_setting.GetCacheRatio(model); ok {
 			pricing.CacheRatio = &cacheRatio

@@ -56,6 +56,10 @@ export type PricingModel = {
   billing_expr?: string
   /** Pricing version returned by backend, useful for cache busting */
   pricing_version?: string
+  /** 官方美元锚倍率（种子表，管理员改价不影响），用于「元/刀」倍率展示 */
+  official_usd_ratio?: number
+  /** 按次计费模型的官方美元单价 */
+  official_usd_price?: number
   /**
    * Optional model metadata fields reserved for backend-provided catalog data.
    * Keep them data-driven; do not synthesize display values on the client.
