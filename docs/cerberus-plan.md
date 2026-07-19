@@ -8,6 +8,7 @@
 | 阶段 | 状态 | 说明 |
 | --- | --- | --- |
 | P1 CNY 记账本位 | ✅ 完成 | 锚翻转+价格表缩放+展示反转+全网关(易支付/Stripe/Waffo/Pancake/Creem)+前端基座，含单测 |
+| P1c 充值输入定死 CNY | ✅ 完成 | 充值输入不再按 `quota_display_type` 解释（删 `DisplayCurrencyToCny`），固定为元；前端钱包全链 ¥ 展示、砍 usdExchangeRate 残留；管理端支付设置文案 CNY 化；单测同步 |
 | P1b 模型页 Provider 分组 | ✅ 完成 | 按 vendor 分组罗列 + 元/刀汇率徽章 + i18n |
 | P2 客户折扣(PolicyResolver) | ✅ 完成 | 模型+Resolver+计费注入(已验证对账一致)+CRUD API+**管理端UI**+单测 |
 | P3 用户级并发+RPM | ✅ 完成 | in-flight信号量+RPM(Redis/内存双模式)+中间件挂载+单测；配置复用P2策略UI |
@@ -79,7 +80,11 @@ type PolicyResolver interface {
 **并发 / RPM（物理渠道）**：
 1. `(user, channel, model)` → 2. `(user, channel)` → 3. `(user, model)` → 4. `(user)` → 5. **系统默认（全局/分组值）**
 
-折扣注入：`PriceData.AddOtherRatio("customer_discount", ratio)`，**再乘**在 `modelRatio × groupRatio` 之上，预扣与结算共用同一乘子。
+折扣注入按计费模式分三条路径，同一请求共用 `resolveCustomerDiscount` 的解析结果：
+
+- **倍率计费**：`PriceData.AddOtherRatio("customer_discount", ratio)`，**再乘**在 `modelRatio × groupRatio` 之上，预扣与结算共用同一乘子。
+- **tiered_expr**：折扣在预扣时定格进 `BillingSnapshot.CustomerDiscount`，结算重跑表达式后乘同一乘子（对账一致）；**只作用于表达式得出的 token 费**，工具调用等附加费按原价。
+- **按次（MJ / Task）**：折扣注入 otherRatios，由各消费路径恰好应用一次（Task 在统一倍率应用点，MJ 在 `ModelPriceHelperPerCall` 后；按次 patch 模型跳过用量倍率但折扣仍生效），并随 `TaskBillingContext` 持久化供轮询期 token 重算复用。
 
 ### 数据模型：`customer_policy`
 
