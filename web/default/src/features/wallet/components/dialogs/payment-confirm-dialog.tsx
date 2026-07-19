@@ -30,10 +30,9 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Skeleton } from '@/components/ui/skeleton'
-import { formatLocalCurrencyAmount } from '@/lib/currency'
 
 import { DEFAULT_DISCOUNT_RATE } from '../../constants'
-import { formatCurrency, getPaymentIcon } from '../../lib'
+import { formatCnyAmount, getPaymentIcon } from '../../lib'
 import type { PaymentMethod } from '../../types'
 
 interface PaymentConfirmDialogProps {
@@ -46,7 +45,6 @@ interface PaymentConfirmDialogProps {
   calculating: boolean
   processing: boolean
   discountRate?: number
-  usdExchangeRate?: number
 }
 
 export function PaymentConfirmDialog({
@@ -59,12 +57,14 @@ export function PaymentConfirmDialog({
   calculating,
   processing,
   discountRate = DEFAULT_DISCOUNT_RATE,
-  usdExchangeRate = 1,
 }: PaymentConfirmDialogProps) {
   const { t } = useTranslation()
   const hasDiscount = discountRate > 0 && discountRate < 1 && paymentAmount > 0
   const originalAmount = hasDiscount ? paymentAmount / discountRate : 0
   const discountAmount = hasDiscount ? originalAmount - paymentAmount : 0
+  // 应付高于到账额度的部分即通道手续费（如 Stripe 收费系数），明示给用户
+  const feeAmount = paymentAmount - topupAmount
+  const hasFee = topupAmount > 0 && feeAmount > 0.005
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -84,11 +84,7 @@ export function PaymentConfirmDialog({
               {t('Topup Amount')}
             </span>
             <span className='text-lg font-semibold'>
-              {formatLocalCurrencyAmount(topupAmount * usdExchangeRate, {
-                digitsLarge: 2,
-                digitsSmall: 2,
-                abbreviate: false,
-              })}
+              {formatCnyAmount(topupAmount)}
             </span>
           </div>
 
@@ -101,23 +97,30 @@ export function PaymentConfirmDialog({
             ) : (
               <div className='flex items-baseline gap-2'>
                 <span className='text-2xl font-semibold'>
-                  {formatCurrency(paymentAmount)}
+                  {formatCnyAmount(paymentAmount)}
                 </span>
                 {hasDiscount && (
                   <span className='text-muted-foreground text-sm line-through'>
-                    {formatCurrency(originalAmount)}
+                    {formatCnyAmount(originalAmount)}
                   </span>
                 )}
               </div>
             )}
           </div>
 
+          {hasFee && !calculating && (
+            <div className='text-muted-foreground flex items-center justify-between text-xs'>
+              <span>{t('Includes processing fee')}</span>
+              <span>{formatCnyAmount(feeAmount)}</span>
+            </div>
+          )}
+
           {hasDiscount && !calculating && (
             <div className='bg-muted/50 rounded-lg p-3'>
               <div className='flex items-center justify-between text-sm'>
                 <span className='text-muted-foreground'>{t('You save')}</span>
                 <span className='font-semibold text-green-600'>
-                  {formatCurrency(discountAmount)}
+                  {formatCnyAmount(discountAmount)}
                 </span>
               </div>
             </div>

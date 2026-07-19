@@ -38,7 +38,7 @@ import { formatNumber } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 import {
-  formatCurrency,
+  formatCnyAmount,
   getDiscountLabel,
   getPaymentIcon,
   getMinTopupAmount,
@@ -71,7 +71,6 @@ interface RechargeFormCardProps {
   topupLink?: string
   loading?: boolean
   priceRatio?: number
-  usdExchangeRate?: number
   onOpenBilling?: () => void
   creemProducts?: CreemProduct[]
   enableCreemTopup?: boolean
@@ -81,6 +80,8 @@ interface RechargeFormCardProps {
   waffoMinTopup?: number
   onWaffoMethodSelect?: (method: WaffoPayMethod, index: number) => void
   enableWaffoPancakeTopup?: boolean
+  /** Stripe 每 ¥1 额度的收费系数（status.stripe_unit_price），用于手续费提示 */
+  stripeUnitPrice?: number
 }
 
 export function RechargeFormCard({
@@ -101,7 +102,6 @@ export function RechargeFormCard({
   topupLink,
   loading,
   priceRatio = 1,
-  usdExchangeRate = 1,
   onOpenBilling,
   creemProducts,
   enableCreemTopup,
@@ -111,6 +111,7 @@ export function RechargeFormCard({
   waffoMinTopup,
   onWaffoMethodSelect,
   enableWaffoPancakeTopup,
+  stripeUnitPrice,
 }: RechargeFormCardProps) {
   const { t } = useTranslation()
   const [localAmount, setLocalAmount] = useState(topupAmount.toString())
@@ -139,6 +140,27 @@ export function RechargeFormCard({
     Array.isArray(waffoPayMethods) && waffoPayMethods.length > 0
   const minTopup = getMinTopupAmount(topupInfo)
   const redemptionEnabled = topupInfo?.enable_redemption !== false
+
+  // Stripe 专属模式：仅启用 Stripe 时收敛为单一支付按钮 + 手续费提示
+  const stripeMethod = topupInfo?.pay_methods?.find((m) => m.type === 'stripe')
+  const stripeOnly =
+    Boolean(topupInfo?.enable_stripe_topup) &&
+    Boolean(stripeMethod) &&
+    !topupInfo?.enable_online_topup &&
+    !enableWaffoTopup &&
+    !enableWaffoPancakeTopup &&
+    !enableCreemTopup
+  // 手续费百分比：收费系数 1.05 → 约 5%
+  const stripeFeePercent =
+    typeof stripeUnitPrice === 'number' && stripeUnitPrice > 1
+      ? Number(((stripeUnitPrice - 1) * 100).toFixed(1))
+      : null
+  const stripeBelowMin = (stripeMethod?.min_topup || 0) > topupAmount
+  // Stripe 专属模式下预设卡片的实付按 Stripe 收费系数估算
+  const effectivePriceRatio =
+    stripeOnly && typeof stripeUnitPrice === 'number' && stripeUnitPrice > 0
+      ? stripeUnitPrice
+      : priceRatio
 
   if (loading) {
     return (
@@ -236,9 +258,8 @@ export function RechargeFormCard({
                         hasDiscount,
                       } = calculatePresetPricing(
                         preset.value,
-                        priceRatio,
-                        discount,
-                        usdExchangeRate
+                        effectivePriceRatio,
+                        discount
                       )
                       return (
                         <Button
@@ -254,7 +275,7 @@ export function RechargeFormCard({
                         >
                           <div className='flex w-full items-center justify-between'>
                             <div className='text-base font-semibold sm:text-lg'>
-                              {formatNumber(displayValue)}
+                              ¥{formatNumber(displayValue)}
                             </div>
                             {hasDiscount && (
                               <div className='text-xs font-medium text-green-600'>
@@ -263,11 +284,16 @@ export function RechargeFormCard({
                             )}
                           </div>
                           <div className='text-muted-foreground mt-1.5 w-full text-xs sm:mt-2'>
-                            Pay {formatCurrency(actualPrice)}
+                            {t('Pay {{amount}}', {
+                              amount: formatCnyAmount(actualPrice),
+                            })}
                             {hasDiscount && savedAmount > 0 && (
                               <span className='text-green-600'>
                                 {' '}
-                                • Save {formatCurrency(savedAmount)}
+                                •{' '}
+                                {t('Save {{amount}}', {
+                                  amount: formatCnyAmount(savedAmount),
+                                })}
                               </span>
                             )}
                           </div>
@@ -292,7 +318,9 @@ export function RechargeFormCard({
                     value={localAmount}
                     onChange={(e) => handleAmountChange(e.target.value)}
                     min={minTopup}
-                    placeholder={`Minimum ${minTopup}`}
+                    placeholder={t('Minimum topup amount: {{amount}}', {
+                      amount: minTopup,
+                    })}
                     className='h-9 text-base sm:h-10 sm:text-lg'
                   />
                   <div className='bg-muted/30 flex min-h-9 items-center justify-between gap-2 rounded-md border px-3 lg:min-w-52'>
@@ -303,13 +331,51 @@ export function RechargeFormCard({
                       <Skeleton className='h-5 w-16' />
                     ) : (
                       <span className='text-sm font-semibold'>
-                        {formatCurrency(paymentAmount)}
+                        {formatCnyAmount(paymentAmount)}
                       </span>
                     )}
                   </div>
                 </div>
               </div>
 
+              {stripeOnly && stripeMethod ? (
+                <div className='space-y-2.5 sm:space-y-3'>
+                  <Button
+                    onClick={() => onPaymentMethodSelect(stripeMethod)}
+                    disabled={stripeBelowMin || !!paymentLoading}
+                    title={
+                      stripeBelowMin
+                        ? t('Minimum topup amount: {{amount}}', {
+                            amount: stripeMethod.min_topup,
+                          })
+                        : undefined
+                    }
+                    className='h-11 w-full gap-2 text-base'
+                  >
+                    {paymentLoading === stripeMethod.type ? (
+                      <Loader2 className='h-4 w-4 animate-spin' />
+                    ) : (
+                      getPaymentIcon(
+                        stripeMethod.type,
+                        'h-4 w-4',
+                        stripeMethod.icon,
+                        stripeMethod.name
+                      )
+                    )}
+                    {t('Pay with Stripe')}
+                  </Button>
+                  <p className='text-muted-foreground text-xs'>
+                    {stripeFeePercent != null
+                      ? t(
+                          'The payment amount includes a Stripe processing fee of approx. {{percent}}%.',
+                          { percent: stripeFeePercent }
+                        )
+                      : t(
+                          'Payments are processed securely by Stripe. The final amount is shown on the Stripe checkout page.'
+                        )}
+                  </p>
+                </div>
+              ) : (
               <div className='space-y-2.5 sm:space-y-3'>
                 <Label className='text-muted-foreground text-xs font-medium tracking-wider uppercase'>
                   {t('Payment Method')}
@@ -388,6 +454,7 @@ export function RechargeFormCard({
                   </Alert>
                 )}
               </div>
+              )}
 
               {enableWaffoTopup &&
                 hasWaffoPaymentMethods &&
