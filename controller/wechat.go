@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"strconv"
 	"time"
 
 	"github.com/QuantumNous/new-api/common"
@@ -91,7 +90,8 @@ func WeChatAuth(c *gin.Context) {
 		}
 	} else {
 		if common.RegisterEnabled {
-			user.Username = "wechat_" + strconv.Itoa(model.GetMaxUserId()+1)
+			// 随机后缀：主键已随机化，MaxUserId+1 不再随注册递增，沿用会导致连续注册撞用户名
+			user.Username = "wechat_" + common.GetRandomString(8)
 			user.DisplayName = "WeChat User"
 			user.Role = common.RoleCommonUser
 			user.Status = common.UserStatusEnabled

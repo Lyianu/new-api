@@ -1,9 +1,11 @@
 package model
 
 import (
+	"crypto/rand"
 	"database/sql"
 	"errors"
 	"fmt"
+	"math/big"
 	"strconv"
 	"strings"
 
@@ -484,12 +486,55 @@ func (user *User) prepareForInsert(tx *gorm.DB) error {
 	if err := ensureEmailAvailableWithTx(tx, user.Email, 0); err != nil {
 		return err
 	}
+	if err := user.assignRandomIdWithTx(tx); err != nil {
+		return err
+	}
 	if user.Password == "" {
 		return nil
 	}
 	var err error
 	user.Password, err = common.Password2Hash(user.Password)
 	return err
+}
+
+// 随机用户 ID 取值范围：9-10 位，落在 int32 内，兼容所有 user_id 关联列与 JS 安全整数。
+// 用随机主键替代数据库自增，避免新注册用户从自身 ID 推断全站用户量。
+const (
+	randomUserIdMin = 100_000_000
+	randomUserIdMax = 2_147_483_647
+)
+
+// assignRandomIdWithTx 为新用户生成随机主键。已显式指定 Id 的调用方（如 root 初始化、测试）不受影响。
+// 先查重再写入；极端并发下的撞号由主键唯一约束兜底（Create 报错，注册重试即可）。
+func (user *User) assignRandomIdWithTx(tx *gorm.DB) error {
+	if user.Id != 0 {
+		return nil
+	}
+	const maxAttempts = 5
+	for i := 0; i < maxAttempts; i++ {
+		id, err := generateRandomUserId()
+		if err != nil {
+			return err
+		}
+		var count int64
+		// Unscoped：软删除用户仍占用其 ID，不可复用
+		if err := tx.Unscoped().Model(&User{}).Where("id = ?", id).Count(&count).Error; err != nil {
+			return err
+		}
+		if count == 0 {
+			user.Id = id
+			return nil
+		}
+	}
+	return errors.New("failed to allocate random user id")
+}
+
+func generateRandomUserId() (int, error) {
+	n, err := rand.Int(rand.Reader, big.NewInt(randomUserIdMax-randomUserIdMin+1))
+	if err != nil {
+		return 0, err
+	}
+	return randomUserIdMin + int(n.Int64()), nil
 }
 
 // BindEmailToUser atomically checks email availability and assigns it to the
