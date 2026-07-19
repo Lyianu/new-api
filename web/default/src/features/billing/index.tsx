@@ -20,7 +20,7 @@ import { Search, Copy, Check, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Dialog } from '@/components/dialog'
+import { SectionPageLayout } from '@/components/layout'
 import { StatusBadge } from '@/components/status-badge'
 import {
   AlertDialog,
@@ -48,22 +48,17 @@ import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
 import { formatCurrencyFromUSD } from '@/lib/currency'
 import { formatNumber } from '@/lib/format'
 
-import { useBillingHistory } from '../../hooks/use-billing-history'
+import { useBillingHistory } from '@/features/wallet/hooks/use-billing-history'
 import {
   getStatusConfig,
   getPaymentMethodName,
   formatTimestamp,
-} from '../../lib/billing'
+} from '@/features/wallet/lib/billing'
 
-interface BillingHistoryDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
-
-export function BillingHistoryDialog({
-  open,
-  onOpenChange,
-}: BillingHistoryDialogProps) {
+/**
+ * 账单页：充值订单记录（由原钱包页「订单历史」弹窗升格而来）。
+ */
+export function Billing() {
   const { t } = useTranslation()
   const {
     records,
@@ -96,61 +91,56 @@ export function BillingHistoryDialog({
 
   return (
     <>
-      <Dialog
-        open={open}
-        onOpenChange={onOpenChange}
-        title={t('Billing History')}
-        description={t(
-          'View your topup transaction records and payment history'
-        )}
-        contentClassName='flex max-h-[calc(100dvh-2rem)] flex-col max-sm:w-screen max-sm:max-w-none max-sm:rounded-none max-sm:p-4 sm:max-w-4xl'
-        contentHeight='auto'
-        bodyClassName='space-y-3'
-      >
-        <div className='min-h-0 space-y-3'>
-          {/* Search and Filter Bar */}
-          <div className='flex items-center gap-2'>
-            <div className='relative flex-1'>
-              <Search className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2' />
-              <Input
-                placeholder={t('Search by order number...')}
-                value={keyword}
-                onChange={(e) => handleSearch(e.target.value)}
-                className='h-9 pl-10'
-              />
-            </div>
-            <Select
-              items={[
-                { value: '10', label: t('10 / page') },
-                { value: '20', label: t('20 / page') },
-                { value: '50', label: t('50 / page') },
-                { value: '100', label: t('100 / page') },
-              ]}
-              value={pageSize.toString()}
-              onValueChange={(value) =>
-                value !== null && handlePageSizeChange(parseInt(value))
-              }
-            >
-              <SelectTrigger className='h-9 w-[92px] sm:w-32'>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent alignItemWithTrigger={false}>
-                <SelectGroup>
-                  <SelectItem value='10'>{t('10 / page')}</SelectItem>
-                  <SelectItem value='20'>{t('20 / page')}</SelectItem>
-                  <SelectItem value='50'>{t('50 / page')}</SelectItem>
-                  <SelectItem value='100'>{t('100 / page')}</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+      <SectionPageLayout>
+        <SectionPageLayout.Title>{t('Bills')}</SectionPageLayout.Title>
+        <SectionPageLayout.Content>
+          <div className='mx-auto w-full max-w-4xl space-y-3'>
+            <p className='text-muted-foreground text-sm'>
+              {t('View your topup transaction records and payment history')}
+            </p>
 
-          {/* Records List */}
-          <div className='max-h-[min(54vh,520px)] overflow-y-auto pr-1'>
-            {loading ? (
+            {/* Search and Filter Bar */}
+            <div className='flex items-center gap-2'>
+              <div className='relative flex-1'>
+                <Search className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2' />
+                <Input
+                  placeholder={t('Search by order number...')}
+                  value={keyword}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className='h-9 pl-10'
+                />
+              </div>
+              <Select
+                items={[
+                  { value: '10', label: t('10 / page') },
+                  { value: '20', label: t('20 / page') },
+                  { value: '50', label: t('50 / page') },
+                  { value: '100', label: t('100 / page') },
+                ]}
+                value={pageSize.toString()}
+                onValueChange={(value) =>
+                  value !== null && handlePageSizeChange(Number.parseInt(value))
+                }
+              >
+                <SelectTrigger className='h-9 w-[92px] sm:w-32'>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent alignItemWithTrigger={false}>
+                  <SelectGroup>
+                    <SelectItem value='10'>{t('10 / page')}</SelectItem>
+                    <SelectItem value='20'>{t('20 / page')}</SelectItem>
+                    <SelectItem value='50'>{t('50 / page')}</SelectItem>
+                    <SelectItem value='100'>{t('100 / page')}</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Records List */}
+            {loading && (
               <div className='space-y-3'>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className='rounded-lg border p-3 sm:p-4'>
+                {['a', 'b', 'c', 'd', 'e'].map((key) => (
+                  <div key={key} className='rounded-lg border p-3 sm:p-4'>
                     <div className='flex items-start justify-between'>
                       <div className='flex-1 space-y-2'>
                         <Skeleton className='h-4 w-48' />
@@ -166,8 +156,9 @@ export function BillingHistoryDialog({
                   </div>
                 ))}
               </div>
-            ) : records.length === 0 ? (
-              <div className='text-muted-foreground flex min-h-40 flex-col items-center justify-center py-10 text-center'>
+            )}
+            {!loading && records.length === 0 && (
+              <div className='text-muted-foreground flex min-h-40 flex-col items-center justify-center rounded-lg border py-10 text-center'>
                 <p className='text-sm font-medium'>
                   {t('No billing records found')}
                 </p>
@@ -177,7 +168,8 @@ export function BillingHistoryDialog({
                     : t('Your transaction history will appear here')}
                 </p>
               </div>
-            ) : (
+            )}
+            {!loading && records.length > 0 && (
               <div className='space-y-3'>
                 {records.map((record) => {
                   const statusConfig = getStatusConfig(record.status)
@@ -276,44 +268,44 @@ export function BillingHistoryDialog({
                 })}
               </div>
             )}
-          </div>
 
-          {/* Pagination */}
-          {!loading && records.length > 0 && (
-            <div className='flex flex-col items-center gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between'>
-              <div className='text-muted-foreground text-xs sm:text-sm'>
-                {t('Showing')} {(page - 1) * pageSize + 1}-
-                {Math.min(page * pageSize, total)} {t('of')} {total}
-              </div>
-              <div className='flex items-center gap-2'>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={() => handlePageChange(page - 1)}
-                  disabled={page <= 1}
-                  className='h-8 w-8 p-0'
-                >
-                  <ChevronLeft className='h-4 w-4' />
-                </Button>
-                <div className='text-muted-foreground flex items-center gap-1 text-sm'>
-                  <span className='font-medium'>{page}</span>
-                  <span>/</span>
-                  <span>{totalPages}</span>
+            {/* Pagination */}
+            {!loading && records.length > 0 && (
+              <div className='flex flex-col items-center gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between'>
+                <div className='text-muted-foreground text-xs sm:text-sm'>
+                  {t('Showing')} {(page - 1) * pageSize + 1}-
+                  {Math.min(page * pageSize, total)} {t('of')} {total}
                 </div>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={() => handlePageChange(page + 1)}
-                  disabled={page >= totalPages}
-                  className='h-8 w-8 p-0'
-                >
-                  <ChevronRight className='h-4 w-4' />
-                </Button>
+                <div className='flex items-center gap-2'>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={() => handlePageChange(page - 1)}
+                    disabled={page <= 1}
+                    className='h-8 w-8 p-0'
+                  >
+                    <ChevronLeft className='h-4 w-4' />
+                  </Button>
+                  <div className='text-muted-foreground flex items-center gap-1 text-sm'>
+                    <span className='font-medium'>{page}</span>
+                    <span>/</span>
+                    <span>{totalPages}</span>
+                  </div>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={() => handlePageChange(page + 1)}
+                    disabled={page >= totalPages}
+                    className='h-8 w-8 p-0'
+                  >
+                    <ChevronRight className='h-4 w-4' />
+                  </Button>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-      </Dialog>
+            )}
+          </div>
+        </SectionPageLayout.Content>
+      </SectionPageLayout>
 
       {/* Confirm Complete Order Dialog */}
       <AlertDialog

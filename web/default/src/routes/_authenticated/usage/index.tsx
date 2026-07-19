@@ -16,22 +16,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import { z } from 'zod'
+import { createFileRoute } from '@tanstack/react-router'
 
-import { Wallet } from '@/features/wallet'
+import { UsageInfo } from '@/features/usage'
 
-const walletSearchSchema = z.object({
-  show_history: z.boolean().optional(),
-})
-
-export const Route = createFileRoute('/_authenticated/wallet/')({
-  component: Wallet,
-  validateSearch: walletSearchSchema,
-  beforeLoad: ({ search }) => {
-    // 订单历史已升格为独立的「账单」页
-    if (search.show_history) {
-      throw redirect({ to: '/billing' })
-    }
-  },
+export const Route = createFileRoute('/_authenticated/usage/')({
+  component: UsageInfo,
 })

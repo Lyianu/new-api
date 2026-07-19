@@ -18,7 +18,9 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import {
   Activity,
+  BookOpen,
   Box,
+  Boxes,
   CreditCard,
   FileText,
   FlaskConical,
@@ -27,8 +29,10 @@ import {
   ListTodo,
   MessageSquare,
   Radio,
+  Receipt,
   ServerCog,
   Settings,
+  Tag,
   Ticket,
   User,
   Users,
@@ -36,49 +40,36 @@ import {
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-import { type SidebarData } from '@/components/layout/types'
+import type { SidebarData } from '@/components/layout/types'
+import { useStatus } from '@/hooks/use-status'
 import { ROLE } from '@/lib/roles'
 
 /**
  * Root navigation groups for the application sidebar.
+ *
+ * 普通用户仅可见「控制台」六项（用量信息 / API Keys / 可用模型 / 充值 / 账单 / 日志明细）
+ * 与「资源」次要组（接口文档 / 模型定价 / 个人信息），版式对齐 DeepSeek 开放平台。
+ * Playground / Chat / 仪表盘分析 / 任务日志保留为管理员专属，管理端体验不变。
  *
  * These are shown when the URL does not match any nested sidebar view
  * registered in `layout/lib/sidebar-view-registry.ts`.
  */
 export function useSidebarData(): SidebarData {
   const { t } = useTranslation()
+  const { status } = useStatus()
+  const docsLink =
+    typeof status?.docs_link === 'string' ? status.docs_link.trim() : ''
 
   return {
     navGroups: [
       {
-        id: 'chat',
-        title: t('Chat'),
+        id: 'console',
+        title: t('Console'),
         items: [
           {
-            title: t('Playground'),
-            url: '/playground',
-            icon: FlaskConical,
-          },
-          {
-            title: t('Chat'),
-            icon: MessageSquare,
-            type: 'chat-presets',
-          },
-        ],
-      },
-      {
-        id: 'general',
-        title: t('General'),
-        items: [
-          {
-            title: t('Overview'),
-            url: '/dashboard/overview',
+            title: t('Usage Info'),
+            url: '/usage',
             icon: Activity,
-          },
-          {
-            title: t('Dashboard'),
-            url: '/dashboard/models',
-            icon: LayoutDashboard,
           },
           {
             title: t('API Keys'),
@@ -86,9 +77,73 @@ export function useSidebarData(): SidebarData {
             icon: Key,
           },
           {
+            title: t('Available Models'),
+            url: '/available-models',
+            icon: Boxes,
+          },
+          {
+            title: t('Top-up'),
+            url: '/wallet',
+            icon: Wallet,
+          },
+          {
+            title: t('Bills'),
+            url: '/billing',
+            icon: Receipt,
+          },
+          {
             title: t('Usage Logs'),
             url: '/usage-logs/common',
             icon: FileText,
+          },
+        ],
+      },
+      {
+        id: 'resources',
+        title: t('Resources'),
+        items: [
+          ...(docsLink
+            ? [
+                {
+                  title: t('API Docs'),
+                  url: docsLink,
+                  icon: BookOpen,
+                },
+              ]
+            : []),
+          {
+            title: t('Model Pricing'),
+            url: '/pricing',
+            icon: Tag,
+          },
+          {
+            title: t('Profile'),
+            url: '/profile',
+            icon: User,
+          },
+        ],
+      },
+      {
+        id: 'advanced',
+        title: t('Analytics'),
+        items: [
+          {
+            title: t('Playground'),
+            url: '/playground',
+            icon: FlaskConical,
+            requiredRole: ROLE.ADMIN,
+          },
+          {
+            title: t('Chat'),
+            icon: MessageSquare,
+            type: 'chat-presets',
+            requiredRole: ROLE.ADMIN,
+          },
+          {
+            title: t('Dashboard'),
+            url: '/dashboard/models',
+            icon: LayoutDashboard,
+            requiredRole: ROLE.ADMIN,
           },
           {
             title: t('Task Logs'),
@@ -96,22 +151,7 @@ export function useSidebarData(): SidebarData {
             activeUrls: ['/usage-logs/drawing'],
             configUrls: ['/usage-logs/drawing', '/usage-logs/task'],
             icon: ListTodo,
-          },
-        ],
-      },
-      {
-        id: 'personal',
-        title: t('Personal'),
-        items: [
-          {
-            title: t('Wallet'),
-            url: '/wallet',
-            icon: Wallet,
-          },
-          {
-            title: t('Profile'),
-            url: '/profile',
-            icon: User,
+            requiredRole: ROLE.ADMIN,
           },
         ],
       },
