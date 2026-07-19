@@ -112,6 +112,8 @@ export interface UserSettings {
   gotify_priority?: number
   /** Accept unset model ratio model */
   accept_unset_model_ratio_model?: boolean
+  /** Return customer discount info in API responses */
+  return_discount_info?: boolean
   /** Record IP log */
   record_ip_log?: boolean
   /** Receive upstream model update notifications (admin only) */
@@ -143,6 +145,7 @@ export interface UpdateUserSettingsRequest {
   gotify_token?: string
   gotify_priority?: number
   accept_unset_model_ratio_model?: boolean
+  return_discount_info?: boolean
   record_ip_log?: boolean
   upstream_model_update_notify_enabled?: boolean
 }

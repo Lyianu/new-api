@@ -22,9 +22,28 @@ import (
 	"github.com/QuantumNous/new-api/service"
 	"github.com/QuantumNous/new-api/setting"
 	"github.com/QuantumNous/new-api/setting/system_setting"
+	"github.com/QuantumNous/new-api/types"
 
 	"github.com/gin-gonic/gin"
 )
+
+// applyMjOtherRatios 将 otherRatios（当前仅客户折扣）恰好一次应用到 MJ 按次额度。
+// MJ 路径此后一律使用 priceData.Quota 做余额校验、扣费与记账，故必须在
+// ModelPriceHelperPerCall 之后、任何使用 Quota 之前调用，且只调用一次。
+func applyMjOtherRatios(priceData *types.PriceData) *dto.MidjourneyResponse {
+	if len(priceData.OtherRatios()) == 0 {
+		return nil
+	}
+	quota, clamp := common.QuotaFromFloatChecked(priceData.ApplyOtherRatiosToFloat(float64(priceData.Quota)))
+	if clamp != nil {
+		return &dto.MidjourneyResponse{
+			Code:        4,
+			Description: "quota_overflow",
+		}
+	}
+	priceData.Quota = quota
+	return nil
+}
 
 func RelayMidjourneyImage(c *gin.Context) {
 	taskId := c.Param("id")
@@ -209,6 +228,9 @@ func RelaySwapFace(c *gin.Context, info *relaycommon.RelayInfo) *dto.MidjourneyR
 			Code:        4,
 			Description: err.Error(),
 		}
+	}
+	if mjErr := applyMjOtherRatios(&priceData); mjErr != nil {
+		return mjErr
 	}
 
 	userQuota, err := model.GetUserQuota(info.UserId, false)
@@ -516,6 +538,9 @@ func RelayMidjourneySubmit(c *gin.Context, relayInfo *relaycommon.RelayInfo) *dt
 			Code:        4,
 			Description: err.Error(),
 		}
+	}
+	if mjErr := applyMjOtherRatios(&priceData); mjErr != nil {
+		return mjErr
 	}
 
 	userQuota, err := model.GetUserQuota(relayInfo.UserId, false)

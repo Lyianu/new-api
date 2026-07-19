@@ -200,6 +200,11 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 		quota, clamp := common.QuotaFromFloatChecked(quotaWithRatios)
 		info.PriceData.Quota = quota
 		noteTaskQuotaClamp(info, clamp)
+	} else if discount, ok := info.PriceData.OtherRatios()["customer_discount"]; ok {
+		// 按次 patch 模型跳过时长/分辨率等用量倍率，但客户折扣是价格属性，仍需生效。
+		quota, clamp := common.QuotaFromFloatChecked(float64(info.PriceData.Quota) * discount)
+		info.PriceData.Quota = quota
+		noteTaskQuotaClamp(info, clamp)
 	}
 
 	// 7. 预扣费（仅首次 — 重试时 info.Billing 已存在，跳过）
@@ -230,6 +235,11 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 	otherRatios := info.PriceData.OtherRatios()
 	if otherRatios == nil {
 		otherRatios = map[string]float64{}
+	}
+	// 客户折扣默认不对外返回（客户可能向下游二级分发，折扣是其商务信息）；
+	// 用户在个人设置开启 ReturnDiscountInfo 后才随 header 返回。计费不受影响。
+	if !info.UserSetting.ReturnDiscountInfo {
+		delete(otherRatios, "customer_discount")
 	}
 	ratiosJSON, _ := common.Marshal(otherRatios)
 	c.Header("X-New-Api-Other-Ratios", string(ratiosJSON))

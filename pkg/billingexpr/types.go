@@ -51,6 +51,19 @@ type BillingSnapshot struct {
 	EstimatedTier             string  `json:"estimated_tier"`
 	QuotaPerUnit              float64 `json:"quota_per_unit"`
 	ExprVersion               int     `json:"expr_version"`
+	// CustomerDiscount 是客户级折扣乘子（1=原价）。预扣时随快照定格，
+	// 结算复用同一值，保证预扣/结算共用同一乘子（对账一致）。
+	// 0 表示未设（历史快照无此字段），等价 1。折扣只作用于表达式得出的
+	// token 费用，不作用于工具调用等附加费。
+	CustomerDiscount float64 `json:"customer_discount,omitempty"`
+}
+
+// DiscountFactor 返回客户折扣乘子；未设（<=0）时为 1。
+func (s *BillingSnapshot) DiscountFactor() float64 {
+	if s == nil || s.CustomerDiscount <= 0 {
+		return 1
+	}
+	return s.CustomerDiscount
 }
 
 // TieredResult holds everything needed after running tiered settlement.

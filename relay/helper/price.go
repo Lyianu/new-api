@@ -70,6 +70,40 @@ func HandleGroupRatio(ctx *gin.Context, relayInfo *relaycommon.RelayInfo) types.
 	return groupRatioInfo
 }
 
+// customerDiscountRatioKey 是客户折扣在 otherRatios / 日志明细中的键名。
+const customerDiscountRatioKey = "customer_discount"
+
+// resolveCustomerDiscount 解析该请求命中的客户级折扣乘子（按 vendor 维度）。
+// 未命中任何规则时返回 1.0（原价）。三条计费路径（倍率、tiered、按次）
+// 共用此解析，保证同一请求语义下折扣一致。
+func resolveCustomerDiscount(info *relaycommon.RelayInfo) float64 {
+	if info == nil {
+		return 1.0
+	}
+	// 快路径：无任何客户策略时直接返回（TTL 内无 DB，近零开销），避免定价缓存依赖。
+	if !service.HasCustomerPolicies() {
+		return 1.0
+	}
+	vendorId := model.GetModelVendorID(info.OriginModelName)
+	// ChannelMeta 是内嵌指针，渠道未选定（或测试环境）时为 nil；
+	// 此时按 channelId=0 解析：vendor 维度规则照常命中，渠道维度规则不命中。
+	channelId := 0
+	if info.ChannelMeta != nil {
+		channelId = info.ChannelId
+	}
+	policy := service.GetPolicyResolver().Resolve(service.PolicyContext{
+		UserId:    info.UserId,
+		Group:     info.UsingGroup,
+		VendorId:  vendorId,
+		ChannelId: channelId,
+		ModelName: info.OriginModelName,
+	})
+	if policy.DiscountRatio > 0 {
+		return policy.DiscountRatio
+	}
+	return 1.0
+}
+
 // applyCustomerDiscount 解析并注入客户级折扣（按 vendor 维度）。
 // 折扣以 otherRatio("customer_discount") 形式再乘在分组价之上；
 // 查不到规则时 DiscountRatio=1.0，不注入（等价无折扣）。
@@ -77,20 +111,8 @@ func applyCustomerDiscount(info *relaycommon.RelayInfo, priceData *types.PriceDa
 	if info == nil || priceData == nil {
 		return
 	}
-	// 快路径：无任何客户策略时直接返回，避免 DB/定价缓存依赖与开销。
-	if !service.HasCustomerPolicies() {
-		return
-	}
-	vendorId := model.GetModelVendorID(info.OriginModelName)
-	policy := service.GetPolicyResolver().Resolve(service.PolicyContext{
-		UserId:    info.UserId,
-		Group:     info.UsingGroup,
-		VendorId:  vendorId,
-		ChannelId: info.ChannelId,
-		ModelName: info.OriginModelName,
-	})
-	if policy.DiscountRatio > 0 && policy.DiscountRatio != 1.0 {
-		priceData.AddOtherRatio("customer_discount", policy.DiscountRatio)
+	if discount := resolveCustomerDiscount(info); discount != 1.0 {
+		priceData.AddOtherRatio(customerDiscountRatioKey, discount)
 	}
 }
 
@@ -276,6 +298,10 @@ func ModelPriceHelperPerCall(c *gin.Context, info *relaycommon.RelayInfo) (types
 		Quota:          quota,
 		GroupRatioInfo: groupRatioInfo,
 	}
+	// 客户折扣注入 otherRatios，由各消费路径恰好应用一次到 Quota：
+	// Task 在 relay_task 的统一倍率应用点，MJ 在 ModelPriceHelperPerCall 调用后。
+	// 此处不直接改 Quota，避免与上述应用点双重打折。
+	applyCustomerDiscount(info, &priceData)
 	return priceData, nil
 }
 
@@ -320,7 +346,10 @@ func modelPriceHelperTiered(c *gin.Context, info *relaycommon.RelayInfo, promptT
 
 	// Expression coefficients are $/1M tokens prices; convert to quota the same way per-call billing does.
 	quotaBeforeGroup := rawCost / 1_000_000 * common.QuotaPerUnit
-	preConsumedQuota, err := billingexpr.QuotaRoundStrict(quotaBeforeGroup * groupRatioInfo.GroupRatio)
+	// 客户折扣在预扣时定格进快照，结算（ComputeTieredQuotaWithRequest）复用同一乘子，
+	// 保证预扣/结算对账一致。折扣不走 otherRatios：tiered 结算重跑表达式而不读倍率管线。
+	customerDiscount := resolveCustomerDiscount(info)
+	preConsumedQuota, err := billingexpr.QuotaRoundStrict(quotaBeforeGroup * groupRatioInfo.GroupRatio * customerDiscount)
 	if err != nil {
 		return types.PriceData{}, err
 	}
@@ -347,6 +376,7 @@ func modelPriceHelperTiered(c *gin.Context, info *relaycommon.RelayInfo, promptT
 		EstimatedTier:             trace.MatchedTier,
 		QuotaPerUnit:              common.QuotaPerUnit,
 		ExprVersion:               billingexpr.ExprVersion(exprStr),
+		CustomerDiscount:          customerDiscount,
 	}
 	info.TieredBillingSnapshot = snapshot
 	info.BillingRequestInput = &requestInput

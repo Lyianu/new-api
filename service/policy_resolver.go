@@ -4,7 +4,9 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
+	"time"
 
+	"github.com/QuantumNous/new-api/common"
 	"github.com/QuantumNous/new-api/model"
 )
 
@@ -13,8 +15,23 @@ import (
 // 也保证早期/测试环境（DB 未就绪）不会 panic。
 var hasPolicies atomic.Bool
 
+// 缓存 TTL：与定价缓存对齐（1 分钟），保证多实例部署下其他节点的策略变更
+// 最迟 1 分钟内生效；失败退避避免 DB 故障期间每个请求都打库。
+const (
+	policyCacheTTL           = time.Minute
+	policyCacheRetryInterval = 5 * time.Second
+)
+
 // HasCustomerPolicies 返回是否存在任何客户策略（供调用方快路径判断）。
+// 内部触发一次 TTL 惰性刷新（缓存新鲜时仅一次 RLock + 原子读，无 DB），
+// 使多实例部署下其他节点的策略增删也能在 TTL 内被感知。
+// 非默认解析器（SetPolicyResolver 注入的表达式/外部服务/测试实现）自行决定
+// 策略存在性，快路径不得替它短路，此时恒返回 true。
 func HasCustomerPolicies() bool {
+	if activeResolver != defaultPolicyResolver {
+		return true
+	}
+	defaultPolicyResolver.ensureLoaded()
 	return hasPolicies.Load()
 }
 
@@ -151,9 +168,16 @@ func ResolvePolicyRows(rows []*model.CustomerPolicy, ctx PolicyContext) Resolved
 // ---- 表驱动实现（带内存缓存，写时失效）----
 
 type TablePolicyResolver struct {
-	mu     sync.RWMutex
-	byUser map[int][]*model.CustomerPolicy
-	loaded bool
+	mu       sync.RWMutex
+	byUser   map[int][]*model.CustomerPolicy
+	loaded   bool
+	lastLoad time.Time // 上次成功加载时间（TTL 起点）
+	lastTry  time.Time // 上次尝试加载时间（含失败，用于退避）
+}
+
+// fresh 返回缓存是否已加载且未过 TTL。调用方需持有 r.mu（读或写锁）。
+func (r *TablePolicyResolver) fresh() bool {
+	return r.loaded && time.Since(r.lastLoad) < policyCacheTTL
 }
 
 var defaultPolicyResolver = &TablePolicyResolver{}
@@ -178,17 +202,19 @@ func SetPolicyResolver(r PolicyResolver) {
 
 // InvalidatePolicyCache 在策略写入后调用：重置并立即重建缓存，
 // 使 hasPolicies 立刻反映最新状态（管理端写操作触发，频率低）。
+// 注意仅对本实例即时生效；其他实例依赖 TTL（policyCacheTTL）内的惰性刷新。
 func InvalidatePolicyCache() {
 	defaultPolicyResolver.mu.Lock()
 	defaultPolicyResolver.loaded = false
 	defaultPolicyResolver.byUser = nil
+	defaultPolicyResolver.lastTry = time.Time{}
 	defaultPolicyResolver.mu.Unlock()
 	defaultPolicyResolver.ensureLoaded()
 }
 
 func (r *TablePolicyResolver) ensureLoaded() {
 	r.mu.RLock()
-	if r.loaded {
+	if r.fresh() {
 		r.mu.RUnlock()
 		return
 	}
@@ -196,18 +222,28 @@ func (r *TablePolicyResolver) ensureLoaded() {
 
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	if r.loaded {
+	if r.fresh() {
 		return
 	}
+	// 失败退避：加载出错后 retryInterval 内沿用旧缓存，避免 DB 故障时每请求打库。
+	if time.Since(r.lastTry) < policyCacheRetryInterval {
+		return
+	}
+	r.lastTry = time.Now()
 	all, err := model.GetAllCustomerPolicies()
+	if err != nil {
+		// 计费安全：出错时保留旧缓存与 hasPolicies，绝不静默清空策略
+		//（清空意味着折扣与限流全部失效），并显式记录。
+		common.SysError("加载客户策略缓存失败（沿用旧缓存）: " + err.Error())
+		return
+	}
 	byUser := make(map[int][]*model.CustomerPolicy)
-	if err == nil {
-		for _, p := range all {
-			byUser[p.UserId] = append(byUser[p.UserId], p)
-		}
+	for _, p := range all {
+		byUser[p.UserId] = append(byUser[p.UserId], p)
 	}
 	r.byUser = byUser
 	r.loaded = true
+	r.lastLoad = time.Now()
 	hasPolicies.Store(len(byUser) > 0)
 }
 

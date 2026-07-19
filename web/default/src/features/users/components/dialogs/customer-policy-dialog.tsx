@@ -21,6 +21,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
+import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Dialog } from '@/components/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -66,6 +67,7 @@ export function CustomerPolicyDialog(props: CustomerPolicyDialogProps) {
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState<NewPolicyForm>(emptyForm)
+  const [deleteTarget, setDeleteTarget] = useState<CustomerPolicy | null>(null)
 
   const refresh = async () => {
     setLoading(true)
@@ -134,8 +136,13 @@ export function CustomerPolicyDialog(props: CustomerPolicyDialogProps) {
       }
     } catch {
       toast.error(t('Failed to delete policy'))
+    } finally {
+      setDeleteTarget(null)
     }
   }
+
+  const policyDimensionText = (p: CustomerPolicy) =>
+    `vendor=${p.vendor_id || '*'}, channel=${p.channel_id || '*'}, model=${p.model_name || '*'}`
 
   const anyLabel = t('0 = any')
 
@@ -179,7 +186,7 @@ export function CustomerPolicyDialog(props: CustomerPolicyDialogProps) {
                 variant='ghost'
                 size='icon-sm'
                 aria-label={t('Delete')}
-                onClick={() => handleDelete(p.id)}
+                onClick={() => setDeleteTarget(p)}
               >
                 <Trash2 className='text-destructive size-4' />
               </Button>
@@ -259,7 +266,7 @@ export function CustomerPolicyDialog(props: CustomerPolicyDialogProps) {
             </div>
             <div className='space-y-1'>
               <Label className='text-muted-foreground text-xs'>
-                {t('Discount')} (1=100%)
+                {t('Discount')} ({t('1 = original price, 0 = unset (not free)')})
               </Label>
               <Input
                 type='number'
@@ -302,6 +309,23 @@ export function CustomerPolicyDialog(props: CustomerPolicyDialogProps) {
           </div>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null)
+        }}
+        title={t('Delete policy')}
+        desc={t(
+          'Delete this policy ({{dimensions}})? Billing discount and rate limits from this rule will no longer apply.',
+          { dimensions: deleteTarget ? policyDimensionText(deleteTarget) : '' }
+        )}
+        confirmText={t('Delete')}
+        destructive
+        handleConfirm={() => {
+          if (deleteTarget) void handleDelete(deleteTarget.id)
+        }}
+      />
     </Dialog>
   )
 }

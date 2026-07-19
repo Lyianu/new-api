@@ -637,6 +637,9 @@ func settleTaskBillingOnComplete(ctx context.Context, adaptor TaskPollingAdaptor
 		return
 	}
 	// 1. 优先让 adaptor 决定最终额度
+	// 注意：adaptor 返回的是最终额度，绕过统一倍率管线——实现方必须自行
+	// 计入 BillingContext.OtherRatios 中的 customer_discount 等价格乘子，
+	// 否则客户折扣会在此分支丢失。
 	if actualQuota := adaptor.AdjustBillingOnComplete(task, taskResult); actualQuota > 0 {
 		RecalculateTaskQuota(ctx, task, actualQuota, "adaptor计费调整")
 		return

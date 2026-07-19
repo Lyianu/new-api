@@ -79,6 +79,7 @@ export function NotificationTab({ profile, onUpdate }: NotificationTabProps) {
     gotify_token: '',
     gotify_priority: 5,
     accept_unset_model_ratio_model: false,
+    return_discount_info: false,
     record_ip_log: false,
     upstream_model_update_notify_enabled: false,
   })
@@ -107,6 +108,7 @@ export function NotificationTab({ profile, onUpdate }: NotificationTabProps) {
         gotify_priority: parsed.gotify_priority ?? 5,
         accept_unset_model_ratio_model:
           parsed.accept_unset_model_ratio_model || false,
+        return_discount_info: parsed.return_discount_info || false,
         record_ip_log: parsed.record_ip_log || false,
         upstream_model_update_notify_enabled:
           parsed.upstream_model_update_notify_enabled || false,
@@ -372,6 +374,28 @@ export function NotificationTab({ profile, onUpdate }: NotificationTabProps) {
             checked={settings.accept_unset_model_ratio_model}
             onCheckedChange={(checked) =>
               updateField('accept_unset_model_ratio_model', checked)
+            }
+          />
+        </div>
+
+        {/* Return Discount Info */}
+        <div className='flex items-start justify-between gap-3 rounded-lg border p-3 sm:items-center sm:p-4'>
+          <div className='space-y-0.5'>
+            <Label htmlFor='returnDiscountInfo'>
+              {t('Return Discount Info')}
+            </Label>
+            <p className='text-muted-foreground text-xs sm:text-sm'>
+              {t(
+                'Include your customer discount ratio in API response headers. Keep off if you resell downstream.'
+              )}
+            </p>
+          </div>
+          <Switch
+            id='returnDiscountInfo'
+            className='shrink-0'
+            checked={settings.return_discount_info}
+            onCheckedChange={(checked) =>
+              updateField('return_discount_info', checked)
             }
           />
         </div>
