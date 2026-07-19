@@ -16,7 +16,8 @@ func setupCnyTopup(t *testing.T, displayType string) {
 	origType := operation_setting.GetGeneralSetting().QuotaDisplayType
 	origRate := operation_setting.USDExchangeRate
 	origPrice := operation_setting.Price
-	origStripe := setting.StripeUnitPrice
+	origStripePercent := setting.StripeFeePercent
+	origStripeFixed := setting.StripeFeeFixed
 	origWaffo := setting.WaffoUnitPrice
 	origDiscounts := operation_setting.GetPaymentSetting().AmountDiscount
 	origGroupRatio := common.TopupGroupRatio2JSONString()
@@ -25,7 +26,8 @@ func setupCnyTopup(t *testing.T, displayType string) {
 		operation_setting.GetGeneralSetting().QuotaDisplayType = origType
 		operation_setting.USDExchangeRate = origRate
 		operation_setting.Price = origPrice
-		setting.StripeUnitPrice = origStripe
+		setting.StripeFeePercent = origStripePercent
+		setting.StripeFeeFixed = origStripeFixed
 		setting.WaffoUnitPrice = origWaffo
 		operation_setting.GetPaymentSetting().AmountDiscount = origDiscounts
 		_ = common.UpdateTopupGroupRatioByJSONString(origGroupRatio)
@@ -34,7 +36,8 @@ func setupCnyTopup(t *testing.T, displayType string) {
 	operation_setting.GetGeneralSetting().QuotaDisplayType = displayType
 	operation_setting.USDExchangeRate = 7.3
 	operation_setting.Price = 1.0
-	setting.StripeUnitPrice = 1.0
+	setting.StripeFeePercent = 0
+	setting.StripeFeeFixed = 0
 	setting.WaffoUnitPrice = 1.0
 	operation_setting.GetPaymentSetting().AmountDiscount = map[int]float64{}
 	require.NoError(t, common.UpdateTopupGroupRatioByJSONString(`{"default":1}`))

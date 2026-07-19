@@ -143,8 +143,8 @@ const paymentSchema = z.object({
   }),
   StripeApiSecret: z.string(),
   StripeWebhookSecret: z.string(),
-  StripePriceId: z.string(),
-  StripeUnitPrice: z.coerce.number().min(0),
+  StripeFeePercent: z.coerce.number().min(0).max(0.49),
+  StripeFeeFixed: z.coerce.number().min(0),
   StripeMinTopUp: z.coerce.number().min(0),
   StripePromotionCodesEnabled: z.boolean(),
   CreemApiKey: z.string(),
@@ -429,8 +429,8 @@ export function PaymentSettingsSection({
       AmountDiscount: values.AmountDiscount.trim(),
       StripeApiSecret: values.StripeApiSecret.trim(),
       StripeWebhookSecret: values.StripeWebhookSecret.trim(),
-      StripePriceId: values.StripePriceId.trim(),
-      StripeUnitPrice: values.StripeUnitPrice,
+      StripeFeePercent: values.StripeFeePercent,
+      StripeFeeFixed: values.StripeFeeFixed,
       StripeMinTopUp: values.StripeMinTopUp,
       StripePromotionCodesEnabled: values.StripePromotionCodesEnabled,
       CreemApiKey: values.CreemApiKey.trim(),
@@ -473,8 +473,8 @@ export function PaymentSettingsSection({
       AmountDiscount: initialRef.current.AmountDiscount.trim(),
       StripeApiSecret: initialRef.current.StripeApiSecret.trim(),
       StripeWebhookSecret: initialRef.current.StripeWebhookSecret.trim(),
-      StripePriceId: initialRef.current.StripePriceId.trim(),
-      StripeUnitPrice: initialRef.current.StripeUnitPrice,
+      StripeFeePercent: initialRef.current.StripeFeePercent,
+      StripeFeeFixed: initialRef.current.StripeFeeFixed,
       StripeMinTopUp: initialRef.current.StripeMinTopUp,
       StripePromotionCodesEnabled:
         initialRef.current.StripePromotionCodesEnabled,
@@ -579,12 +579,15 @@ export function PaymentSettingsSection({
       })
     }
 
-    if (sanitized.StripePriceId !== initial.StripePriceId) {
-      updates.push({ key: 'StripePriceId', value: sanitized.StripePriceId })
+    if (sanitized.StripeFeePercent !== initial.StripeFeePercent) {
+      updates.push({
+        key: 'StripeFeePercent',
+        value: sanitized.StripeFeePercent,
+      })
     }
 
-    if (sanitized.StripeUnitPrice !== initial.StripeUnitPrice) {
-      updates.push({ key: 'StripeUnitPrice', value: sanitized.StripeUnitPrice })
+    if (sanitized.StripeFeeFixed !== initial.StripeFeeFixed) {
+      updates.push({ key: 'StripeFeeFixed', value: sanitized.StripeFeeFixed })
     }
 
     if (sanitized.StripeMinTopUp !== initial.StripeMinTopUp) {
@@ -1340,21 +1343,23 @@ export function PaymentSettingsSection({
 
                   <FormField
                     control={form.control}
-                    name='StripePriceId'
+                    name='StripeFeePercent'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('Price ID')}</FormLabel>
+                        <FormLabel>{t('Processing fee percent')}</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder={t('price_xxx')}
-                            {...field}
-                            onChange={(event) =>
-                              field.onChange(event.target.value)
-                            }
+                            type='number'
+                            step='0.001'
+                            min={0}
+                            max={0.49}
+                            {...safeNumberFieldProps(field)}
                           />
                         </FormControl>
                         <FormDescription>
-                          {t('Stripe product price ID')}
+                          {t(
+                            'Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)'
+                          )}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -1365,12 +1370,10 @@ export function PaymentSettingsSection({
                 <div className='grid gap-6 md:grid-cols-3'>
                   <FormField
                     control={form.control}
-                    name='StripeUnitPrice'
+                    name='StripeFeeFixed'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          {t('Unit charge factor (per ¥1 of credit)')}
-                        </FormLabel>
+                        <FormLabel>{t('Fixed fee per transaction (CNY)')}</FormLabel>
                         <FormControl>
                           <Input
                             type='number'
@@ -1380,7 +1383,9 @@ export function PaymentSettingsSection({
                           />
                         </FormControl>
                         <FormDescription>
-                          {t('e.g., 1.05 means charge ¥1.05 per ¥1 of credit')}
+                          {t(
+                            'Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2'
+                          )}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>

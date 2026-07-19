@@ -295,8 +295,8 @@ export type BillingSettings = {
   'payment_setting.compliance_confirmed_ip': string
   StripeApiSecret: string
   StripeWebhookSecret: string
-  StripePriceId: string
-  StripeUnitPrice: number
+  StripeFeePercent: number
+  StripeFeeFixed: number
   StripeMinTopUp: number
   StripePromotionCodesEnabled: boolean
   CreemApiKey: string

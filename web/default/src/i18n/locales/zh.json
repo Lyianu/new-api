@@ -5211,6 +5211,11 @@
     "The payment amount includes a Stripe processing fee of approx. {{percent}}%.": "支付金额已包含约 {{percent}}% 的 Stripe 通道手续费。",
     "Payments are processed securely by Stripe. The final amount is shown on the Stripe checkout page.": "支付由 Stripe 安全处理，最终金额以 Stripe 结账页面为准。",
     "Includes processing fee": "含通道手续费",
-    "CNY/USD": "元/刀"
+    "CNY/USD": "元/刀",
+    "The payment amount includes a Stripe processing fee of approx. {{percent}}% + {{fixed}} per transaction.": "支付金额已包含 Stripe 通道手续费：约 {{percent}}% + 每笔 {{fixed}}。",
+    "Processing fee percent": "手续费百分比",
+    "Fixed fee per transaction (CNY)": "每笔固定手续费（元）",
+    "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)": "Stripe 按含费总额收取的百分比，如 0.054 = 5.4%（2.9% 基础 + 1.5% 国际卡 + 1% 货币转换）",
+    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Stripe 每笔固定手续费（人民币），如 $0.30 ≈ 2.2"
   }
 }

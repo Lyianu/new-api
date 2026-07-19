@@ -218,9 +218,14 @@ export function Wallet() {
                 waffoMinTopup={topupInfo?.waffo_min_topup}
                 onWaffoMethodSelect={handleWaffoMethodSelect}
                 enableWaffoPancakeTopup={topupInfo?.enable_waffo_pancake_topup}
-                stripeUnitPrice={
-                  typeof status?.stripe_unit_price === 'number'
-                    ? status.stripe_unit_price
+                stripeFeePercent={
+                  typeof status?.stripe_fee_percent === 'number'
+                    ? status.stripe_fee_percent
+                    : undefined
+                }
+                stripeFeeFixed={
+                  typeof status?.stripe_fee_fixed === 'number'
+                    ? status.stripe_fee_fixed
                     : undefined
                 }
               />

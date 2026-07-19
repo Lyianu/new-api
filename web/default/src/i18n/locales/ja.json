@@ -5211,6 +5211,11 @@
     "The payment amount includes a Stripe processing fee of approx. {{percent}}%.": "支払金額には約{{percent}}%のStripe決済手数料が含まれています。",
     "Payments are processed securely by Stripe. The final amount is shown on the Stripe checkout page.": "決済はStripeにより安全に処理されます。最終金額はStripeの決済ページに表示されます。",
     "Includes processing fee": "決済手数料を含む",
-    "CNY/USD": "元/ドル"
+    "CNY/USD": "元/ドル",
+    "The payment amount includes a Stripe processing fee of approx. {{percent}}% + {{fixed}} per transaction.": "支払金額には Stripe 決済手数料（約 {{percent}}% + 1件あたり {{fixed}}）が含まれています。",
+    "Processing fee percent": "決済手数料率",
+    "Fixed fee per transaction (CNY)": "1件あたりの固定手数料（元）",
+    "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)": "Stripe が総額に対して課す手数料率。例：0.054 = 5.4%（基本 2.9% + 国際カード 1.5% + 通貨換算 1%）",
+    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Stripe の1件あたり固定手数料（人民元）。例：$0.30 ≈ 2.2"
   }
 }

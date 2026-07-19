@@ -25,22 +25,19 @@ func TestStripeWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 	confirmPaymentComplianceForTest(t)
 	originalAPISecret := setting.StripeApiSecret
 	originalWebhookSecret := setting.StripeWebhookSecret
-	originalPriceID := setting.StripePriceId
 	t.Cleanup(func() {
 		setting.StripeApiSecret = originalAPISecret
 		setting.StripeWebhookSecret = originalWebhookSecret
-		setting.StripePriceId = originalPriceID
 	})
 
 	setting.StripeWebhookSecret = ""
 	setting.StripeApiSecret = "sk_test_123"
-	setting.StripePriceId = "price_123"
 	require.False(t, isStripeWebhookEnabled())
 
 	setting.StripeWebhookSecret = "whsec_test"
 	require.True(t, isStripeWebhookEnabled())
 
-	setting.StripePriceId = ""
+	setting.StripeApiSecret = ""
 	require.False(t, isStripeWebhookEnabled())
 }
 

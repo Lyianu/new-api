@@ -5211,6 +5211,11 @@
     "The payment amount includes a Stripe processing fee of approx. {{percent}}%.": "The payment amount includes a Stripe processing fee of approx. {{percent}}%.",
     "Payments are processed securely by Stripe. The final amount is shown on the Stripe checkout page.": "Payments are processed securely by Stripe. The final amount is shown on the Stripe checkout page.",
     "Includes processing fee": "Includes processing fee",
-    "CNY/USD": "CNY/USD"
+    "CNY/USD": "CNY/USD",
+    "The payment amount includes a Stripe processing fee of approx. {{percent}}% + {{fixed}} per transaction.": "The payment amount includes a Stripe processing fee of approx. {{percent}}% + {{fixed}} per transaction.",
+    "Processing fee percent": "Processing fee percent",
+    "Fixed fee per transaction (CNY)": "Fixed fee per transaction (CNY)",
+    "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)": "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)",
+    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2"
   }
 }

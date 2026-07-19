@@ -5211,6 +5211,11 @@
     "The payment amount includes a Stripe processing fee of approx. {{percent}}%.": "Số tiền thanh toán đã bao gồm phí xử lý Stripe khoảng {{percent}}%.",
     "Payments are processed securely by Stripe. The final amount is shown on the Stripe checkout page.": "Thanh toán được xử lý an toàn bởi Stripe. Số tiền cuối cùng hiển thị trên trang thanh toán Stripe.",
     "Includes processing fee": "Đã bao gồm phí xử lý",
-    "CNY/USD": "CNY/USD"
+    "CNY/USD": "CNY/USD",
+    "The payment amount includes a Stripe processing fee of approx. {{percent}}% + {{fixed}} per transaction.": "Số tiền thanh toán đã bao gồm phí xử lý Stripe khoảng {{percent}}% + {{fixed}} mỗi giao dịch.",
+    "Processing fee percent": "Tỷ lệ phí xử lý",
+    "Fixed fee per transaction (CNY)": "Phí cố định mỗi giao dịch (CNY)",
+    "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)": "Phí phần trăm Stripe tính trên tổng số tiền, ví dụ 0.054 = 5,4% (2,9% cơ bản + 1,5% thẻ quốc tế + 1% chuyển đổi tiền tệ)",
+    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Phí cố định của Stripe mỗi giao dịch tính bằng CNY, ví dụ $0.30 ≈ 2.2"
   }
 }

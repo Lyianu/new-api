@@ -80,8 +80,20 @@ interface RechargeFormCardProps {
   waffoMinTopup?: number
   onWaffoMethodSelect?: (method: WaffoPayMethod, index: number) => void
   enableWaffoPancakeTopup?: boolean
-  /** Stripe 每 ¥1 额度的收费系数（status.stripe_unit_price），用于手续费提示 */
-  stripeUnitPrice?: number
+  /** Stripe 手续费百分比（status.stripe_fee_percent，0.054 = 5.4%），按含费总额计收 */
+  stripeFeePercent?: number
+  /** Stripe 每笔固定手续费（status.stripe_fee_fixed，单位元） */
+  stripeFeeFixed?: number
+}
+
+/**
+ * gross-up 预估：应付 P = (净额 N + F) / (1 − p)，与后端 stripeGrossUp 一致。
+ * 仅用于预设卡片展示，实际金额以后端 RequestAmount / Stripe 页面为准。
+ */
+function stripeGrossUp(net: number, percent: number, fixed: number): number {
+  const p = percent >= 0 && percent < 0.5 ? percent : 0
+  const f = fixed > 0 ? fixed : 0
+  return Math.ceil(((net + f) / (1 - p)) * 100) / 100
 }
 
 export function RechargeFormCard({
@@ -111,7 +123,8 @@ export function RechargeFormCard({
   waffoMinTopup,
   onWaffoMethodSelect,
   enableWaffoPancakeTopup,
-  stripeUnitPrice,
+  stripeFeePercent,
+  stripeFeeFixed,
 }: RechargeFormCardProps) {
   const { t } = useTranslation()
   const [localAmount, setLocalAmount] = useState(topupAmount.toString())
@@ -150,17 +163,12 @@ export function RechargeFormCard({
     !enableWaffoTopup &&
     !enableWaffoPancakeTopup &&
     !enableCreemTopup
-  // 手续费百分比：收费系数 1.05 → 约 5%
-  const stripeFeePercent =
-    typeof stripeUnitPrice === 'number' && stripeUnitPrice > 1
-      ? Number(((stripeUnitPrice - 1) * 100).toFixed(1))
-      : null
+  const feePercent = typeof stripeFeePercent === 'number' ? stripeFeePercent : 0
+  const feeFixed = typeof stripeFeeFixed === 'number' ? stripeFeeFixed : 0
+  const hasStripeFee = feePercent > 0 || feeFixed > 0
+  // 提示文案用的展示值：0.054 → 5.4
+  const feePercentDisplay = Number((feePercent * 100).toFixed(2))
   const stripeBelowMin = (stripeMethod?.min_topup || 0) > topupAmount
-  // Stripe 专属模式下预设卡片的实付按 Stripe 收费系数估算
-  const effectivePriceRatio =
-    stripeOnly && typeof stripeUnitPrice === 'number' && stripeUnitPrice > 0
-      ? stripeUnitPrice
-      : priceRatio
 
   if (loading) {
     return (
@@ -251,16 +259,20 @@ export function RechargeFormCard({
                         preset.discount ||
                         topupInfo?.discount?.[preset.value] ||
                         1.0
-                      const {
-                        displayValue,
-                        actualPrice,
-                        savedAmount,
-                        hasDiscount,
-                      } = calculatePresetPricing(
+                      const base = calculatePresetPricing(
                         preset.value,
-                        effectivePriceRatio,
+                        stripeOnly ? 1 : priceRatio,
                         discount
                       )
+                      // Stripe 专属模式：折后净额再 gross-up，与实际扣款口径一致
+                      const actualPrice = stripeOnly
+                        ? stripeGrossUp(base.actualPrice, feePercent, feeFixed)
+                        : base.actualPrice
+                      const savedAmount = stripeOnly
+                        ? stripeGrossUp(base.originalPrice, feePercent, feeFixed) -
+                          actualPrice
+                        : base.savedAmount
+                      const { displayValue, hasDiscount } = base
                       return (
                         <Button
                           key={preset.value}
@@ -365,10 +377,13 @@ export function RechargeFormCard({
                     {t('Pay with Stripe')}
                   </Button>
                   <p className='text-muted-foreground text-xs'>
-                    {stripeFeePercent != null
+                    {hasStripeFee
                       ? t(
-                          'The payment amount includes a Stripe processing fee of approx. {{percent}}%.',
-                          { percent: stripeFeePercent }
+                          'The payment amount includes a Stripe processing fee of approx. {{percent}}% + {{fixed}} per transaction.',
+                          {
+                            percent: feePercentDisplay,
+                            fixed: formatCnyAmount(feeFixed),
+                          }
                         )
                       : t(
                           'Payments are processed securely by Stripe. The final amount is shown on the Stripe checkout page.'

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"strconv"
 	"strings"
@@ -88,11 +89,18 @@ func (*StripeAdaptor) RequestPay(c *gin.Context, req *StripePayRequest) {
 	id := c.GetInt("id")
 	user, _ := model.GetUserById(id, false)
 	chargedMoney := GetChargedAmount(float64(req.Amount), *user)
+	payMoney := getStripePayMoney(float64(req.Amount), user.Group)
+	if payMoney <= 0.01 {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "充值金额过低"})
+		return
+	}
+	payCents := int64(math.Round(payMoney * 100))
+	productName := fmt.Sprintf("Credit Top-up ¥%.2f", chargedMoney)
 
 	reference := fmt.Sprintf("new-api-ref-%d-%d-%s", user.Id, time.Now().UnixMilli(), randstr.String(4))
 	referenceId := "ref_" + common.Sha1([]byte(reference))
 
-	payLink, err := genStripeLink(referenceId, user.StripeCustomer, user.Email, req.Amount, req.SuccessURL, req.CancelURL)
+	payLink, err := genStripeLink(referenceId, user.StripeCustomer, user.Email, payCents, productName, req.SuccessURL, req.CancelURL)
 	if err != nil {
 		logger.LogError(c.Request.Context(), fmt.Sprintf("Stripe 创建 Checkout Session 失败 user_id=%d trade_no=%s amount=%d error=%q", id, referenceId, req.Amount, err.Error()))
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "拉起支付失败"})
@@ -333,14 +341,18 @@ func sessionExpired(ctx context.Context, event stripe.Event) {
 //   - referenceId: unique reference identifier for the transaction
 //   - customerId: existing Stripe customer ID (empty string if new customer)
 //   - email: customer email address for new customer creation
-//   - amount: quantity of units to purchase
+//   - payCents: total charge amount in CNY cents (分), fee already grossed-up
+//   - productName: line item name shown on the Stripe checkout page
 //   - successURL: custom URL to redirect after successful payment (empty for default)
 //   - cancelURL: custom URL to redirect when payment is canceled (empty for default)
 //
 // Returns the checkout session URL or an error if the session creation fails.
-func genStripeLink(referenceId string, customerId string, email string, amount int64, successURL string, cancelURL string) (string, error) {
+func genStripeLink(referenceId string, customerId string, email string, payCents int64, productName string, successURL string, cancelURL string) (string, error) {
 	if !strings.HasPrefix(setting.StripeApiSecret, "sk_") && !strings.HasPrefix(setting.StripeApiSecret, "rk_") {
 		return "", fmt.Errorf("无效的Stripe API密钥")
+	}
+	if payCents <= 0 {
+		return "", fmt.Errorf("无效的支付金额")
 	}
 
 	stripe.Key = setting.StripeApiSecret
@@ -353,14 +365,22 @@ func genStripeLink(referenceId string, customerId string, email string, amount i
 		cancelURL = paymentReturnPath("/console/topup")
 	}
 
+	// 动态 price_data：金额（含 gross-up 手续费）由服务端计算，
+	// 固定 Price 对象 × quantity 的线性结构无法表达每笔固定手续费
 	params := &stripe.CheckoutSessionParams{
 		ClientReferenceID: stripe.String(referenceId),
 		SuccessURL:        stripe.String(successURL),
 		CancelURL:         stripe.String(cancelURL),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
 			{
-				Price:    stripe.String(setting.StripePriceId),
-				Quantity: stripe.Int64(amount),
+				PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
+					Currency:   stripe.String(string(stripe.CurrencyCNY)),
+					UnitAmount: stripe.Int64(payCents),
+					ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
+						Name: stripe.String(productName),
+					},
+				},
+				Quantity: stripe.Int64(1),
 			},
 		},
 		Mode:                stripe.String(string(stripe.CheckoutSessionModePayment)),
@@ -396,7 +416,22 @@ func GetChargedAmount(count float64, user model.User) float64 {
 	return cny * topUpGroupRatio
 }
 
-// getStripePayMoney 计算前端预览的应付金额（真实扣款以 Stripe Price 对象为准）。
+// stripeGrossUp 把净额 N 反推为应向客户收取的总额 P = (N + F) / (1 - p)。
+// Stripe 的百分比手续费按含费总额 P 计收，线性加价（N × (1+p)）会导致净到账恒少于 N。
+// 对异常配置做钳制：p ∈ [0, 0.5)，F ≥ 0，防止误配导致除零或负价。
+func stripeGrossUp(netCny float64) float64 {
+	p := setting.StripeFeePercent
+	if p < 0 || p >= 0.5 {
+		p = 0
+	}
+	f := setting.StripeFeeFixed
+	if f < 0 {
+		f = 0
+	}
+	return (netCny + f) / (1 - p)
+}
+
+// getStripePayMoney 计算应付金额（元），已向上取整到分，与实际扣款一致。
 func getStripePayMoney(amount float64, group string) float64 {
 	originalAmount := amount
 	cny := topupAmountToCny(int64(amount)).InexactFloat64()
@@ -412,8 +447,9 @@ func getStripePayMoney(amount float64, group string) float64 {
 			discount = ds
 		}
 	}
-	payMoney := cny * setting.StripeUnitPrice * topupGroupRatio * discount
-	return payMoney
+	payMoney := stripeGrossUp(cny * topupGroupRatio * discount)
+	// 向上取整到分：宁可多收 <1 分，不可净到账不足
+	return math.Ceil(payMoney*100-1e-9) / 100
 }
 
 // getStripeMinTopup Stripe 最小充值额，单位元。
