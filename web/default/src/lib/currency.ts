@@ -158,7 +158,7 @@ export function isCurrencyDisplayType(
 
 export function parseCurrencyDisplayType(
   value: unknown,
-  fallback: CurrencyDisplayType = 'USD'
+  fallback: CurrencyDisplayType = 'CNY'
 ): CurrencyDisplayType {
   return isCurrencyDisplayType(value) ? value : fallback
 }
@@ -194,12 +194,12 @@ function getDisplayMeta(config: CurrencyConfig): DisplayMeta {
   // usdExchangeRate 语义：1 USD = usdExchangeRate 元人民币（getConfig 保证 > 0）。
   const usdRate = config.usdExchangeRate > 0 ? config.usdExchangeRate : 1
   switch (config.quotaDisplayType) {
-    case 'CNY':
+    case 'USD':
       return {
         kind: 'currency',
-        symbol: '¥',
-        currencyCode: 'CNY',
-        exchangeRate: 1,
+        symbol: '$',
+        currencyCode: 'USD',
+        exchangeRate: 1 / usdRate,
       }
     case 'CUSTOM':
       return {
@@ -213,13 +213,14 @@ function getDisplayMeta(config: CurrencyConfig): DisplayMeta {
         kind: 'tokens',
         quotaPerUnit: config.quotaPerUnit,
       }
-    case 'USD':
+    case 'CNY':
     default:
+      // CNY 是记账本位，也是未知配置下的兜底展示币种。
       return {
         kind: 'currency',
-        symbol: '$',
-        currencyCode: 'USD',
-        exchangeRate: 1 / usdRate,
+        symbol: '¥',
+        currencyCode: 'CNY',
+        exchangeRate: 1,
       }
   }
 }

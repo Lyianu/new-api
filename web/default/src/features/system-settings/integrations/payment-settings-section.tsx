@@ -905,7 +905,7 @@ export function PaymentSettingsSection({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
-                          {t('Price (local currency / USD)')}
+                          {t('Charge factor (per ¥1 of credit)')}
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -917,7 +917,7 @@ export function PaymentSettingsSection({
                         </FormControl>
                         <FormDescription>
                           {t(
-                            'How much to charge for each US dollar of balance (Epay)'
+                            'How much CNY to charge for each ¥1 of credit (Epay)'
                           )}
                         </FormDescription>
                         <FormMessage />
@@ -930,7 +930,7 @@ export function PaymentSettingsSection({
                     name='MinTopUp'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('Minimum top-up (USD)')}</FormLabel>
+                        <FormLabel>{t('Minimum top-up (CNY)')}</FormLabel>
                         <FormControl>
                           <Input
                             type='number'
@@ -940,7 +940,7 @@ export function PaymentSettingsSection({
                           />
                         </FormControl>
                         <FormDescription>
-                          {t('Smallest USD amount users can recharge (Epay)')}
+                          {t('Smallest CNY amount users can recharge (Epay)')}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -1369,7 +1369,7 @@ export function PaymentSettingsSection({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
-                          {t('Unit price (local currency / USD)')}
+                          {t('Unit charge factor (per ¥1 of credit)')}
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -1380,7 +1380,7 @@ export function PaymentSettingsSection({
                           />
                         </FormControl>
                         <FormDescription>
-                          {t('e.g., 8 means 8 local currency per USD')}
+                          {t('e.g., 1.05 means charge ¥1.05 per ¥1 of credit')}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -1392,7 +1392,7 @@ export function PaymentSettingsSection({
                     name='StripeMinTopUp'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('Minimum top-up (USD)')}</FormLabel>
+                        <FormLabel>{t('Minimum top-up (CNY)')}</FormLabel>
                         <FormControl>
                           <Input
                             type='number'
@@ -1402,7 +1402,7 @@ export function PaymentSettingsSection({
                           />
                         </FormControl>
                         <FormDescription>
-                          {t('Minimum recharge amount in USD')}
+                          {t('Minimum recharge amount in CNY')}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>

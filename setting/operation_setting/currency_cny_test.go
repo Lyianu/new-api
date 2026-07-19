@@ -52,19 +52,6 @@ func TestQuotaToDisplayCurrency_USD(t *testing.T) {
 	}
 }
 
-// 充值：不同展示类型下用户输入金额换算回人民币。
-func TestDisplayCurrencyToCny(t *testing.T) {
-	withDisplay(t, QuotaDisplayTypeCNY, 7.3)
-	if got := DisplayCurrencyToCny(100); !approxEqual(got, 100) {
-		t.Fatalf("CNY input 100 -> %v, want 100", got)
-	}
-
-	withDisplay(t, QuotaDisplayTypeUSD, 7.3)
-	if got := DisplayCurrencyToCny(10); !approxEqual(got, 73) {
-		t.Fatalf("USD input 10 -> %v, want 73", got)
-	}
-}
-
 // USDExchangeRate<=0 时应回落为 1，避免除零。
 func TestUsdExchangeRateFallback(t *testing.T) {
 	withDisplay(t, QuotaDisplayTypeUSD, 0)

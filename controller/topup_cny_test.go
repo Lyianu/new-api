@@ -49,16 +49,17 @@ func TestTopupCreditCnyAmount_CNY(t *testing.T) {
 		operation_setting.CnyToQuota(float64(topupCreditCnyAmount(100))), 1e-6)
 }
 
-// USD 展示：$10 → ¥73 credit。
-func TestTopupCreditCnyAmount_USD(t *testing.T) {
-	setupCnyTopup(t, operation_setting.QuotaDisplayTypeUSD)
-	require.Equal(t, int64(73), topupCreditCnyAmount(10))
-}
-
-// TOKENS 展示：QuotaPerUnit*5 tokens → ¥5 credit。
-func TestTopupCreditCnyAmount_Tokens(t *testing.T) {
-	setupCnyTopup(t, operation_setting.QuotaDisplayTypeTokens)
-	require.Equal(t, int64(5), topupCreditCnyAmount(int64(common.QuotaPerUnit*5)))
+// 充值输入固定为元：展示类型切到 USD/TOKENS 也不改变输入语义。
+func TestTopupCreditCnyAmount_FixedCnyRegardlessOfDisplayType(t *testing.T) {
+	for _, displayType := range []string{
+		operation_setting.QuotaDisplayTypeUSD,
+		operation_setting.QuotaDisplayTypeTokens,
+		operation_setting.QuotaDisplayTypeCustom,
+	} {
+		setupCnyTopup(t, displayType)
+		require.Equal(t, int64(100), topupCreditCnyAmount(100), "displayType=%s", displayType)
+		require.InDelta(t, 100.0, getPayMoney(100, "default"), 1e-6, "displayType=%s", displayType)
+	}
 }
 
 // 易支付：CNY 展示下足额收款（Price=1.0），付款额 == 人民币额度。

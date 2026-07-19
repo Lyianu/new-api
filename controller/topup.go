@@ -146,24 +146,17 @@ func GetEpayClient() *epay.Client {
 	return withUrl
 }
 
-// topupAmountToCny 把用户按当前展示类型输入的充值金额换算为人民币（记账本位）。
-// - CNY: 直接就是人民币
-// - USD: amount 美元 × 汇率 → 人民币
-// - TOKENS: amount tokens ÷ QuotaPerUnit → 人民币
-// - CUSTOM: 先按自定义汇率折美元再折人民币
+// topupAmountToCny 返回充值输入金额对应的人民币数值。
+// 充值输入固定以元（人民币）为单位，不随 quota_display_type 漂移；
+// 展示类型仅影响余额等只读展示，外币网关只在收款侧做汇率换算。
 func topupAmountToCny(amount int64) decimal.Decimal {
-	dAmount := decimal.NewFromInt(amount)
-	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		return dAmount.Div(decimal.NewFromFloat(common.QuotaPerUnit))
-	}
-	cny := operation_setting.DisplayCurrencyToCny(dAmount.InexactFloat64())
-	return decimal.NewFromFloat(cny)
+	return decimal.NewFromInt(amount)
 }
 
 // topupCreditCnyAmount 返回充值订单应入账的人民币额度（整数），供 TopUp.Amount 存储。
 // webhook 处再按 Amount × QuotaPerUnit 折算 quota，保证收款与入账在 CNY 本位一致。
-func topupCreditCnyAmount(displayAmount int64) int64 {
-	return topupAmountToCny(displayAmount).IntPart()
+func topupCreditCnyAmount(amount int64) int64 {
+	return topupAmountToCny(amount).IntPart()
 }
 
 // getPayMoney 计算实际应收人民币金额 = 人民币额度 × 收款系数(Price) × 充值分组倍率 × 金额折扣。
@@ -192,14 +185,9 @@ func getPayMoney(amount int64, group string) float64 {
 	return payMoney.InexactFloat64()
 }
 
+// getMinTopup 最小充值额，单位元。
 func getMinTopup() int64 {
-	minTopup := operation_setting.MinTopUp
-	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		dMinTopup := decimal.NewFromInt(int64(minTopup))
-		dQuotaPerUnit := decimal.NewFromFloat(common.QuotaPerUnit)
-		minTopup = int(dMinTopup.Mul(dQuotaPerUnit).IntPart())
-	}
-	return int64(minTopup)
+	return int64(operation_setting.MinTopUp)
 }
 
 func RequestEpay(c *gin.Context) {

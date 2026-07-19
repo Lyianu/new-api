@@ -416,10 +416,7 @@ func getStripePayMoney(amount float64, group string) float64 {
 	return payMoney
 }
 
+// getStripeMinTopup Stripe 最小充值额，单位元。
 func getStripeMinTopup() int64 {
-	minTopup := setting.StripeMinTopUp
-	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		minTopup = minTopup * int(common.QuotaPerUnit)
-	}
-	return int64(minTopup)
+	return int64(setting.StripeMinTopUp)
 }

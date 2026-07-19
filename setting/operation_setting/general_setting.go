@@ -138,19 +138,3 @@ func QuotaToDisplayCurrency(quota float64) (string, float64) {
 		return "¥", cny
 	}
 }
-
-// DisplayCurrencyToCny 把某展示类型下用户输入的金额换算回人民币（充值下单用）。
-func DisplayCurrencyToCny(amount float64) float64 {
-	switch generalSetting.QuotaDisplayType {
-	case QuotaDisplayTypeUSD:
-		return amount * usdExchangeRate()
-	case QuotaDisplayTypeCustom:
-		rate := generalSetting.CustomCurrencyExchangeRate
-		if rate <= 0 {
-			rate = 1
-		}
-		return (amount / rate) * usdExchangeRate()
-	default: // CNY
-		return amount
-	}
-}

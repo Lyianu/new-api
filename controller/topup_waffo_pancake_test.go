@@ -45,13 +45,12 @@ func TestGetWaffoPancakePayMoney(t *testing.T) {
 		require.NoError(t, common.UpdateTopupGroupRatioByJSONString(originalTopupGroupRatio))
 	})
 
-	// CNY 本位：USD 展示金额先按汇率折算为人民币额度，再乘单价系数收款。
+	// 充值输入固定为元：展示类型不影响计价，仅收款系数/分组倍率/折扣参与。
 	operation_setting.USDExchangeRate = 7.3
 	setting.WaffoPancakeUnitPrice = 2.5
 	operation_setting.GetPaymentSetting().AmountDiscount = map[int]float64{
-		10:                           0.8,
-		int(common.QuotaPerUnit * 3): 0.5,
-		20:                           0,
+		10: 0.8,
+		20: 0,
 	}
 	require.NoError(t, common.UpdateTopupGroupRatioByJSONString(`{"default":1,"vip":1.2}`))
 
@@ -63,24 +62,24 @@ func TestGetWaffoPancakePayMoney(t *testing.T) {
 		expected         float64
 	}{
 		{
-			// USD 展示：$10 × 7.3 = ¥73；×2.5 × 1.2(vip) × 0.8(discount) = 175.2
-			name:             "usd display converts to cny before pricing",
+			// ¥10 × 2.5 × 1.2(vip) × 0.8(discount) = 24，USD 展示不改变输入语义
+			name:             "usd display does not change cny input semantics",
 			amount:           10,
 			group:            "vip",
 			quotaDisplayType: operation_setting.QuotaDisplayTypeUSD,
-			expected:         175.2,
+			expected:         24,
 		},
 		{
-			// tokens 展示：QuotaPerUnit*3 tokens = ¥3；×2.5 × 1.2 × 0.5 = 4.5
-			name:             "tokens display converts quota to cny before pricing",
-			amount:           int64(common.QuotaPerUnit * 3),
+			// tokens 展示同样不换算：¥10 × 2.5 × 1.2 × 0.8 = 24
+			name:             "tokens display does not change cny input semantics",
+			amount:           10,
 			group:            "vip",
 			quotaDisplayType: operation_setting.QuotaDisplayTypeTokens,
-			expected:         4.5,
+			expected:         24,
 		},
 		{
-			// CNY 展示直接计价 + discount=0 回退为 1：¥20 × 2.5 × 1(default) × 1 = 50
-			name:             "cny display prices directly and non-positive discount falls back",
+			// discount=0 回退为 1：¥20 × 2.5 × 1(default) × 1 = 50
+			name:             "non-positive discount falls back to full price",
 			amount:           20,
 			group:            "default",
 			quotaDisplayType: operation_setting.QuotaDisplayTypeCNY,

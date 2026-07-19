@@ -47,10 +47,14 @@ export function formatQuotaShort(quota: number): string {
 }
 
 /**
- * Format currency amount that is already in local currency.
- * This is used for payment amounts that have been calculated via priceRatio.
+ * 充值额度与实收款项一律以人民币计价，固定展示 ¥，不随 quota_display_type 漂移。
  */
-export function formatCurrency(amount: number | string): string {
+export function formatCnyAmount(amount: number | string): string {
+  const formatted = formatPlainAmount(amount)
+  return formatted === '-' ? formatted : `¥${formatted}`
+}
+
+function formatPlainAmount(amount: number | string): string {
   const numeric =
     typeof amount === 'number' ? amount : Number.parseFloat(String(amount))
   if (!Number.isFinite(numeric)) return '-'
@@ -73,19 +77,19 @@ export function getDiscountLabel(discount: number): string {
 }
 
 /**
- * Calculate pricing details for a preset amount
+ * Calculate pricing details for a preset amount.
+ * presetValue 即人民币额度（元），无需再做任何汇率换算。
  */
 export function calculatePresetPricing(
   presetValue: number,
   priceRatio: number,
-  discount: number,
-  usdExchangeRate: number = 1
+  discount: number
 ) {
   const originalPrice = presetValue * priceRatio
   const actualPrice = originalPrice * discount
   const savedAmount = originalPrice - actualPrice
   const hasDiscount = discount < 1.0
-  const displayValue = presetValue * usdExchangeRate
+  const displayValue = presetValue
 
   return {
     displayValue,
