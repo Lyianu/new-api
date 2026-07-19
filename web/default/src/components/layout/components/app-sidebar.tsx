@@ -18,13 +18,25 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 
-import { Sidebar, SidebarContent, SidebarRail } from '@/components/ui/sidebar'
+import { ConfigDrawer } from '@/components/config-drawer'
+import { LanguageSwitcher } from '@/components/language-switcher'
+import { NotificationPopover } from '@/components/notification-popover'
+import { ProfileDropdown } from '@/components/profile-dropdown'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarRail,
+} from '@/components/ui/sidebar'
 import { useLayout } from '@/context/layout-provider'
+import { useNotifications } from '@/hooks/use-notifications'
 import { useSidebarView } from '@/hooks/use-sidebar-view'
 import { MOTION_TRANSITION, MOTION_VARIANTS } from '@/lib/motion'
 
 import { NavGroup } from './nav-group'
 import { SidebarViewHeader } from './sidebar-view-header'
+import { SystemBrand } from './system-brand'
 
 /**
  * Application sidebar.
@@ -47,9 +59,14 @@ export function AppSidebar() {
   const { collapsible, variant } = useLayout()
   const { key, view, navGroups } = useSidebarView()
   const shouldReduce = useReducedMotion()
+  const notifications = useNotifications()
 
   return (
     <Sidebar collapsible={collapsible} variant={variant}>
+      {/* 顶栏已移除：Logo 常驻 sidebar 头部 */}
+      <SidebarHeader className='px-2 pt-2'>
+        <SystemBrand />
+      </SidebarHeader>
       {view && <SidebarViewHeader view={view} />}
 
       <SidebarContent className='py-2'>
@@ -70,6 +87,27 @@ export function AppSidebar() {
           </motion.div>
         </AnimatePresence>
       </SidebarContent>
+
+      {/* 原顶栏的全局操作（通知/语言/主题/账户）收敛到 sidebar 底部 */}
+      <SidebarFooter className='border-sidebar-border border-t px-2 py-2'>
+        <div className='flex items-center justify-between gap-1 group-data-[collapsible=icon]:flex-col'>
+          <ProfileDropdown />
+          <div className='flex items-center gap-1 group-data-[collapsible=icon]:flex-col'>
+            <NotificationPopover
+              open={notifications.popoverOpen}
+              onOpenChange={notifications.setPopoverOpen}
+              unreadCount={notifications.unreadCount}
+              activeTab={notifications.activeTab}
+              onTabChange={notifications.setActiveTab}
+              notice={notifications.notice}
+              announcements={notifications.announcements}
+              loading={notifications.loading}
+            />
+            <LanguageSwitcher />
+            <ConfigDrawer />
+          </div>
+        </div>
+      </SidebarFooter>
 
       <SidebarRail />
     </Sidebar>

@@ -18,13 +18,16 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { AnimatedOutlet } from '@/components/page-transition'
 import { SkipToMain } from '@/components/skip-to-main'
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@/components/ui/sidebar'
 import { LayoutProvider } from '@/context/layout-provider'
 import { SearchProvider } from '@/context/search-provider'
 import { getCookie } from '@/lib/cookies'
 import { cn } from '@/lib/utils'
 
-import { AppHeader } from './app-header'
 import { AppSidebar } from './app-sidebar'
 
 type AuthenticatedLayoutProps = {
@@ -37,9 +40,18 @@ export function AuthenticatedLayout(props: AuthenticatedLayoutProps) {
   return (
     <LayoutProvider>
       <SearchProvider>
-        <SidebarProvider defaultOpen={defaultOpen} className='flex-col'>
+        {/* 控制台无顶栏：Logo 与全局操作收进 sidebar，头部高度归零 */}
+        <SidebarProvider
+          defaultOpen={defaultOpen}
+          className='flex-col'
+          style={{ '--app-header-height': '0px' } as React.CSSProperties}
+        >
           <SkipToMain />
-          <AppHeader />
+          {/* 移动端唯一的侧栏入口（桌面端有 SidebarRail 与 ⌘B） */}
+          <SidebarTrigger
+            variant='outline'
+            className='bg-background fixed right-3 bottom-3 z-40 size-10 rounded-full shadow-md md:hidden'
+          />
           <div className='flex min-h-0 w-full flex-1'>
             <AppSidebar />
             <SidebarInset
