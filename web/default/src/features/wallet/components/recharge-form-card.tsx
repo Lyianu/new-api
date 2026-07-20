@@ -583,7 +583,7 @@ export function RechargeFormCard({
       {redemptionEnabled ? (
         <div className='space-y-2.5 border-t pt-4 sm:space-y-3 sm:pt-6'>
           <div className='flex items-center gap-2'>
-            <IconBadge tone='warning' size='xs'>
+            <IconBadge tone='neutral' size='xs'>
               <Gift />
             </IconBadge>
             <Label

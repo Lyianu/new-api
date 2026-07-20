@@ -83,7 +83,7 @@ export function TwoFACard({ loading: pageLoading }: TwoFACardProps) {
             {/* Status Section */}
             <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between xl:flex-col 2xl:flex-row'>
               <div className='flex items-start gap-4'>
-                <IconBadge tone='success' size='sm'>
+                <IconBadge tone='neutral' size='sm'>
                   <Shield />
                 </IconBadge>
                 <div className='space-y-1'>

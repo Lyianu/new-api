@@ -179,7 +179,7 @@ export function BalanceQueryDialog({
         {/* Current Balance Display */}
         <div className='bg-muted/50 rounded-lg border p-4'>
           <div className='text-muted-foreground mb-2 flex items-center gap-2 text-sm'>
-            <IconBadge tone='success' size='xs'>
+            <IconBadge tone='neutral' size='xs'>
               <DollarSign />
             </IconBadge>
             <span>{t('Current Balance')}</span>

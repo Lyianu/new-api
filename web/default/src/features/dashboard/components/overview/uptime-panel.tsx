@@ -98,7 +98,7 @@ export function UptimePanel() {
     <PanelWrapper
       title={
         <span className='flex items-center gap-2'>
-          <IconBadge tone='success' size='sm'>
+          <IconBadge tone='neutral' size='sm'>
             <Activity />
           </IconBadge>
           {t('Uptime')}

@@ -335,7 +335,7 @@ function RequestPreview(props: {
 
       <div className='flex items-center justify-between gap-3 border-b pb-3'>
         <div className='flex min-w-0 items-center gap-2'>
-          <IconBadge tone='info'>
+          <IconBadge tone='neutral'>
             <TerminalSquare />
           </IconBadge>
           <div className='min-w-0'>

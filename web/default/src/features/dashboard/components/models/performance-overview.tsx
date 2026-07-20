@@ -114,7 +114,7 @@ export function PerformanceOverview() {
       <div className='flex flex-wrap items-center gap-x-5 gap-y-2.5 px-4 py-2.5 sm:px-5 sm:py-3'>
         {/* Title */}
         <div className='flex items-center gap-1.5'>
-          <IconBadge tone='success' size='xs'>
+          <IconBadge tone='neutral' size='xs'>
             <HeartPulse />
           </IconBadge>
           <span className='text-xs font-semibold whitespace-nowrap'>
@@ -142,19 +142,19 @@ export function PerformanceOverview() {
               label={t('Success rate')}
               value={formatUptimePct(summary.successRate)}
               valueClassName={getSuccessRateTextClass(summary.successRate)}
-              tone='success'
+              tone='neutral'
             />
             <InlineMetric
               icon={Timer}
               label={t('Average latency')}
               value={formatLatency(summary.avgLatencyMs)}
-              tone='warning'
+              tone='neutral'
             />
             <InlineMetric
               icon={Gauge}
               label={t('Throughput')}
               value={formatThroughput(summary.avgTps)}
-              tone='info'
+              tone='neutral'
             />
           </div>
         )}

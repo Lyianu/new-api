@@ -154,7 +154,7 @@ export function AudioPreviewDialog(props: AudioPreviewDialogProps) {
       onOpenChange={props.onOpenChange}
       title={
         <>
-          <IconBadge tone='chart-4' size='sm'>
+          <IconBadge tone='neutral' size='sm'>
             <Music />
           </IconBadge>
           {t('Audio Preview')}

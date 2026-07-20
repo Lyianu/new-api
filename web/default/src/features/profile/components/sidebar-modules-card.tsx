@@ -205,7 +205,7 @@ export function SidebarModulesCard() {
     <Card data-card-hover='false' className='gap-0 overflow-hidden py-0'>
       <CardHeader className='border-b p-3 !pb-3 sm:p-5 sm:!pb-5'>
         <div className='flex items-center gap-3'>
-          <IconBadge tone='info' size='title'>
+          <IconBadge tone='neutral' size='title'>
             <LayoutDashboard />
           </IconBadge>
           <div className='min-w-0'>

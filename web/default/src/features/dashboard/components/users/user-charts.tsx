@@ -231,7 +231,7 @@ export function UserCharts(props: UserChartsProps) {
               className='overflow-hidden rounded-lg border'
             >
               <div className='flex w-full items-center gap-2 border-b px-3 py-2 sm:px-5 sm:py-3'>
-                <IconBadge tone='info' size='sm'>
+                <IconBadge tone='neutral' size='sm'>
                   <Users />
                 </IconBadge>
                 <div className='text-sm font-semibold'>{t(chart.labelKey)}</div>

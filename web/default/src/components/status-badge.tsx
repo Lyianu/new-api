@@ -21,7 +21,6 @@ For commercial licensing, please contact support@quantumnous.com
 import * as React from 'react'
 
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
-import { stringToColor } from '@/lib/colors'
 import { cn } from '@/lib/utils'
 
 export const dotColorMap = {
@@ -137,8 +136,10 @@ export function StatusBadge({
   const contextType = React.useContext(StatusBadgeTypeContext)
   const type = typeProp ?? contextType
 
+  // 简约基调：autoColor（模型/分组名 hash 撒色）统一收敛为中性灰，
+  // 彩色仅保留给显式传入的语义 variant（success/warning/danger/info）。
   const computedVariant: StatusVariant = autoColor
-    ? (stringToColor(autoColor) as StatusVariant)
+    ? 'neutral'
     : (variant ?? 'neutral')
 
   const handleClick = (e: React.MouseEvent<HTMLSpanElement>) => {

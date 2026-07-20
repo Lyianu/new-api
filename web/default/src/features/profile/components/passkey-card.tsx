@@ -243,7 +243,7 @@ export function PasskeyCard({ loading: pageLoading }: PasskeyCardProps) {
           <div className='space-y-6'>
             <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between xl:flex-col 2xl:flex-row'>
               <div className='flex items-start gap-4'>
-                <IconBadge tone='info' size='sm'>
+                <IconBadge tone='neutral' size='sm'>
                   <KeyRound />
                 </IconBadge>
                 <div className='space-y-1'>

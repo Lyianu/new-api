@@ -1836,7 +1836,7 @@ export function ChannelMutateDrawer({
             <div className='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between'>
               <div className='min-w-0'>
                 <SheetTitle className='flex items-center gap-3'>
-                  <IconBadge tone='info' size='title'>
+                  <IconBadge tone='neutral' size='title'>
                     <ChannelTypeLogo type={currentType} size={22} />
                   </IconBadge>
                   <span>

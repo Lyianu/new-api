@@ -191,7 +191,7 @@ export function ViewLogsDialog({
       onOpenChange={onOpenChange}
       title={
         <>
-          <IconBadge tone='chart-3' size='sm'>
+          <IconBadge tone='neutral' size='sm'>
             <Terminal />
           </IconBadge>
           {t('Deployment logs')}
