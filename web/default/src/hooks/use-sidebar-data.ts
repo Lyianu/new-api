@@ -32,7 +32,6 @@ import {
   Receipt,
   ServerCog,
   Settings,
-  Tag,
   Ticket,
   User,
   Users,
@@ -111,11 +110,6 @@ export function useSidebarData(): SidebarData {
                 },
               ]
             : []),
-          {
-            title: t('Model Pricing'),
-            url: '/pricing',
-            icon: Tag,
-          },
           {
             title: t('Profile'),
             url: '/profile',

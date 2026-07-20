@@ -87,7 +87,7 @@ type DashboardActionPath =
   | '/playground'
   | '/channels'
   | '/usage-logs'
-  | '/pricing'
+  | '/available-models'
 
 interface StartStep {
   title: string
@@ -546,9 +546,9 @@ export function OverviewDashboard() {
         icon: FileText,
       },
       {
-        title: t('Pricing'),
+        title: t('Available Models'),
         description: t('Review model rates before scaling traffic'),
-        to: '/pricing',
+        to: '/available-models',
         icon: BookOpen,
       },
     ],

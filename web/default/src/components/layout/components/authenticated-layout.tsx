@@ -24,7 +24,6 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { LayoutProvider } from '@/context/layout-provider'
-import { SearchProvider } from '@/context/search-provider'
 import { getCookie } from '@/lib/cookies'
 import { cn } from '@/lib/utils'
 
@@ -39,9 +38,8 @@ export function AuthenticatedLayout(props: AuthenticatedLayoutProps) {
 
   return (
     <LayoutProvider>
-      <SearchProvider>
-        {/* 控制台无顶栏：Logo 与全局操作收进 sidebar，头部高度归零 */}
-        <SidebarProvider
+      {/* 控制台无顶栏：Logo 与全局操作收进 sidebar，头部高度归零 */}
+      <SidebarProvider
           defaultOpen={defaultOpen}
           className='flex-col'
           style={{ '--app-header-height': '0px' } as React.CSSProperties}
@@ -65,8 +63,7 @@ export function AuthenticatedLayout(props: AuthenticatedLayoutProps) {
               {props.children ?? <AnimatedOutlet />}
             </SidebarInset>
           </div>
-        </SidebarProvider>
-      </SearchProvider>
+      </SidebarProvider>
     </LayoutProvider>
   )
 }

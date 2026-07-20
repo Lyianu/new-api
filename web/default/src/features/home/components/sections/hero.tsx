@@ -160,9 +160,9 @@ export function Hero(props: HeroProps) {
                 <Button
                   variant='outline'
                   className='border-border/50 hover:border-border hover:bg-muted/50 h-11 rounded-lg px-5 text-sm font-medium'
-                  render={<Link to='/pricing' />}
+                  render={<Link to='/sign-in' />}
                 >
-                  {t('View Pricing')}
+                  {t('Sign in')}
                 </Button>
                 {renderDocsButton()}
               </>
