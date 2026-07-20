@@ -5203,5 +5203,10 @@
     "Fixed fee per transaction (CNY)": "每筆固定手續費（元）",
     "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)": "Stripe 按含費總額收取的百分比，如 0.054 = 5.4%（2.9% 基礎 + 1.5% 國際卡 + 1% 貨幣轉換）",
     "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Stripe 每筆固定手續費（人民幣），如 $0.30 ≈ 2.2"
-  }
+  },
+  "Create and manage keys for accessing the API.": "建立並管理用於存取 API 的金鑰。",
+  "Models available to your account and their pricing.": "目前帳戶可用的模型及其費率。",
+  "Add funds to your account balance.": "為帳戶餘額儲值。",
+  "Monthly statements of your spending.": "按月彙總的消費帳單。",
+  "Your balance, credits and recent consumption at a glance.": "一目了然地查看餘額、額度與近期消耗。"
 }

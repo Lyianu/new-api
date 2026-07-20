@@ -188,6 +188,9 @@ export function Wallet() {
     <>
       <SectionPageLayout>
         <SectionPageLayout.Title>{t('Top-up')}</SectionPageLayout.Title>
+        <SectionPageLayout.Description>
+          {t('Add funds to your account balance.')}
+        </SectionPageLayout.Description>
         <SectionPageLayout.Content>
           <div className='mx-auto flex w-full max-w-3xl flex-col gap-4 sm:gap-5'>
             <div id='wallet-add-funds' className='scroll-mt-4'>

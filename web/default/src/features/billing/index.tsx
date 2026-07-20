@@ -93,6 +93,9 @@ export function Billing() {
     <>
       <SectionPageLayout>
         <SectionPageLayout.Title>{t('Bills')}</SectionPageLayout.Title>
+        <SectionPageLayout.Description>
+          {t('Monthly statements of your spending.')}
+        </SectionPageLayout.Description>
         <SectionPageLayout.Content>
           <div className='mx-auto w-full max-w-4xl space-y-3'>
             <p className='text-muted-foreground text-sm'>
