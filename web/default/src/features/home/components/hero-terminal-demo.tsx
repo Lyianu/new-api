@@ -36,6 +36,13 @@ interface ApiDemoConfig {
   accent: AccentTone
 }
 
+// 简约基调：四个 tab 不再各配一色，激活态统一用前景色表达
+const NEUTRAL_ACCENT = {
+  activeText: 'text-foreground',
+  activeBorder: 'border-foreground',
+  badge: 'bg-muted text-foreground',
+}
+
 const ACCENT_CLASSES: Record<
   AccentTone,
   {
@@ -44,30 +51,10 @@ const ACCENT_CLASSES: Record<
     badge: string
   }
 > = {
-  emerald: {
-    activeText: 'text-emerald-600 dark:text-emerald-400',
-    activeBorder: 'border-emerald-500 dark:border-emerald-400',
-    badge:
-      'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-400',
-  },
-  amber: {
-    activeText: 'text-amber-600 dark:text-amber-400',
-    activeBorder: 'border-amber-500 dark:border-amber-400',
-    badge:
-      'bg-amber-500/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-400',
-  },
-  blue: {
-    activeText: 'text-blue-600 dark:text-blue-400',
-    activeBorder: 'border-blue-500 dark:border-blue-400',
-    badge:
-      'bg-blue-500/10 text-blue-600 dark:bg-blue-400/10 dark:text-blue-400',
-  },
-  violet: {
-    activeText: 'text-violet-600 dark:text-violet-400',
-    activeBorder: 'border-violet-500 dark:border-violet-400',
-    badge:
-      'bg-violet-500/10 text-violet-600 dark:bg-violet-400/10 dark:text-violet-400',
-  },
+  emerald: NEUTRAL_ACCENT,
+  amber: NEUTRAL_ACCENT,
+  blue: NEUTRAL_ACCENT,
+  violet: NEUTRAL_ACCENT,
 }
 
 const API_DEMOS: ApiDemoConfig[] = [
