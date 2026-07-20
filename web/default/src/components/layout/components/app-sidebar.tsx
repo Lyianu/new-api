@@ -18,10 +18,10 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 
-import { ConfigDrawer } from '@/components/config-drawer'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import { NotificationPopover } from '@/components/notification-popover'
 import { ProfileDropdown } from '@/components/profile-dropdown'
+import { ThemeSwitch } from '@/components/theme-switch'
 import {
   Sidebar,
   SidebarContent,
@@ -104,7 +104,7 @@ export function AppSidebar() {
               loading={notifications.loading}
             />
             <LanguageSwitcher />
-            <ConfigDrawer />
+            <ThemeSwitch />
           </div>
         </div>
       </SidebarFooter>
