@@ -226,7 +226,7 @@ export function RechargeFormCard({
       title={t('Add Funds')}
       description={t('Choose an amount and payment method')}
       icon={<WalletCards className='h-4 w-4' />}
-      iconTone='success'
+      iconTone='neutral'
       disableHoverEffect
       action={
         onOpenBilling ? (

@@ -3596,7 +3596,7 @@ export function ChannelMutateDrawer({
                           <CardHeading
                             title={t('Routing & Overrides')}
                             icon={<Route className='h-4 w-4' />}
-                            iconTone='info'
+                            iconTone='neutral'
                           />
                           <div
                             id={ADVANCED_SETTINGS_SECTION_IDS.routingStrategy}
@@ -3608,7 +3608,7 @@ export function ChannelMutateDrawer({
                             <SubHeading
                               title={t('Routing Strategy')}
                               icon={<Route className='h-3.5 w-3.5' />}
-                              iconTone='info'
+                              iconTone='neutral'
                             />
                             <div className='grid gap-4 sm:grid-cols-2'>
                               <FormField
@@ -3716,7 +3716,7 @@ export function ChannelMutateDrawer({
                             <SubHeading
                               title={t('Internal Notes')}
                               icon={<FileText className='h-3.5 w-3.5' />}
-                              iconTone='chart-3'
+                              iconTone='neutral'
                             />
                             <div className='grid gap-4 sm:grid-cols-2'>
                               <FormField
@@ -3774,7 +3774,7 @@ export function ChannelMutateDrawer({
                             <SubHeading
                               title={t('Override Rules')}
                               icon={<Code className='h-3.5 w-3.5' />}
-                              iconTone='chart-4'
+                              iconTone='neutral'
                             />
 
                             <FormField
@@ -4041,7 +4041,7 @@ export function ChannelMutateDrawer({
                           <CardHeading
                             title={t('Channel Extra Settings')}
                             icon={<Settings className='h-4 w-4' />}
-                            iconTone='chart-3'
+                            iconTone='neutral'
                           />
                           {sensitiveLocked && (
                             <Alert className='border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-50'>
@@ -4249,7 +4249,7 @@ export function ChannelMutateDrawer({
                             <CardHeading
                               title={t('Field passthrough controls')}
                               icon={<SlidersHorizontal className='h-4 w-4' />}
-                              iconTone='chart-4'
+                              iconTone='neutral'
                             />
                             <fieldset
                               disabled={sensitiveLocked}
@@ -4493,7 +4493,7 @@ export function ChannelMutateDrawer({
                             <CardHeading
                               title={t('Upstream Model Detection Settings')}
                               icon={<RefreshCw className='h-4 w-4' />}
-                              iconTone='info'
+                              iconTone='neutral'
                             />
                             <fieldset
                               disabled={sensitiveLocked}

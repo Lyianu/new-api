@@ -850,7 +850,7 @@ export function DetailsDialog(props: DetailsDialogProps) {
         {showTopupAuditSection && (
           <DetailSection
             icon={<ShieldCheck className='size-3.5' aria-hidden='true' />}
-            iconTone='success'
+            iconTone='neutral'
             label={t('Top-up Audit Info')}
           >
             {topupAuditFields.map((field) => (
@@ -895,7 +895,7 @@ export function DetailsDialog(props: DetailsDialogProps) {
         {showManageAuditSection && (
           <DetailSection
             icon={<ShieldCheck className='size-3.5' aria-hidden='true' />}
-            iconTone='info'
+            iconTone='neutral'
             label={t('Operation Audit Info')}
           >
             {operationText != null && (
@@ -938,7 +938,7 @@ export function DetailsDialog(props: DetailsDialogProps) {
         {isLogin && loginAuditFields.length > 0 && (
           <DetailSection
             icon={<LogIn className='size-3.5' aria-hidden='true' />}
-            iconTone='info'
+            iconTone='neutral'
             label={t('Login Info')}
           >
             {operationText != null && (
@@ -959,7 +959,7 @@ export function DetailsDialog(props: DetailsDialogProps) {
         {hasAudioTokens && other && (
           <DetailSection
             icon={<Headphones className='size-3.5' aria-hidden='true' />}
-            iconTone='chart-4'
+            iconTone='neutral'
             label={t('Audio Tokens')}
           >
             {other.audio_input != null && other.audio_input > 0 && (
@@ -1182,7 +1182,7 @@ export function DetailsDialog(props: DetailsDialogProps) {
         {other?.po && Array.isArray(other.po) && other.po.length > 0 && (
           <DetailSection
             icon={<Settings2 className='size-3.5' aria-hidden='true' />}
-            iconTone='chart-3'
+            iconTone='neutral'
             label={`${t('Param Override')} (${other.po.length})`}
           >
             {other.po.filter(Boolean).map((line) => {

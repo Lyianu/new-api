@@ -31,8 +31,9 @@ function hashString(value: string): number {
 export function getUserAvatarStyle(name: string): UserAvatarStyle {
   const hash = hashString(name)
   const hue = hash % 360
-  const saturation = 54 + (hash % 8)
-  const lightness = 52 + ((hash >> 4) % 8)
+  // 低饱和配色：保留按名字区分的色相，但不与全站中性基调冲突
+  const saturation = 28 + (hash % 6)
+  const lightness = 50 + ((hash >> 4) % 8)
 
   return {
     backgroundColor: `hsl(${hue} ${saturation}% ${lightness}%)`,
