@@ -12,11 +12,15 @@ import (
 )
 
 type TopUp struct {
-	Id              int     `json:"id"`
-	UserId          int     `json:"user_id" gorm:"index"`
-	Amount          int64   `json:"amount"`
-	Money           float64 `json:"money"`
-	TradeNo         string  `json:"trade_no" gorm:"unique;type:varchar(255);index"`
+	Id     int   `json:"id"`
+	UserId int   `json:"user_id" gorm:"index"`
+	Amount int64 `json:"amount"`
+	// Money 入账人民币基数（含充值分组倍率），quota = Money × QuotaPerUnit
+	Money float64 `json:"money"`
+	// PayMoney 用户实付金额（人民币，含通道手续费）。
+	// 仅人民币计价网关（Stripe/易支付）写入；其他网关或存量订单为 0，展示层需回退到 Money。
+	PayMoney float64 `json:"pay_money" gorm:"default:0"`
+	TradeNo  string  `json:"trade_no" gorm:"unique;type:varchar(255);index"`
 	PaymentMethod   string  `json:"payment_method" gorm:"type:varchar(50)"`
 	PaymentProvider string  `json:"payment_provider" gorm:"type:varchar(50);default:''"`
 	CreateTime      int64   `json:"create_time"`

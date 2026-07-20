@@ -245,8 +245,20 @@ export function Billing() {
                             {t('Payment')}
                           </Label>
                           <div className='text-sm font-semibold text-red-600'>
-                            {formatNumber(record.money)}
+                            ¥
+                            {formatNumber(
+                              record.pay_money && record.pay_money > 0
+                                ? record.pay_money
+                                : record.money
+                            )}
                           </div>
+                          {record.pay_money != null &&
+                            record.pay_money - record.money > 0.005 && (
+                              <div className='text-muted-foreground text-xs'>
+                                {t('Includes processing fee')} ¥
+                                {(record.pay_money - record.money).toFixed(2)}
+                              </div>
+                            )}
                         </div>
                       </div>
 

@@ -4,6 +4,7 @@ import (
 	"math"
 	"testing"
 
+	"github.com/QuantumNous/new-api/model"
 	"github.com/QuantumNous/new-api/setting"
 	"github.com/QuantumNous/new-api/setting/operation_setting"
 	"github.com/stretchr/testify/require"
@@ -68,6 +69,24 @@ func TestGetStripePayMoneyCeilsToCent(t *testing.T) {
 
 	received := pay - (pay*0.054 + 2.2)
 	require.GreaterOrEqual(t, received, 100.0-1e-9, "净到账不得低于入账额度")
+}
+
+// 订单不变量：实付金额（pay_money 落库值）不得低于入账基数（money 落库值），
+// 即通道手续费恒非负——否则说明费率配置或公式出错，平台在贴钱。
+func TestStripePayMoneyNeverBelowChargedAmount(t *testing.T) {
+	setupCnyTopup(t, operation_setting.QuotaDisplayTypeCNY)
+	setStripeFee(t, 0.054, 2.2)
+
+	user := model.User{Group: "default"}
+	for _, amount := range []float64{5, 10, 47, 100, 999, 10000} {
+		payMoney := getStripePayMoney(amount, user.Group)
+		charged := GetChargedAmount(amount, user)
+		require.GreaterOrEqual(t, payMoney, charged, "amount=%v", amount)
+	}
+
+	// 手续费归零时两者应相等（除向上取整的 <1 分误差）
+	setStripeFee(t, 0, 0)
+	require.InDelta(t, GetChargedAmount(100, user), getStripePayMoney(100, "default"), 0.01)
 }
 
 // 小额充值下固定费占比显著：¥5 的应付金额需明显高于线性 5.4% 加价。

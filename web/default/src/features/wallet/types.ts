@@ -259,8 +259,10 @@ export interface TopupRecord {
   user_id: number
   /** Topup amount (quota) */
   amount: number
-  /** Payment amount (actual money paid) */
+  /** Credited CNY base (quota = money × QuotaPerUnit) */
   money: number
+  /** Actual amount paid in CNY incl. processing fee; 0 on legacy/non-CNY orders (fall back to money) */
+  pay_money?: number
   /** Trade/order number */
   trade_no: string
   /** Payment method type */
