@@ -17,10 +17,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { useNavigate } from '@tanstack/react-router'
+import { Receipt } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SectionPageLayout } from '@/components/layout'
+import { Button } from '@/components/ui/button'
 import { useStatus } from '@/hooks/use-status'
 
 import { CreemConfirmDialog } from './components/dialogs/creem-confirm-dialog'
@@ -188,6 +190,17 @@ export function Wallet() {
     <>
       <SectionPageLayout>
         <SectionPageLayout.Title>{t('Top-up')}</SectionPageLayout.Title>
+        <SectionPageLayout.Actions>
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={() => void navigate({ to: '/billing' })}
+            className='gap-2'
+          >
+            <Receipt className='h-4 w-4' />
+            {t('Order History')}
+          </Button>
+        </SectionPageLayout.Actions>
         <SectionPageLayout.Content>
           <div className='mx-auto flex w-full max-w-3xl flex-col gap-4 sm:gap-5'>
             <div id='wallet-add-funds' className='scroll-mt-4'>
@@ -209,7 +222,6 @@ export function Wallet() {
                 topupLink={topupInfo?.topup_link}
                 loading={topupLoading}
                 priceRatio={(status?.price as number) || 1}
-                onOpenBilling={() => void navigate({ to: '/billing' })}
                 creemProducts={topupInfo?.creem_products}
                 enableCreemTopup={topupInfo?.enable_creem_topup}
                 onCreemProductSelect={handleCreemProductSelect}

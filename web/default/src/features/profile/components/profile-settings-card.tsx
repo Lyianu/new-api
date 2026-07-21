@@ -68,8 +68,6 @@ export function ProfileSettingsCard({
     <TitledCard
       title={t('Settings')}
       description={t('Configure your account preferences and integrations')}
-      icon={<Settings className='h-4 w-4' />}
-      iconTone='neutral'
       disableHoverEffect
     >
       <Tabs value={activeTab} onValueChange={setActiveTab}>

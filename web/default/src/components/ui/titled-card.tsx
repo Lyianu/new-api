@@ -76,11 +76,9 @@ export function TitledCard({
               </IconBadge>
             )}
             <div className='min-w-0'>
+              {/* 区块级标题：明显小于页面主标题，避免"页中页"观感 */}
               <CardTitle
-                className={cn(
-                  'text-lg tracking-tight sm:text-xl',
-                  titleClassName
-                )}
+                className={cn('text-base tracking-tight', titleClassName)}
               >
                 {title}
               </CardTitle>
