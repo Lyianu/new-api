@@ -5202,11 +5202,6 @@
     "Processing fee percent": "Processing fee percent",
     "Fixed fee per transaction (CNY)": "Fixed fee per transaction (CNY)",
     "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)": "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)",
-    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2",
-    "Create and manage keys for accessing the API.": "Create and manage keys for accessing the API.",
-    "Models available to your account and their pricing.": "Models available to your account and their pricing.",
-    "Add funds to your account balance.": "Add funds to your account balance.",
-    "Monthly statements of your spending.": "Monthly statements of your spending.",
-    "Your balance, credits and recent consumption at a glance.": "Your balance, credits and recent consumption at a glance."
+    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2"
   }
 }

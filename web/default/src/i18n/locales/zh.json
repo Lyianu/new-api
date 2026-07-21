@@ -5202,11 +5202,6 @@
     "Processing fee percent": "手续费百分比",
     "Fixed fee per transaction (CNY)": "每笔固定手续费（元）",
     "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)": "Stripe 按含费总额收取的百分比，如 0.054 = 5.4%（2.9% 基础 + 1.5% 国际卡 + 1% 货币转换）",
-    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Stripe 每笔固定手续费（人民币），如 $0.30 ≈ 2.2",
-    "Create and manage keys for accessing the API.": "创建并管理用于访问 API 的密钥。",
-    "Models available to your account and their pricing.": "当前账户可用的模型及其费率。",
-    "Add funds to your account balance.": "为账户余额充值。",
-    "Monthly statements of your spending.": "按月汇总的消费账单。",
-    "Your balance, credits and recent consumption at a glance.": "一目了然地查看余额、额度与近期消耗。"
+    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Stripe 每笔固定手续费（人民币），如 $0.30 ≈ 2.2"
   }
 }

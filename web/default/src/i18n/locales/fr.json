@@ -5202,11 +5202,6 @@
     "Processing fee percent": "Pourcentage de frais de traitement",
     "Fixed fee per transaction (CNY)": "Frais fixes par transaction (CNY)",
     "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)": "Frais en pourcentage prélevés par Stripe sur le montant total, ex. 0.054 = 5,4 % (2,9 % de base + 1,5 % carte internationale + 1 % conversion de devise)",
-    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Frais fixes Stripe par transaction en CNY, ex. 0,30 $ ≈ 2.2",
-    "Create and manage keys for accessing the API.": "Créez et gérez les clés d'accès à l'API.",
-    "Models available to your account and their pricing.": "Modèles disponibles pour votre compte et leurs tarifs.",
-    "Add funds to your account balance.": "Ajoutez des fonds au solde de votre compte.",
-    "Monthly statements of your spending.": "Relevés mensuels de vos dépenses.",
-    "Your balance, credits and recent consumption at a glance.": "Votre solde, vos crédits et votre consommation récente en un coup d'œil."
+    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Frais fixes Stripe par transaction en CNY, ex. 0,30 $ ≈ 2.2"
   }
 }

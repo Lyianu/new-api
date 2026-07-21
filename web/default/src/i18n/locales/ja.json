@@ -5202,11 +5202,6 @@
     "Processing fee percent": "決済手数料率",
     "Fixed fee per transaction (CNY)": "1件あたりの固定手数料（元）",
     "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)": "Stripe が総額に対して課す手数料率。例：0.054 = 5.4%（基本 2.9% + 国際カード 1.5% + 通貨換算 1%）",
-    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Stripe の1件あたり固定手数料（人民元）。例：$0.30 ≈ 2.2",
-    "Create and manage keys for accessing the API.": "API へのアクセスに使用するキーを作成・管理します。",
-    "Models available to your account and their pricing.": "アカウントで利用可能なモデルと料金。",
-    "Add funds to your account balance.": "アカウント残高にチャージします。",
-    "Monthly statements of your spending.": "月ごとの利用明細です。",
-    "Your balance, credits and recent consumption at a glance.": "残高・クレジット・最近の使用状況をひと目で確認できます。"
+    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Stripe の1件あたり固定手数料（人民元）。例：$0.30 ≈ 2.2"
   }
 }

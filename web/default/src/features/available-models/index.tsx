@@ -107,9 +107,6 @@ export function AvailableModels() {
   return (
     <SectionPageLayout>
       <SectionPageLayout.Title>{t('Available Models')}</SectionPageLayout.Title>
-      <SectionPageLayout.Description>
-        {t('Models available to your account and their pricing.')}
-      </SectionPageLayout.Description>
       <SectionPageLayout.Content>
         <div className='mx-auto w-full max-w-5xl space-y-5'>
           <p className='text-muted-foreground text-sm'>

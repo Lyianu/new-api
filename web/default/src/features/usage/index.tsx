@@ -120,9 +120,6 @@ export function UsageInfo() {
   return (
     <SectionPageLayout>
       <SectionPageLayout.Title>{t('Usage Info')}</SectionPageLayout.Title>
-      <SectionPageLayout.Description>
-        {t('Your balance, credits and recent consumption at a glance.')}
-      </SectionPageLayout.Description>
       <SectionPageLayout.Content>
         <div className='space-y-3 sm:space-y-4'>
           <FadeIn>
