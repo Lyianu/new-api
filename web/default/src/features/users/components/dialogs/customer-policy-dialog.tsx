@@ -34,6 +34,9 @@ import {
   type CustomerPolicy,
 } from '../../customer-policy'
 
+// 客户策略现仅承载计费折扣；并发/RPM 限流已改为「分组×模型」配置
+// （系统设置 → 速率限制），不再按用户配置。
+
 interface CustomerPolicyDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -46,9 +49,6 @@ type NewPolicyForm = {
   channel_id: string
   model_name: string
   discount_ratio: string
-  max_concurrency: string
-  rpm_limit: string
-  priority: string
 }
 
 const emptyForm: NewPolicyForm = {
@@ -56,9 +56,6 @@ const emptyForm: NewPolicyForm = {
   channel_id: '',
   model_name: '',
   discount_ratio: '1',
-  max_concurrency: '',
-  rpm_limit: '',
-  priority: '',
 }
 
 export function CustomerPolicyDialog(props: CustomerPolicyDialogProps) {
@@ -88,14 +85,23 @@ export function CustomerPolicyDialog(props: CustomerPolicyDialogProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.open, props.userId])
 
-  const numOr = (s: string, dflt: number) => {
-    const n = Number(s)
-    return Number.isFinite(n) ? n : dflt
+  // 空串 → 0（通配）；非空但不是整数 → null（拒绝，防止脏输入被静默当作通配）
+  const strictIntOrWildcard = (s: string): number | null => {
+    const trimmed = s.trim()
+    if (trimmed === '') return 0
+    if (!/^\d+$/.test(trimmed)) return null
+    return Number.parseInt(trimmed, 10)
   }
 
   const handleAdd = async () => {
-    const discount = numOr(form.discount_ratio, 1)
-    if (discount < 0 || discount > 10) {
+    const vendorId = strictIntOrWildcard(form.vendor_id)
+    const channelId = strictIntOrWildcard(form.channel_id)
+    if (vendorId === null || channelId === null) {
+      toast.error(t('Vendor ID and Channel ID must be integers (empty = any)'))
+      return
+    }
+    const discount = Number(form.discount_ratio)
+    if (!Number.isFinite(discount) || discount < 0 || discount > 10) {
       toast.error(t('Discount must be between 0 and 10'))
       return
     }
@@ -103,13 +109,13 @@ export function CustomerPolicyDialog(props: CustomerPolicyDialogProps) {
     try {
       const res = await addCustomerPolicy({
         user_id: props.userId,
-        vendor_id: numOr(form.vendor_id, 0),
-        channel_id: numOr(form.channel_id, 0),
+        vendor_id: vendorId,
+        channel_id: channelId,
         model_name: form.model_name.trim(),
         discount_ratio: discount,
-        max_concurrency: numOr(form.max_concurrency, 0),
-        rpm_limit: numOr(form.rpm_limit, 0),
-        priority: numOr(form.priority, 0),
+        max_concurrency: 0,
+        rpm_limit: 0,
+        priority: 0,
       })
       if (res.success) {
         toast.success(t('Policy added'))
@@ -161,26 +167,22 @@ export function CustomerPolicyDialog(props: CustomerPolicyDialogProps) {
     }
     return (
       <div className='divide-border divide-y rounded-md border text-sm'>
-        <div className='text-muted-foreground grid grid-cols-7 gap-2 px-3 py-2 font-medium'>
+        <div className='text-muted-foreground grid grid-cols-5 gap-2 px-3 py-2 font-medium'>
           <span>{t('Vendor ID')}</span>
           <span>{t('Channel ID')}</span>
           <span>{t('Model')}</span>
           <span>{t('Discount')}</span>
-          <span>{t('Max Concurrency')}</span>
-          <span>{t('RPM Limit')}</span>
           <span className='text-right'>{t('Action')}</span>
         </div>
         {policies.map((p) => (
           <div
             key={p.id}
-            className='grid grid-cols-7 items-center gap-2 px-3 py-2'
+            className='grid grid-cols-5 items-center gap-2 px-3 py-2'
           >
             <span>{p.vendor_id || '*'}</span>
             <span>{p.channel_id || '*'}</span>
             <span className='truncate'>{p.model_name || '*'}</span>
             <span>{p.discount_ratio}</span>
-            <span>{p.max_concurrency || '-'}</span>
-            <span>{p.rpm_limit || '-'}</span>
             <span className='text-right'>
               <Button
                 variant='ghost'
@@ -207,7 +209,7 @@ export function CustomerPolicyDialog(props: CustomerPolicyDialogProps) {
           : t('Customer Policies')
       }
       description={t(
-        'Per-customer discount (by vendor) and concurrency / RPM limits (by channel). 0 / empty / * = any; model supports prefix like claude-*.'
+        'Per-customer billing discount by vendor / channel / model. 0 / empty / * = any; model supports prefix like claude-*.'
       )}
       contentHeight='auto'
       bodyClassName='space-y-4'
@@ -227,7 +229,7 @@ export function CustomerPolicyDialog(props: CustomerPolicyDialogProps) {
         {/* 新增策略 */}
         <div className='space-y-2 border-t pt-4'>
           <Label>{t('Add policy')}</Label>
-          <div className='grid grid-cols-2 gap-2 sm:grid-cols-3'>
+          <div className='grid grid-cols-2 gap-2 sm:grid-cols-4'>
             <div className='space-y-1'>
               <Label className='text-muted-foreground text-xs'>
                 {t('Vendor ID')} ({anyLabel})
@@ -277,30 +279,6 @@ export function CustomerPolicyDialog(props: CustomerPolicyDialogProps) {
                 }
               />
             </div>
-            <div className='space-y-1'>
-              <Label className='text-muted-foreground text-xs'>
-                {t('Max Concurrency')}
-              </Label>
-              <Input
-                type='number'
-                value={form.max_concurrency}
-                onChange={(e) =>
-                  setForm({ ...form, max_concurrency: e.target.value })
-                }
-              />
-            </div>
-            <div className='space-y-1'>
-              <Label className='text-muted-foreground text-xs'>
-                {t('RPM Limit')}
-              </Label>
-              <Input
-                type='number'
-                value={form.rpm_limit}
-                onChange={(e) =>
-                  setForm({ ...form, rpm_limit: e.target.value })
-                }
-              />
-            </div>
           </div>
           <div className='flex justify-end'>
             <Button onClick={handleAdd} disabled={saving}>
@@ -317,7 +295,7 @@ export function CustomerPolicyDialog(props: CustomerPolicyDialogProps) {
         }}
         title={t('Delete policy')}
         desc={t(
-          'Delete this policy ({{dimensions}})? Billing discount and rate limits from this rule will no longer apply.',
+          'Delete this policy ({{dimensions}})? The billing discount from this rule will no longer apply.',
           { dimensions: deleteTarget ? policyDimensionText(deleteTarget) : '' }
         )}
         confirmText={t('Delete')}

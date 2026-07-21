@@ -5160,7 +5160,6 @@
     "Zoom": "Zoom",
     "Exchange rate: {{rate}} CNY / USD": "Taux de change : {{rate}} CNY / USD",
     "Customer Policies": "Customer Policies",
-    "Per-customer discount (by vendor) and concurrency / RPM limits (by channel). 0 / empty / * = any; model supports prefix like claude-*.": "Per-customer discount (by vendor) and concurrency / RPM limits (by channel). 0 / empty / * = any; model supports prefix like claude-*.",
     "Existing policies": "Existing policies",
     "No policies configured": "No policies configured",
     "Add policy": "Add policy",
@@ -5202,6 +5201,16 @@
     "Processing fee percent": "Pourcentage de frais de traitement",
     "Fixed fee per transaction (CNY)": "Frais fixes par transaction (CNY)",
     "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)": "Frais en pourcentage prélevés par Stripe sur le montant total, ex. 0.054 = 5,4 % (2,9 % de base + 1,5 % carte internationale + 1 % conversion de devise)",
-    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Frais fixes Stripe par transaction en CNY, ex. 0,30 $ ≈ 2.2"
+    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Frais fixes Stripe par transaction en CNY, ex. 0,30 $ ≈ 2.2",
+    "Per-customer billing discount by vendor / channel / model. 0 / empty / * = any; model supports prefix like claude-*.": "Remise de facturation par client, par fournisseur / canal / modèle. 0 / vide / * = tous ; le modèle accepte un préfixe comme claude-*.",
+    "Vendor ID and Channel ID must be integers (empty = any)": "L'ID fournisseur et l'ID canal doivent être des entiers (vide = tous)",
+    "1 = original price, 0 = unset (not free)": "1 = prix normal, 0 = non défini (pas gratuit)",
+    "Delete policy": "Supprimer la politique",
+    "Delete this policy ({{dimensions}})? The billing discount from this rule will no longer apply.": "Supprimer cette politique ({{dimensions}}) ? La remise de facturation de cette règle ne s'appliquera plus.",
+    "Group Model Limits": "Limites par groupe et modèle",
+    "Concurrency and RPM limits by group and model": "Limites de concurrence et de RPM par groupe et modèle",
+    "Add rule": "Ajouter une règle",
+    "Save group model limits": "Enregistrer les limites par groupe et modèle",
+    "Limits apply per user within the group: with 5 concurrency for model A, every user in the group gets 5 concurrent requests for A. Model supports exact name, prefix like claude-*, or * for all; the most specific matching rule wins, and models covered by the same rule share one counter. 0 = unlimited.": "Les limites s'appliquent à chaque utilisateur du groupe : avec 5 requêtes simultanées pour le modèle A, chaque utilisateur du groupe dispose de 5 requêtes simultanées pour A. Le modèle accepte un nom exact, un préfixe comme claude-* ou * pour tous ; la règle la plus spécifique l'emporte, et les modèles couverts par la même règle partagent un compteur. 0 = illimité."
   }
 }

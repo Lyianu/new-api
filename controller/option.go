@@ -270,6 +270,8 @@ func UpdateOption(c *gin.Context) {
 		}
 	case "ModelRequestRateLimitGroup":
 		err = setting.CheckModelRequestRateLimitGroup(option.Value.(string))
+	case "GroupModelLimit":
+		err = setting.CheckGroupModelLimits(option.Value.(string))
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
 				"success": false,

@@ -4,15 +4,16 @@ import (
 	"github.com/QuantumNous/new-api/common"
 )
 
-// CustomerPolicy 是「按客户 × (供应商/渠道, 模型)」粒度的策略规则。
+// CustomerPolicy 是「按客户 × (供应商/渠道, 模型)」粒度的**折扣**规则。
 //
 // 维度语义（0 / 空 / "*" 表示通配）：
 //   - VendorId：折扣维度（供应商/Provider）。0 表示任意供应商。
-//   - ChannelId：并发/RPM 维度（物理渠道）。0 表示任意渠道。
+//   - ChannelId：渠道维度。0 表示任意渠道。
 //   - ModelName：模型名，支持精确、通配 "*"/""、前缀 "claude-*"。
 //
-// 一条规则同时可携带折扣与并发/RPM 限制；解析时按维度各自回落（见 service.PolicyResolver）。
-// 折扣规则通常设置 VendorId（ChannelId=0）；并发/RPM 规则通常设置 ChannelId。
+// 注意：MaxConcurrency / RpmLimit 字段已废弃（保留仅为兼容存量数据），
+// 并发/RPM 限流改为「分组×模型」配置（setting.GroupModelLimit +
+// middleware.GroupModelLimit），不再按用户生效。
 type CustomerPolicy struct {
 	Id             int     `json:"id"`
 	UserId         int     `json:"user_id" gorm:"index:idx_customer_policy_user"`
@@ -20,8 +21,8 @@ type CustomerPolicy struct {
 	ChannelId      int     `json:"channel_id" gorm:"default:0"`  // 0 = 任意渠道
 	ModelName      string  `json:"model_name" gorm:"type:varchar(128);default:''"`
 	DiscountRatio  float64 `json:"discount_ratio" gorm:"default:1"` // 1=原价，0.9=九折；<=0 视为未设
-	MaxConcurrency int     `json:"max_concurrency" gorm:"default:0"` // 0=不限
-	RpmLimit       int     `json:"rpm_limit" gorm:"default:0"`       // 0=用分组默认
+	MaxConcurrency int     `json:"max_concurrency" gorm:"default:0"` // 已废弃：限流改由分组×模型配置
+	RpmLimit       int     `json:"rpm_limit" gorm:"default:0"`       // 已废弃：限流改由分组×模型配置
 	Priority       int     `json:"priority" gorm:"default:0"`        // 命中优先级，越大越优先
 	CreatedTime    int64   `json:"created_time" gorm:"bigint"`
 	UpdatedTime    int64   `json:"updated_time" gorm:"bigint"`

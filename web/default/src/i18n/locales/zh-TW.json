@@ -5160,7 +5160,6 @@
     "Zoom": "縮放",
     "Exchange rate: {{rate}} CNY / USD": "匯率：{{rate}} 元/刀",
     "Customer Policies": "客戶策略",
-    "Per-customer discount (by vendor) and concurrency / RPM limits (by channel). 0 / empty / * = any; model supports prefix like claude-*.": "按客戶設定折扣（按供應商）與並發/RPM 限制（按渠道）。0 / 空 / * 表示任意；模型支援前綴如 claude-*。",
     "Existing policies": "現有策略",
     "No policies configured": "尚未設定策略",
     "Add policy": "新增策略",
@@ -5202,6 +5201,16 @@
     "Processing fee percent": "手續費百分比",
     "Fixed fee per transaction (CNY)": "每筆固定手續費（元）",
     "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)": "Stripe 按含費總額收取的百分比，如 0.054 = 5.4%（2.9% 基礎 + 1.5% 國際卡 + 1% 貨幣轉換）",
-    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Stripe 每筆固定手續費（人民幣），如 $0.30 ≈ 2.2"
+    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Stripe 每筆固定手續費（人民幣），如 $0.30 ≈ 2.2",
+    "Per-customer billing discount by vendor / channel / model. 0 / empty / * = any; model supports prefix like claude-*.": "按供應商 / 渠道 / 模型維度的客戶計費折扣。0 / 留空 / * 表示任意；模型支援 claude-* 前綴。",
+    "Vendor ID and Channel ID must be integers (empty = any)": "供應商 ID 與渠道 ID 必須為整數（留空 = 任意）",
+    "1 = original price, 0 = unset (not free)": "1 = 原價，0 = 未設定（不是免費）",
+    "Delete policy": "刪除策略",
+    "Delete this policy ({{dimensions}})? The billing discount from this rule will no longer apply.": "確定刪除該策略（{{dimensions}}）？該規則的計費折扣將不再生效。",
+    "Group Model Limits": "分組模型限流",
+    "Concurrency and RPM limits by group and model": "按分組 × 模型設定併發與 RPM 上限",
+    "Add rule": "新增規則",
+    "Save group model limits": "儲存分組模型限流",
+    "Limits apply per user within the group: with 5 concurrency for model A, every user in the group gets 5 concurrent requests for A. Model supports exact name, prefix like claude-*, or * for all; the most specific matching rule wins, and models covered by the same rule share one counter. 0 = unlimited.": "限額對分組內每個使用者各自生效：模型 A 配 5 併發，則該分組每個使用者呼叫 A 時各有 5 併發。模型支援精確名稱、claude-* 前綴或 * 萬用字元；命中時取最具體的規則，同一條規則涵蓋的模型共享一個計數器。0 = 不限。"
   }
 }

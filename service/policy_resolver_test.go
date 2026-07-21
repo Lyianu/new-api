@@ -21,7 +21,7 @@ func ctxFor(userId, vendorId, channelId int, modelName string) PolicyContext {
 // 无规则 → 系统默认。
 func TestResolve_Default(t *testing.T) {
 	got := ResolvePolicyRows(nil, ctxFor(1, 10, 5, "claude-3"))
-	if !approx(got.DiscountRatio, 1.0) || got.MaxConcurrency != 0 || got.RpmLimit != 0 {
+	if !approx(got.DiscountRatio, 1.0) {
 		t.Fatalf("default = %+v", got)
 	}
 }
@@ -67,26 +67,15 @@ func TestResolve_PrefixMatch(t *testing.T) {
 	}
 }
 
-// 并发/RPM 按渠道维度独立解析，各自回落。
-func TestResolve_ConcurrencyAndRpmByChannel(t *testing.T) {
+// 废弃的限流字段不参与解析：仅设置了并发/RPM 的存量规则不影响折扣结果。
+func TestResolve_DeprecatedLimitFieldsIgnored(t *testing.T) {
 	rows := []*model.CustomerPolicy{
-		{Id: 1, UserId: 1, VendorId: 10, DiscountRatio: 0.9}, // 仅折扣
-		{Id: 2, UserId: 1, ChannelId: 5, MaxConcurrency: 3, RpmLimit: 60},
+		{Id: 1, UserId: 1, VendorId: 10, DiscountRatio: 0.9},              // 仅折扣
+		{Id: 2, UserId: 1, ChannelId: 5, MaxConcurrency: 3, RpmLimit: 60}, // 存量限流规则
 	}
 	got := ResolvePolicyRows(rows, ctxFor(1, 10, 5, "claude-3"))
 	if !approx(got.DiscountRatio, 0.9) {
 		t.Fatalf("discount = %v, want 0.9", got.DiscountRatio)
-	}
-	if got.MaxConcurrency != 3 || got.RpmLimit != 60 {
-		t.Fatalf("limits = (%d,%d), want (3,60)", got.MaxConcurrency, got.RpmLimit)
-	}
-	// 换渠道 → 并发/RPM 回落默认，折扣仍按 vendor 命中
-	got2 := ResolvePolicyRows(rows, ctxFor(1, 10, 9, "claude-3"))
-	if got2.MaxConcurrency != 0 || got2.RpmLimit != 0 {
-		t.Fatalf("other channel limits = (%d,%d), want (0,0)", got2.MaxConcurrency, got2.RpmLimit)
-	}
-	if !approx(got2.DiscountRatio, 0.9) {
-		t.Fatalf("other channel discount = %v, want 0.9", got2.DiscountRatio)
 	}
 }
 

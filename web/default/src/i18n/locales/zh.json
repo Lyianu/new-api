@@ -5160,7 +5160,6 @@
     "Zoom": "缩放",
     "Exchange rate: {{rate}} CNY / USD": "汇率：{{rate}} 元/刀",
     "Customer Policies": "客户策略",
-    "Per-customer discount (by vendor) and concurrency / RPM limits (by channel). 0 / empty / * = any; model supports prefix like claude-*.": "按客户配置折扣（按供应商）与并发/RPM 限制（按渠道）。0 / 空 / * 表示任意；模型支持前缀如 claude-*。",
     "Existing policies": "现有策略",
     "No policies configured": "尚未配置策略",
     "Add policy": "新增策略",
@@ -5202,6 +5201,16 @@
     "Processing fee percent": "手续费百分比",
     "Fixed fee per transaction (CNY)": "每笔固定手续费（元）",
     "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)": "Stripe 按含费总额收取的百分比，如 0.054 = 5.4%（2.9% 基础 + 1.5% 国际卡 + 1% 货币转换）",
-    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Stripe 每笔固定手续费（人民币），如 $0.30 ≈ 2.2"
+    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Stripe 每笔固定手续费（人民币），如 $0.30 ≈ 2.2",
+    "Per-customer billing discount by vendor / channel / model. 0 / empty / * = any; model supports prefix like claude-*.": "按供应商 / 渠道 / 模型维度的客户计费折扣。0 / 留空 / * 表示任意；模型支持 claude-* 前缀。",
+    "Vendor ID and Channel ID must be integers (empty = any)": "供应商 ID 与渠道 ID 必须为整数（留空 = 任意）",
+    "1 = original price, 0 = unset (not free)": "1 = 原价，0 = 未设置（不是免费）",
+    "Delete policy": "删除策略",
+    "Delete this policy ({{dimensions}})? The billing discount from this rule will no longer apply.": "确定删除该策略（{{dimensions}}）？该规则的计费折扣将不再生效。",
+    "Group Model Limits": "分组模型限流",
+    "Concurrency and RPM limits by group and model": "按分组 × 模型配置并发与 RPM 上限",
+    "Add rule": "添加规则",
+    "Save group model limits": "保存分组模型限流",
+    "Limits apply per user within the group: with 5 concurrency for model A, every user in the group gets 5 concurrent requests for A. Model supports exact name, prefix like claude-*, or * for all; the most specific matching rule wins, and models covered by the same rule share one counter. 0 = unlimited.": "限额对分组内每个用户各自生效：模型 A 配 5 并发，则该分组每个用户调用 A 时各有 5 并发。模型支持精确名、claude-* 前缀或 * 通配；命中时取最具体的规则，同一条规则覆盖的模型共享一个计数器。0 = 不限。"
   }
 }

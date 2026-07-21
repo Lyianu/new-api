@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { RateLimitSection } from '../request-limits/rate-limit-section'
+import { GroupModelLimitSection } from '../request-limits/group-model-limit-section'
 import { SensitiveWordsSection } from '../request-limits/sensitive-words-section'
 import { SSRFSection } from '../request-limits/ssrf-section'
 import { TokenLimitSection } from '../request-limits/token-limit-section'
@@ -37,6 +38,17 @@ const SECURITY_SECTIONS = [
           ModelRequestRateLimitDurationMinutes:
             settings.ModelRequestRateLimitDurationMinutes,
           ModelRequestRateLimitGroup: settings.ModelRequestRateLimitGroup,
+        }}
+      />
+    ),
+  },
+  {
+    id: 'group-model-limit',
+    titleKey: 'Group Model Limits',
+    build: (settings: SecuritySettings) => (
+      <GroupModelLimitSection
+        defaultValues={{
+          GroupModelLimit: settings.GroupModelLimit,
         }}
       />
     ),

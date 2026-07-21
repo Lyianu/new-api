@@ -5160,7 +5160,6 @@
     "Zoom": "ズーム",
     "Exchange rate: {{rate}} CNY / USD": "為替レート：{{rate}} 元/ドル",
     "Customer Policies": "Customer Policies",
-    "Per-customer discount (by vendor) and concurrency / RPM limits (by channel). 0 / empty / * = any; model supports prefix like claude-*.": "Per-customer discount (by vendor) and concurrency / RPM limits (by channel). 0 / empty / * = any; model supports prefix like claude-*.",
     "Existing policies": "Existing policies",
     "No policies configured": "No policies configured",
     "Add policy": "Add policy",
@@ -5202,6 +5201,16 @@
     "Processing fee percent": "決済手数料率",
     "Fixed fee per transaction (CNY)": "1件あたりの固定手数料（元）",
     "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)": "Stripe が総額に対して課す手数料率。例：0.054 = 5.4%（基本 2.9% + 国際カード 1.5% + 通貨換算 1%）",
-    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Stripe の1件あたり固定手数料（人民元）。例：$0.30 ≈ 2.2"
+    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Stripe の1件あたり固定手数料（人民元）。例：$0.30 ≈ 2.2",
+    "Per-customer billing discount by vendor / channel / model. 0 / empty / * = any; model supports prefix like claude-*.": "ベンダー / チャネル / モデル単位の顧客別課金割引。0 / 空欄 / * は任意を意味し、モデルは claude-* の前方一致に対応します。",
+    "Vendor ID and Channel ID must be integers (empty = any)": "ベンダー ID とチャネル ID は整数で入力してください（空欄 = 任意）",
+    "1 = original price, 0 = unset (not free)": "1 = 定価、0 = 未設定（無料ではありません）",
+    "Delete policy": "ポリシーを削除",
+    "Delete this policy ({{dimensions}})? The billing discount from this rule will no longer apply.": "このポリシー（{{dimensions}}）を削除しますか？このルールの課金割引は適用されなくなります。",
+    "Group Model Limits": "グループ別モデル制限",
+    "Concurrency and RPM limits by group and model": "グループ × モデル単位の同時実行数と RPM 上限",
+    "Add rule": "ルールを追加",
+    "Save group model limits": "グループ別モデル制限を保存",
+    "Limits apply per user within the group: with 5 concurrency for model A, every user in the group gets 5 concurrent requests for A. Model supports exact name, prefix like claude-*, or * for all; the most specific matching rule wins, and models covered by the same rule share one counter. 0 = unlimited.": "制限はグループ内の各ユーザーに個別に適用されます：モデル A に同時実行数 5 を設定すると、グループ内の各ユーザーがそれぞれ 5 並列で A を呼び出せます。モデルは完全一致、claude-* の前方一致、* の全一致に対応し、最も具体的なルールが優先されます。同一ルールが対象とするモデルはカウンターを共有します。0 = 無制限。"
   }
 }

@@ -5160,7 +5160,6 @@
     "Zoom": "Zoom",
     "Exchange rate: {{rate}} CNY / USD": "Exchange rate: ¥{{rate}} / $1",
     "Customer Policies": "Customer Policies",
-    "Per-customer discount (by vendor) and concurrency / RPM limits (by channel). 0 / empty / * = any; model supports prefix like claude-*.": "Per-customer discount (by vendor) and concurrency / RPM limits (by channel). 0 / empty / * = any; model supports prefix like claude-*.",
     "Existing policies": "Existing policies",
     "No policies configured": "No policies configured",
     "Add policy": "Add policy",
@@ -5202,6 +5201,16 @@
     "Processing fee percent": "Processing fee percent",
     "Fixed fee per transaction (CNY)": "Fixed fee per transaction (CNY)",
     "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)": "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)",
-    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2"
+    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2",
+    "Per-customer billing discount by vendor / channel / model. 0 / empty / * = any; model supports prefix like claude-*.": "Per-customer billing discount by vendor / channel / model. 0 / empty / * = any; model supports prefix like claude-*.",
+    "Vendor ID and Channel ID must be integers (empty = any)": "Vendor ID and Channel ID must be integers (empty = any)",
+    "1 = original price, 0 = unset (not free)": "1 = original price, 0 = unset (not free)",
+    "Delete policy": "Delete policy",
+    "Delete this policy ({{dimensions}})? The billing discount from this rule will no longer apply.": "Delete this policy ({{dimensions}})? The billing discount from this rule will no longer apply.",
+    "Group Model Limits": "Group Model Limits",
+    "Concurrency and RPM limits by group and model": "Concurrency and RPM limits by group and model",
+    "Add rule": "Add rule",
+    "Save group model limits": "Save group model limits",
+    "Limits apply per user within the group: with 5 concurrency for model A, every user in the group gets 5 concurrent requests for A. Model supports exact name, prefix like claude-*, or * for all; the most specific matching rule wins, and models covered by the same rule share one counter. 0 = unlimited.": "Limits apply per user within the group: with 5 concurrency for model A, every user in the group gets 5 concurrent requests for A. Model supports exact name, prefix like claude-*, or * for all; the most specific matching rule wins, and models covered by the same rule share one counter. 0 = unlimited."
   }
 }

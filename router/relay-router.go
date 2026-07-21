@@ -62,7 +62,7 @@ func SetRelayRouter(router *gin.Engine) {
 	playgroundRouter := router.Group("/pg")
 	playgroundRouter.Use(middleware.RouteTag("relay"))
 	playgroundRouter.Use(middleware.SystemPerformanceCheck())
-	playgroundRouter.Use(middleware.UserAuth(), middleware.Distribute(), middleware.UserPolicyLimit())
+	playgroundRouter.Use(middleware.UserAuth(), middleware.Distribute(), middleware.GroupModelLimit())
 	{
 		playgroundRouter.POST("/chat/completions", controller.Playground)
 	}
@@ -75,7 +75,7 @@ func SetRelayRouter(router *gin.Engine) {
 		// WebSocket 路由（统一到 Relay）
 		wsRouter := relayV1Router.Group("")
 		wsRouter.Use(middleware.Distribute())
-		wsRouter.Use(middleware.UserPolicyLimit())
+		wsRouter.Use(middleware.GroupModelLimit())
 		wsRouter.GET("/realtime", func(c *gin.Context) {
 			controller.Relay(c, types.RelayFormatOpenAIRealtime)
 		})
@@ -84,7 +84,7 @@ func SetRelayRouter(router *gin.Engine) {
 		//http router
 		httpRouter := relayV1Router.Group("")
 		httpRouter.Use(middleware.Distribute())
-		httpRouter.Use(middleware.UserPolicyLimit())
+		httpRouter.Use(middleware.GroupModelLimit())
 
 		// claude related routes
 		httpRouter.POST("/messages", func(c *gin.Context) {
@@ -181,7 +181,7 @@ func SetRelayRouter(router *gin.Engine) {
 	relaySunoRouter := router.Group("/suno")
 	relaySunoRouter.Use(middleware.RouteTag("relay"))
 	relaySunoRouter.Use(middleware.SystemPerformanceCheck())
-	relaySunoRouter.Use(middleware.TokenAuth(), middleware.Distribute(), middleware.UserPolicyLimit())
+	relaySunoRouter.Use(middleware.TokenAuth(), middleware.Distribute(), middleware.GroupModelLimit())
 	{
 		relaySunoRouter.POST("/submit/:action", controller.RelayTask)
 		relaySunoRouter.POST("/fetch", controller.RelayTaskFetch)
@@ -194,7 +194,7 @@ func SetRelayRouter(router *gin.Engine) {
 	relayGeminiRouter.Use(middleware.TokenAuth())
 	relayGeminiRouter.Use(middleware.ModelRequestRateLimit())
 	relayGeminiRouter.Use(middleware.Distribute())
-	relayGeminiRouter.Use(middleware.UserPolicyLimit())
+	relayGeminiRouter.Use(middleware.GroupModelLimit())
 	{
 		// Gemini API 路径格式: /v1beta/models/{model_name}:{action}
 		relayGeminiRouter.POST("/models/*path", func(c *gin.Context) {
@@ -205,7 +205,7 @@ func SetRelayRouter(router *gin.Engine) {
 
 func registerMjRouterGroup(relayMjRouter *gin.RouterGroup) {
 	relayMjRouter.GET("/image/:id", relay.RelayMidjourneyImage)
-	relayMjRouter.Use(middleware.TokenAuth(), middleware.Distribute(), middleware.UserPolicyLimit())
+	relayMjRouter.Use(middleware.TokenAuth(), middleware.Distribute(), middleware.GroupModelLimit())
 	{
 		relayMjRouter.POST("/submit/action", controller.RelayMidjourney)
 		relayMjRouter.POST("/submit/shorten", controller.RelayMidjourney)

@@ -43,22 +43,21 @@ func WarmupPolicyCache() {
 // PolicyContext 是策略解析的输入上下文，字段均可从 RelayInfo 取得。
 type PolicyContext struct {
 	UserId    int
-	Group     string
 	VendorId  int // 折扣维度：由 modelName → vendor 映射得到
-	ChannelId int // 并发/RPM 维度：物理渠道
+	ChannelId int // 渠道维度（0 = 渠道未选定/不限）
 	ModelName string
 }
 
-// ResolvedPolicy 是解析结果。零值即系统默认（不打折、不限并发、用分组默认 RPM）。
+// ResolvedPolicy 是解析结果。零值即系统默认（不打折）。
+// 注意：客户策略现仅承载折扣；并发/RPM 限流已改为「分组×模型」配置
+//（见 setting.GroupModelLimit / middleware.GroupModelLimit），不再按用户解析。
 type ResolvedPolicy struct {
-	DiscountRatio  float64 // 1.0 = 原价（再乘在分组价之上）
-	MaxConcurrency int     // 0 = 不限
-	RpmLimit       int     // 0 = 用分组默认
+	DiscountRatio float64 // 1.0 = 原价（再乘在分组价之上）
 }
 
 // SystemDefaultPolicy 是查不到任何规则时的系统默认。
 func SystemDefaultPolicy() ResolvedPolicy {
-	return ResolvedPolicy{DiscountRatio: 1.0, MaxConcurrency: 0, RpmLimit: 0}
+	return ResolvedPolicy{DiscountRatio: 1.0}
 }
 
 // PolicyResolver 把「折扣 / 并发 / RPM 取什么值」抽象到接口后面，
@@ -129,13 +128,13 @@ func betterThan(score int, p *model.CustomerPolicy, bestScore int, best *model.C
 	return p.Id > best.Id
 }
 
-// ResolvePolicyRows 是纯回落解析：对折扣 / 并发 / RPM 三项各自挑选
-// 「命中且设置了该项」的最具体规则；任一项无命中则回落系统默认。
+// ResolvePolicyRows 是纯回落解析：挑选「命中且设置了折扣」的最具体规则，
+// 无命中则回落系统默认（原价）。
 func ResolvePolicyRows(rows []*model.CustomerPolicy, ctx PolicyContext) ResolvedPolicy {
 	res := SystemDefaultPolicy()
 
-	var bestDiscount, bestConc, bestRpm *model.CustomerPolicy
-	var scDiscount, scConc, scRpm int
+	var bestDiscount *model.CustomerPolicy
+	var scDiscount int
 
 	for _, p := range rows {
 		score, ok := ruleMatches(p, ctx)
@@ -145,22 +144,10 @@ func ResolvePolicyRows(rows []*model.CustomerPolicy, ctx PolicyContext) Resolved
 		if p.DiscountRatio > 0 && betterThan(score, p, scDiscount, bestDiscount) {
 			bestDiscount, scDiscount = p, score
 		}
-		if p.MaxConcurrency > 0 && betterThan(score, p, scConc, bestConc) {
-			bestConc, scConc = p, score
-		}
-		if p.RpmLimit > 0 && betterThan(score, p, scRpm, bestRpm) {
-			bestRpm, scRpm = p, score
-		}
 	}
 
 	if bestDiscount != nil {
 		res.DiscountRatio = bestDiscount.DiscountRatio
-	}
-	if bestConc != nil {
-		res.MaxConcurrency = bestConc.MaxConcurrency
-	}
-	if bestRpm != nil {
-		res.RpmLimit = bestRpm.RpmLimit
 	}
 	return res
 }

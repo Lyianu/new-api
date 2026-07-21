@@ -93,7 +93,6 @@ func resolveCustomerDiscount(info *relaycommon.RelayInfo) float64 {
 	}
 	policy := service.GetPolicyResolver().Resolve(service.PolicyContext{
 		UserId:    info.UserId,
-		Group:     info.UsingGroup,
 		VendorId:  vendorId,
 		ChannelId: channelId,
 		ModelName: info.OriginModelName,

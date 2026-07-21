@@ -5160,7 +5160,6 @@
     "Zoom": "Zoom",
     "Exchange rate: {{rate}} CNY / USD": "Tỷ giá: {{rate}} CNY / USD",
     "Customer Policies": "Customer Policies",
-    "Per-customer discount (by vendor) and concurrency / RPM limits (by channel). 0 / empty / * = any; model supports prefix like claude-*.": "Per-customer discount (by vendor) and concurrency / RPM limits (by channel). 0 / empty / * = any; model supports prefix like claude-*.",
     "Existing policies": "Existing policies",
     "No policies configured": "No policies configured",
     "Add policy": "Add policy",
@@ -5202,6 +5201,16 @@
     "Processing fee percent": "Tỷ lệ phí xử lý",
     "Fixed fee per transaction (CNY)": "Phí cố định mỗi giao dịch (CNY)",
     "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)": "Phí phần trăm Stripe tính trên tổng số tiền, ví dụ 0.054 = 5,4% (2,9% cơ bản + 1,5% thẻ quốc tế + 1% chuyển đổi tiền tệ)",
-    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Phí cố định của Stripe mỗi giao dịch tính bằng CNY, ví dụ $0.30 ≈ 2.2"
+    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Phí cố định của Stripe mỗi giao dịch tính bằng CNY, ví dụ $0.30 ≈ 2.2",
+    "Per-customer billing discount by vendor / channel / model. 0 / empty / * = any; model supports prefix like claude-*.": "Chiết khấu thanh toán theo từng khách hàng theo nhà cung cấp / kênh / mô hình. 0 / trống / * = bất kỳ; mô hình hỗ trợ tiền tố như claude-*.",
+    "Vendor ID and Channel ID must be integers (empty = any)": "ID nhà cung cấp và ID kênh phải là số nguyên (trống = bất kỳ)",
+    "1 = original price, 0 = unset (not free)": "1 = giá gốc, 0 = chưa đặt (không phải miễn phí)",
+    "Delete policy": "Xóa chính sách",
+    "Delete this policy ({{dimensions}})? The billing discount from this rule will no longer apply.": "Xóa chính sách này ({{dimensions}})? Chiết khấu thanh toán của quy tắc này sẽ không còn hiệu lực.",
+    "Group Model Limits": "Giới hạn theo nhóm và mô hình",
+    "Concurrency and RPM limits by group and model": "Giới hạn đồng thời và RPM theo nhóm và mô hình",
+    "Add rule": "Thêm quy tắc",
+    "Save group model limits": "Lưu giới hạn theo nhóm và mô hình",
+    "Limits apply per user within the group: with 5 concurrency for model A, every user in the group gets 5 concurrent requests for A. Model supports exact name, prefix like claude-*, or * for all; the most specific matching rule wins, and models covered by the same rule share one counter. 0 = unlimited.": "Giới hạn áp dụng riêng cho từng người dùng trong nhóm: với 5 yêu cầu đồng thời cho mô hình A, mỗi người dùng trong nhóm có 5 yêu cầu đồng thời với A. Mô hình hỗ trợ tên chính xác, tiền tố như claude-* hoặc * cho tất cả; quy tắc cụ thể nhất được ưu tiên, và các mô hình thuộc cùng một quy tắc dùng chung một bộ đếm. 0 = không giới hạn."
   }
 }

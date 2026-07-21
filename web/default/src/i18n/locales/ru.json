@@ -5160,7 +5160,6 @@
     "Zoom": "Zoom",
     "Exchange rate: {{rate}} CNY / USD": "Курс: {{rate}} CNY / USD",
     "Customer Policies": "Customer Policies",
-    "Per-customer discount (by vendor) and concurrency / RPM limits (by channel). 0 / empty / * = any; model supports prefix like claude-*.": "Per-customer discount (by vendor) and concurrency / RPM limits (by channel). 0 / empty / * = any; model supports prefix like claude-*.",
     "Existing policies": "Existing policies",
     "No policies configured": "No policies configured",
     "Add policy": "Add policy",
@@ -5202,6 +5201,16 @@
     "Processing fee percent": "Процент комиссии",
     "Fixed fee per transaction (CNY)": "Фиксированная комиссия за транзакцию (CNY)",
     "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)": "Процентная комиссия Stripe от общей суммы, напр. 0.054 = 5,4% (2,9% база + 1,5% международная карта + 1% конвертация валюты)",
-    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Фиксированная комиссия Stripe за транзакцию в CNY, напр. $0.30 ≈ 2.2"
+    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Фиксированная комиссия Stripe за транзакцию в CNY, напр. $0.30 ≈ 2.2",
+    "Per-customer billing discount by vendor / channel / model. 0 / empty / * = any; model supports prefix like claude-*.": "Индивидуальная скидка клиента по поставщику / каналу / модели. 0 / пусто / * = любой; модель поддерживает префикс вида claude-*.",
+    "Vendor ID and Channel ID must be integers (empty = any)": "ID поставщика и ID канала должны быть целыми числами (пусто = любой)",
+    "1 = original price, 0 = unset (not free)": "1 = полная цена, 0 = не задано (не бесплатно)",
+    "Delete policy": "Удалить политику",
+    "Delete this policy ({{dimensions}})? The billing discount from this rule will no longer apply.": "Удалить эту политику ({{dimensions}})? Скидка на оплату по этому правилу перестанет действовать.",
+    "Group Model Limits": "Лимиты по группе и модели",
+    "Concurrency and RPM limits by group and model": "Лимиты одновременных запросов и RPM по группе и модели",
+    "Add rule": "Добавить правило",
+    "Save group model limits": "Сохранить лимиты по группе и модели",
+    "Limits apply per user within the group: with 5 concurrency for model A, every user in the group gets 5 concurrent requests for A. Model supports exact name, prefix like claude-*, or * for all; the most specific matching rule wins, and models covered by the same rule share one counter. 0 = unlimited.": "Лимиты действуют отдельно для каждого пользователя группы: при 5 одновременных запросах для модели A каждый пользователь группы получает 5 одновременных запросов к A. Модель поддерживает точное имя, префикс вида claude-* или * для всех; применяется наиболее конкретное правило, а модели одного правила используют общий счётчик. 0 = без ограничений."
   }
 }
