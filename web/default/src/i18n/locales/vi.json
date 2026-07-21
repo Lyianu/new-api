@@ -5202,11 +5202,11 @@
     "Processing fee percent": "Tỷ lệ phí xử lý",
     "Fixed fee per transaction (CNY)": "Phí cố định mỗi giao dịch (CNY)",
     "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)": "Phí phần trăm Stripe tính trên tổng số tiền, ví dụ 0.054 = 5,4% (2,9% cơ bản + 1,5% thẻ quốc tế + 1% chuyển đổi tiền tệ)",
-    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Phí cố định của Stripe mỗi giao dịch tính bằng CNY, ví dụ $0.30 ≈ 2.2"
-  },
-  "Create and manage keys for accessing the API.": "Tạo và quản lý khóa truy cập API.",
-  "Models available to your account and their pricing.": "Các mô hình khả dụng cho tài khoản của bạn và mức giá.",
-  "Add funds to your account balance.": "Nạp tiền vào số dư tài khoản của bạn.",
-  "Monthly statements of your spending.": "Bảng kê chi tiêu hằng tháng của bạn.",
-  "Your balance, credits and recent consumption at a glance.": "Số dư, hạn mức và mức tiêu thụ gần đây trong nháy mắt."
+    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Phí cố định của Stripe mỗi giao dịch tính bằng CNY, ví dụ $0.30 ≈ 2.2",
+    "Create and manage keys for accessing the API.": "Tạo và quản lý khóa truy cập API.",
+    "Models available to your account and their pricing.": "Các mô hình khả dụng cho tài khoản của bạn và mức giá.",
+    "Add funds to your account balance.": "Nạp tiền vào số dư tài khoản của bạn.",
+    "Monthly statements of your spending.": "Bảng kê chi tiêu hằng tháng của bạn.",
+    "Your balance, credits and recent consumption at a glance.": "Số dư, hạn mức và mức tiêu thụ gần đây trong nháy mắt."
+  }
 }

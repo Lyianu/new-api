@@ -5202,11 +5202,11 @@
     "Processing fee percent": "Процент комиссии",
     "Fixed fee per transaction (CNY)": "Фиксированная комиссия за транзакцию (CNY)",
     "Stripe percent fee on the gross charge, e.g. 0.054 = 5.4% (2.9% base + 1.5% international card + 1% currency conversion)": "Процентная комиссия Stripe от общей суммы, напр. 0.054 = 5,4% (2,9% база + 1,5% международная карта + 1% конвертация валюты)",
-    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Фиксированная комиссия Stripe за транзакцию в CNY, напр. $0.30 ≈ 2.2"
-  },
-  "Create and manage keys for accessing the API.": "Создавайте ключи доступа к API и управляйте ими.",
-  "Models available to your account and their pricing.": "Модели, доступные вашему аккаунту, и их тарифы.",
-  "Add funds to your account balance.": "Пополните баланс вашего аккаунта.",
-  "Monthly statements of your spending.": "Ежемесячные отчёты о ваших расходах.",
-  "Your balance, credits and recent consumption at a glance.": "Баланс, кредиты и недавнее потребление — всё на одном экране."
+    "Stripe fixed fee per transaction in CNY, e.g. $0.30 ≈ 2.2": "Фиксированная комиссия Stripe за транзакцию в CNY, напр. $0.30 ≈ 2.2",
+    "Create and manage keys for accessing the API.": "Создавайте ключи доступа к API и управляйте ими.",
+    "Models available to your account and their pricing.": "Модели, доступные вашему аккаунту, и их тарифы.",
+    "Add funds to your account balance.": "Пополните баланс вашего аккаунта.",
+    "Monthly statements of your spending.": "Ежемесячные отчёты о ваших расходах.",
+    "Your balance, credits and recent consumption at a glance.": "Баланс, кредиты и недавнее потребление — всё на одном экране."
+  }
 }
