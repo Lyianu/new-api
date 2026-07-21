@@ -27,7 +27,6 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail,
 } from '@/components/ui/sidebar'
 import { useLayout } from '@/context/layout-provider'
 import { useNotifications } from '@/hooks/use-notifications'
@@ -56,13 +55,14 @@ import { SystemBrand } from './system-brand'
  * in the registry; this component requires no changes.
  */
 export function AppSidebar() {
-  const { collapsible, variant } = useLayout()
+  const { variant } = useLayout()
   const { key, view, navGroups } = useSidebarView()
   const shouldReduce = useReducedMotion()
   const notifications = useNotifications()
 
+  // 桌面端固定展开（收缩已下线），移动端由 ui/sidebar 渲染为抽屉
   return (
-    <Sidebar collapsible={collapsible} variant={variant}>
+    <Sidebar variant={variant}>
       {/* 顶栏已移除：Logo 常驻 sidebar 头部 */}
       <SidebarHeader className='px-2 pt-2'>
         <SystemBrand />
@@ -90,9 +90,9 @@ export function AppSidebar() {
 
       {/* 原顶栏的全局操作（通知/语言/主题/账户）收敛到 sidebar 底部 */}
       <SidebarFooter className='border-sidebar-border border-t px-2 py-2'>
-        <div className='flex items-center justify-between gap-1 group-data-[collapsible=icon]:flex-col'>
+        <div className='flex items-center justify-between gap-1'>
           <ProfileDropdown />
-          <div className='flex items-center gap-1 group-data-[collapsible=icon]:flex-col'>
+          <div className='flex items-center gap-1'>
             <NotificationPopover
               open={notifications.popoverOpen}
               onOpenChange={notifications.setPopoverOpen}
@@ -108,8 +108,6 @@ export function AppSidebar() {
           </div>
         </div>
       </SidebarFooter>
-
-      <SidebarRail />
     </Sidebar>
   )
 }

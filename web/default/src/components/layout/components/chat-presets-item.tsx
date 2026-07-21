@@ -28,12 +28,6 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
@@ -113,51 +107,12 @@ function ChatMenuItem({
 }
 
 /**
- * Dropdown menu item for a single chat preset
- */
-function DropdownPresetItem({
-  preset,
-  loading,
-  onOpen,
-}: {
-  preset: ChatPreset
-  loading: boolean
-  onOpen: (preset: ChatPreset) => void | Promise<void>
-}) {
-  if (preset.type === 'web') {
-    return (
-      <DropdownMenuItem
-        render={<Link to='/chat/$chatId' params={{ chatId: preset.id }} />}
-      >
-        {preset.name}
-      </DropdownMenuItem>
-    )
-  }
-
-  return (
-    <DropdownMenuItem
-      disabled={loading}
-      onClick={() => {
-        if (!loading) void onOpen(preset)
-      }}
-    >
-      {preset.name}
-      {loading ? (
-        <Loader2 className='ml-auto h-4 w-4 animate-spin opacity-70' />
-      ) : (
-        <ExternalLink className='ml-auto h-4 w-4 opacity-70' />
-      )}
-    </DropdownMenuItem>
-  )
-}
-
-/**
  * Dynamic chat presets navigation item
  */
 export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
   const { t } = useTranslation()
   const { chatPresets, serverAddress } = useChatPresets()
-  const { state, isMobile, setOpenMobile } = useSidebar()
+  const { setOpenMobile } = useSidebar()
   const href = useLocation({ select: (location) => location.href })
   const [loadingPresetId, setLoadingPresetId] = useState<string | null>(null)
   const loadingPresetIdRef = useRef<string | null>(null)
@@ -223,33 +178,6 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
   // Don't render if no visible presets
   if (visiblePresets.length === 0) {
     return null
-  }
-
-  // Collapsed state on non-mobile - render dropdown menu
-  if (state === 'collapsed' && !isMobile) {
-    return (
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={<SidebarMenuButton tooltip={item.title} />}
-          >
-            {item.icon && <item.icon className='h-4 w-4 shrink-0' />}
-            <span className='min-w-0 flex-1 truncate'>{item.title}</span>
-            <ChevronRight className='ms-auto h-4 w-4 shrink-0 opacity-70' />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='start'>
-            {visiblePresets.map((preset) => (
-              <DropdownPresetItem
-                key={preset.id}
-                preset={preset}
-                loading={loadingPresetId === preset.id}
-                onOpen={handleOpenExternal}
-              />
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    )
   }
 
   // Expanded state - render collapsible menu

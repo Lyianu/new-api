@@ -59,7 +59,7 @@ export function SystemBrand(props: SystemBrandProps) {
               className='size-full rounded-lg object-cover'
             />
           </div>
-          <div className='grid flex-1 text-start text-sm leading-tight group-data-[collapsible=icon]:hidden'>
+          <div className='grid flex-1 text-start text-sm leading-tight'>
             <span className='truncate font-semibold'>{name}</span>
             {version && <span className='truncate text-xs'>{version}</span>}
           </div>

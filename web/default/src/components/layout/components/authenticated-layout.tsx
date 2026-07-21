@@ -24,7 +24,6 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { LayoutProvider } from '@/context/layout-provider'
-import { getCookie } from '@/lib/cookies'
 import { cn } from '@/lib/utils'
 
 import { AppSidebar } from './app-sidebar'
@@ -34,18 +33,17 @@ type AuthenticatedLayoutProps = {
 }
 
 export function AuthenticatedLayout(props: AuthenticatedLayoutProps) {
-  const defaultOpen = getCookie('sidebar_state') !== 'false'
-
   return (
     <LayoutProvider>
       {/* 控制台无顶栏：Logo 与全局操作收进 sidebar，头部高度归零 */}
       <SidebarProvider
-          defaultOpen={defaultOpen}
+          // 桌面端侧栏固定展开，不读取历史收缩 cookie
+          defaultOpen
           className='flex-col'
           style={{ '--app-header-height': '0px' } as React.CSSProperties}
         >
           <SkipToMain />
-          {/* 移动端唯一的侧栏入口（桌面端有 SidebarRail 与 ⌘B） */}
+          {/* 移动端唯一的侧栏入口（桌面端侧栏常驻） */}
           <SidebarTrigger
             variant='outline'
             className='bg-background fixed right-3 bottom-3 z-40 size-10 rounded-full shadow-md md:hidden'

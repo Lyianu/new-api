@@ -109,9 +109,10 @@ function SidebarProvider({
   )
 
   // Helper to toggle the sidebar.
+  // 桌面端侧栏固定展开（产品决策：不支持收缩），仅移动端抽屉可开合。
   const toggleSidebar = React.useCallback(() => {
-    return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open)
-  }, [isMobile, setOpen, setOpenMobile])
+    if (isMobile) setOpenMobile((open) => !open)
+  }, [isMobile, setOpenMobile])
 
   // Adds a keyboard shortcut to toggle the sidebar.
   React.useEffect(() => {
