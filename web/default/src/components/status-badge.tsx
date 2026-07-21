@@ -37,7 +37,7 @@ export const dotColorMap = {
   grey: 'bg-neutral',
   indigo: 'bg-chart-1',
   'light-blue': 'bg-info',
-  'light-green': 'bg-emerald-400',
+  'light-green': 'bg-success',
   lime: 'bg-chart-3',
   orange: 'bg-warning',
   pink: 'bg-chart-5',
@@ -61,7 +61,7 @@ export const textColorMap = {
   grey: 'text-muted-foreground',
   indigo: 'text-chart-1',
   'light-blue': 'text-info',
-  'light-green': 'text-emerald-500 dark:text-emerald-300',
+  'light-green': 'text-success',
   lime: 'text-chart-3',
   orange: 'text-warning',
   pink: 'text-chart-5',
@@ -175,7 +175,7 @@ export function StatusBadge({
         textColorMap[computedVariant],
         pulse && 'animate-pulse',
         copyable &&
-          'cursor-copy hover:brightness-95 active:scale-95 dark:hover:brightness-110',
+          'cursor-copy hover:opacity-80',
         className
       )}
       onClick={handleClick}

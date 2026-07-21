@@ -16,196 +16,57 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { Outlet, useRouterState } from '@tanstack/react-router'
-import { motion, useReducedMotion, type Variants } from 'motion/react'
+import { Outlet } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
 
-import {
-  CARD_ITEM_VARIANTS,
-  CARD_STAGGER_VARIANTS,
-  MOTION_TRANSITION,
-  MOTION_VARIANTS,
-  STAGGER_ITEM_VARIANTS,
-  STAGGER_VARIANTS,
-  TABLE_ROW_VARIANTS,
-  TABLE_STAGGER_VARIANTS,
-} from '@/lib/motion'
+// 入场动效已整体下线（简约基调：页面/卡片/表格即时呈现）。
+// 组件接口保留为纯透传，避免大面积改动调用点；后续可逐步内联移除。
 
-interface PageTransitionProps {
+interface PassthroughProps {
   children: ReactNode
   className?: string
 }
 
-export function PageTransition(props: PageTransitionProps) {
-  const shouldReduce = useReducedMotion()
-
-  if (shouldReduce) {
-    return <div className={props.className}>{props.children}</div>
-  }
-
-  return (
-    <motion.div
-      initial={MOTION_VARIANTS.pageEnter.initial}
-      animate={MOTION_VARIANTS.pageEnter.animate}
-      transition={MOTION_TRANSITION.default}
-      className={props.className}
-    >
-      {props.children}
-    </motion.div>
-  )
+export function PageTransition(props: PassthroughProps) {
+  return <div className={props.className}>{props.children}</div>
 }
 
 export function AnimatedOutlet() {
-  const shouldReduce = useReducedMotion()
-  // Key the page transition by the matched route id, not the resolved pathname.
-  // Navigating between params of the same route (e.g. dashboard tabs served by
-  // /dashboard/$section) then re-renders in place instead of remounting the
-  // route component and discarding its state (such as the selected time range).
-  const routeKey = useRouterState({
-    select: (s) => s.matches.at(-1)?.routeId ?? s.location.pathname,
-  })
-
-  if (shouldReduce) {
-    return (
-      <div className='flex min-h-0 flex-1 flex-col'>
-        <Outlet />
-      </div>
-    )
-  }
-
   return (
-    <motion.div
-      key={routeKey}
-      initial={MOTION_VARIANTS.pageEnter.initial}
-      animate={MOTION_VARIANTS.pageEnter.animate}
-      transition={MOTION_TRANSITION.fast}
-      className='flex min-h-0 flex-1 flex-col'
-    >
+    <div className='flex min-h-0 flex-1 flex-col'>
       <Outlet />
-    </motion.div>
+    </div>
   )
 }
 
-interface StaggerContainerProps {
-  children: ReactNode
-  className?: string
-  variants?: Variants
+export function StaggerContainer(props: PassthroughProps) {
+  return <div className={props.className}>{props.children}</div>
 }
 
-export function StaggerContainer(props: StaggerContainerProps) {
-  const shouldReduce = useReducedMotion()
-
-  if (shouldReduce) {
-    return <div className={props.className}>{props.children}</div>
-  }
-
-  return (
-    <motion.div
-      variants={props.variants ?? STAGGER_VARIANTS}
-      initial='initial'
-      animate='animate'
-      className={props.className}
-    >
-      {props.children}
-    </motion.div>
-  )
+export function StaggerItem(props: PassthroughProps) {
+  return <div className={props.className}>{props.children}</div>
 }
 
-interface StaggerItemProps {
-  children: ReactNode
-  className?: string
-  variants?: Variants
+export function TableStaggerContainer(props: PassthroughProps) {
+  return <tbody className={props.className}>{props.children}</tbody>
 }
 
-export function StaggerItem(props: StaggerItemProps) {
-  return (
-    <motion.div
-      variants={props.variants ?? STAGGER_ITEM_VARIANTS}
-      className={props.className}
-    >
-      {props.children}
-    </motion.div>
-  )
+export function TableStaggerRow(props: PassthroughProps) {
+  return <tr className={props.className}>{props.children}</tr>
 }
 
-export function TableStaggerContainer(props: StaggerContainerProps) {
-  const shouldReduce = useReducedMotion()
-
-  if (shouldReduce) {
-    return <>{props.children}</>
-  }
-
-  return (
-    <motion.tbody
-      variants={TABLE_STAGGER_VARIANTS}
-      initial='initial'
-      animate='animate'
-      className={props.className}
-    >
-      {props.children}
-    </motion.tbody>
-  )
+export function CardStaggerContainer(props: PassthroughProps) {
+  return <div className={props.className}>{props.children}</div>
 }
 
-export function TableStaggerRow(props: StaggerItemProps) {
-  return (
-    <motion.tr variants={TABLE_ROW_VARIANTS} className={props.className}>
-      {props.children}
-    </motion.tr>
-  )
+export function CardStaggerItem(props: PassthroughProps) {
+  return <div className={props.className}>{props.children}</div>
 }
 
-export function CardStaggerContainer(props: StaggerContainerProps) {
-  const shouldReduce = useReducedMotion()
-
-  if (shouldReduce) {
-    return <div className={props.className}>{props.children}</div>
-  }
-
-  return (
-    <motion.div
-      variants={CARD_STAGGER_VARIANTS}
-      initial='initial'
-      animate='animate'
-      className={props.className}
-    >
-      {props.children}
-    </motion.div>
-  )
-}
-
-export function CardStaggerItem(props: StaggerItemProps) {
-  return (
-    <motion.div variants={CARD_ITEM_VARIANTS} className={props.className}>
-      {props.children}
-    </motion.div>
-  )
-}
-
-interface FadeInProps {
-  children: ReactNode
-  className?: string
+interface FadeInProps extends PassthroughProps {
   delay?: number
 }
 
 export function FadeIn(props: FadeInProps) {
-  const shouldReduce = useReducedMotion()
-
-  if (shouldReduce) {
-    return <div className={props.className}>{props.children}</div>
-  }
-
-  return (
-    <motion.div
-      initial={MOTION_VARIANTS.fadeIn.initial}
-      animate={MOTION_VARIANTS.fadeIn.animate}
-      transition={{
-        ...MOTION_TRANSITION.default,
-        delay: props.delay,
-      }}
-      className={props.className}
-    >
-      {props.children}
-    </motion.div>
-  )
+  return <div className={props.className}>{props.children}</div>
 }

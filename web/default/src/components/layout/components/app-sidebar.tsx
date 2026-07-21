@@ -16,8 +16,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
-
 import { LanguageSwitcher } from '@/components/language-switcher'
 import { NotificationPopover } from '@/components/notification-popover'
 import { ProfileDropdown } from '@/components/profile-dropdown'
@@ -31,7 +29,6 @@ import {
 import { useLayout } from '@/context/layout-provider'
 import { useNotifications } from '@/hooks/use-notifications'
 import { useSidebarView } from '@/hooks/use-sidebar-view'
-import { MOTION_TRANSITION, MOTION_VARIANTS } from '@/lib/motion'
 
 import { NavGroup } from './nav-group'
 import { SidebarViewHeader } from './sidebar-view-header'
@@ -57,7 +54,6 @@ import { SystemBrand } from './system-brand'
 export function AppSidebar() {
   const { variant } = useLayout()
   const { key, view, navGroups } = useSidebarView()
-  const shouldReduce = useReducedMotion()
   const notifications = useNotifications()
 
   // 桌面端固定展开（收缩已下线），移动端由 ui/sidebar 渲染为抽屉
@@ -70,22 +66,12 @@ export function AppSidebar() {
       {view && <SidebarViewHeader view={view} />}
 
       <SidebarContent className='py-2'>
-        <AnimatePresence mode='wait' initial={false}>
-          <motion.div
-            key={key}
-            initial={
-              shouldReduce ? false : MOTION_VARIANTS.sidebarSlide.initial
-            }
-            animate={MOTION_VARIANTS.sidebarSlide.animate}
-            exit={shouldReduce ? undefined : MOTION_VARIANTS.sidebarSlide.exit}
-            transition={MOTION_TRANSITION.fast}
-            className='flex flex-col'
-          >
-            {navGroups.map((props) => (
-              <NavGroup key={props.id || props.title} {...props} />
-            ))}
-          </motion.div>
-        </AnimatePresence>
+        {/* 视图切换即时呈现（滑动动效已下线） */}
+        <div key={key} className='flex flex-col'>
+          {navGroups.map((props) => (
+            <NavGroup key={props.id || props.title} {...props} />
+          ))}
+        </div>
       </SidebarContent>
 
       {/* 原顶栏的全局操作（通知/语言/主题/账户）收敛到 sidebar 底部 */}

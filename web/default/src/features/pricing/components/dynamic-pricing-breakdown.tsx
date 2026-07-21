@@ -199,7 +199,7 @@ export function DynamicPricingBreakdown({
       <section className={cn('min-w-0', !compact && 'py-4')}>
         {!compact && (
           <div className='mb-3 flex items-center gap-2'>
-            <span className='inline-flex size-6 items-center justify-center rounded-lg bg-amber-100 text-amber-700 shadow-sm dark:bg-amber-500/20 dark:text-amber-300'>
+            <span className='inline-flex size-6 items-center justify-center bg-warning/10 text-warning rounded-lg'>
               <TagIcon className='size-3.5' />
             </span>
             <div>
@@ -234,7 +234,7 @@ export function DynamicPricingBreakdown({
     <section className={cn('min-w-0', !compact && 'py-3 sm:py-4')}>
       {!compact && (
         <div className='mb-3 flex items-start gap-2 sm:mb-4'>
-          <span className='mt-0.5 inline-flex size-6 items-center justify-center rounded-lg bg-amber-100 text-amber-700 shadow-sm dark:bg-amber-500/20 dark:text-amber-300'>
+          <span className='mt-0.5 inline-flex size-6 items-center justify-center bg-warning/10 text-warning rounded-lg'>
             <TagIcon className='size-3.5' />
           </span>
           <div>
@@ -271,13 +271,13 @@ export function DynamicPricingBreakdown({
                   key={`tier-mobile-${i}`}
                   className={cn(
                     'rounded-md border p-2',
-                    isMatched && 'border-emerald-500/40 bg-emerald-500/10'
+                    isMatched && 'border-success/40 bg-success/10'
                   )}
                 >
                   <div className='mb-1.5 flex flex-wrap items-center gap-1.5'>
                     <Badge
                       variant='secondary'
-                      className='bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300'
+                      className='bg-muted text-foreground'
                     >
                       {tier.label || t('Default')}
                     </Badge>
@@ -339,7 +339,7 @@ export function DynamicPricingBreakdown({
                 normalizeTierLabel(tier.label) === normalizedMatchedTierLabel
               return cn(
                 isMatched &&
-                  'bg-emerald-50/70 hover:bg-emerald-50/70 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/10'
+                  'bg-success/5 hover:bg-success/5'
               )
             }}
             columns={[
@@ -362,7 +362,7 @@ export function DynamicPricingBreakdown({
                       <div className='flex flex-wrap items-center gap-1.5'>
                         <Badge
                           variant='secondary'
-                          className='bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300'
+                          className='bg-muted text-foreground'
                         >
                           {tier.label || t('Default')}
                         </Badge>

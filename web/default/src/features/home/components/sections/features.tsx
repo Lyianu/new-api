@@ -74,7 +74,7 @@ export function Features(_props: FeaturesProps) {
       visual: (
         <div className='mt-4 flex items-center justify-center'>
           <div className='relative'>
-            <div className='flex size-16 items-center justify-center rounded-2xl border-border bg-muted/40 border'>
+            <div className='flex size-16 items-center justify-center rounded-xl border-border bg-muted/40 border'>
               <Shield
                 className='text-muted-foreground size-7'
                 strokeWidth={1.5}
@@ -141,7 +141,7 @@ export function Features(_props: FeaturesProps) {
             {['API', 'SDK', 'CLI', 'Docs'].map((n) => (
               <div
                 key={n}
-                className='border-background from-muted to-muted/60 text-muted-foreground flex size-8 items-center justify-center rounded-full border-2 bg-gradient-to-br text-[9px] font-bold'
+                className='border-background bg-muted text-muted-foreground flex size-8 items-center justify-center rounded-full border text-[9px] font-medium'
               >
                 {n}
               </div>
