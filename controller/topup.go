@@ -95,7 +95,18 @@ func GetTopUpInfo(c *gin.Context) {
 		}
 	}
 
+	// 用户所在分组的充值倍率：统一只作用于收款侧（应付 = 额度 × 倍率 × 折扣），
+	// 下发给前端，保证预设卡片报价与实际扣款同口径
+	topupGroupRatio := 1.0
+	if userGroup, err := model.GetUserGroup(c.GetInt("id"), false); err == nil {
+		topupGroupRatio = common.GetTopupGroupRatio(userGroup)
+		if topupGroupRatio <= 0 {
+			topupGroupRatio = 1
+		}
+	}
+
 	data := gin.H{
+		"topup_group_ratio":                topupGroupRatio,
 		"enable_online_topup":              isEpayTopUpEnabled(),
 		"enable_stripe_topup":              isStripeTopUpEnabled(),
 		"enable_creem_topup":               isCreemTopUpEnabled(),

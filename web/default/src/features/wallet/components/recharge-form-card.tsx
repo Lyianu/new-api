@@ -123,6 +123,13 @@ export function RechargeFormCard({
 }: RechargeFormCardProps) {
   const { t } = useTranslation()
   const [localAmount, setLocalAmount] = useState(topupAmount.toString())
+  // 用户分组充值倍率（后端下发，只作用于收款侧）：预设卡片报价必须乘上它，
+  // 否则倍率≠1 的分组会看到与实际扣款不符的价格
+  const groupRatio =
+    typeof topupInfo?.topup_group_ratio === 'number' &&
+    topupInfo.topup_group_ratio > 0
+      ? topupInfo.topup_group_ratio
+      : 1
 
   useEffect(() => {
     setLocalAmount(topupAmount.toString())
@@ -131,7 +138,7 @@ export function RechargeFormCard({
   // 后端充值金额是整数（元，int64）：只放行数字字符，保证输入框显示值
   // 与实际下单值严格一致（不允许出现小数被截断、负号残留等偏差）
   const handleAmountChange = (value: string) => {
-    const digits = value.replace(/\D/g, '')
+    const digits = value.replaceAll(/\D/g, '')
     setLocalAmount(digits)
     onTopupAmountChange(digits === '' ? 0 : Number.parseInt(digits, 10))
   }
@@ -232,9 +239,11 @@ export function RechargeFormCard({
                         preset.discount ||
                         topupInfo?.discount?.[preset.value] ||
                         1.0
+                      // Stripe 收款价 = 额度 × 分组倍率 × 折扣（再 gross-up）；
+                      // 易支付等通道还要乘价格系数 priceRatio（status.price）
                       const base = calculatePresetPricing(
                         preset.value,
-                        stripeOnly ? 1 : priceRatio,
+                        (stripeOnly ? 1 : priceRatio) * groupRatio,
                         discount
                       )
                       // Stripe 专属模式：折后净额再 gross-up，与实际扣款口径一致

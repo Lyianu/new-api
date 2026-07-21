@@ -4,6 +4,7 @@ import (
 	"math"
 	"testing"
 
+	"github.com/QuantumNous/new-api/common"
 	"github.com/QuantumNous/new-api/model"
 	"github.com/QuantumNous/new-api/setting"
 	"github.com/QuantumNous/new-api/setting/operation_setting"
@@ -100,4 +101,18 @@ func TestGetStripePayMoneySmallAmountCoversFixedFee(t *testing.T) {
 
 	received := pay - (pay*0.054 + 2.2)
 	require.GreaterOrEqual(t, received, 5.0-1e-9)
+}
+
+// 充值分组倍率统一只作用于收款侧：入账不随倍率变化，应付按倍率加价
+// （与易支付/Waffo 路径同语义；防止回归到上游"双边乘"的矛盾行为）。
+func TestTopupGroupRatioAppliesToPaySideOnly(t *testing.T) {
+	setupCnyTopup(t, operation_setting.QuotaDisplayTypeCNY)
+	require.NoError(t, common.UpdateTopupGroupRatioByJSONString(`{"default":1,"vip":1.2}`))
+
+	user := model.User{Group: "vip"}
+	require.InDelta(t, 100.0, GetChargedAmount(100, user), 1e-6, "入账恒为请求额度")
+	require.InDelta(t, 120.0, getStripePayMoney(100, "vip"), 1e-9, "应付按倍率加价")
+	// 手续费叠加在加价后的净额上：gross-up(120)
+	setStripeFee(t, 0.054, 2.2)
+	require.InDelta(t, math.Ceil((120+2.2)/0.946*100)/100, getStripePayMoney(100, "vip"), 1e-9)
 }

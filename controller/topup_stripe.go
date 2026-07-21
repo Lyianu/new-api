@@ -406,15 +406,14 @@ func genStripeLink(referenceId string, customerId string, email string, payCents
 	return result.URL, nil
 }
 
-// GetChargedAmount 返回 Stripe 订单入账的人民币额度基数（含充值分组赠送倍率）。
+// GetChargedAmount 返回 Stripe 订单入账的人民币额度基数。
 // 入账 quota = 该值 × QuotaPerUnit（见 model.Recharge）。CNY 本位下先把展示金额折算为人民币。
-func GetChargedAmount(count float64, user model.User) float64 {
-	topUpGroupRatio := common.GetTopupGroupRatio(user.Group)
-	if topUpGroupRatio == 0 {
-		topUpGroupRatio = 1
-	}
-	cny := topupAmountToCny(int64(count)).InexactFloat64()
-	return cny * topUpGroupRatio
+//
+// 充值分组倍率（TopupGroupRatio）统一只作用于收款侧（见 getStripePayMoney），
+// 入账恒为请求额度本身 —— 与易支付/Waffo 路径语义一致：倍率>1 即该分组充值加价。
+// （上游 new-api 的 Stripe 路径曾把倍率同时乘进入账，与其余通道相互矛盾，已在此收敛。）
+func GetChargedAmount(count float64, _ model.User) float64 {
+	return topupAmountToCny(int64(count)).InexactFloat64()
 }
 
 // stripeGrossUp 把净额 N 反推为应向客户收取的总额 P = (N + F) / (1 - p)。

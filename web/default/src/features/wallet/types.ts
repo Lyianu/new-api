@@ -120,6 +120,8 @@ export interface WaffoPayMethod {
  * Topup configuration information
  */
 export interface TopupInfo {
+  /** 当前用户所在分组的充值倍率（仅作用于收款侧：应付 = 额度 × 倍率 × 折扣） */
+  topup_group_ratio?: number
   /** Whether online topup is enabled */
   enable_online_topup: boolean
   /** Whether Stripe topup is enabled */
