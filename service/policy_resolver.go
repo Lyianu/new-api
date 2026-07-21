@@ -50,7 +50,7 @@ type PolicyContext struct {
 
 // ResolvedPolicy 是解析结果。零值即系统默认（不打折）。
 // 注意：客户策略现仅承载折扣；并发/RPM 限流已改为「分组×模型」配置
-//（见 setting.GroupModelLimit / middleware.GroupModelLimit），不再按用户解析。
+// （见 setting.GroupModelLimit / middleware.GroupModelLimit），不再按用户解析。
 type ResolvedPolicy struct {
 	DiscountRatio float64 // 1.0 = 原价（再乘在分组价之上）
 }
