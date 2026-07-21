@@ -62,9 +62,11 @@ export function PaymentConfirmDialog({
   const hasDiscount = discountRate > 0 && discountRate < 1 && paymentAmount > 0
   const originalAmount = hasDiscount ? paymentAmount / discountRate : 0
   const discountAmount = hasDiscount ? originalAmount - paymentAmount : 0
-  // 应付高于到账额度的部分即通道手续费（如 Stripe 收费系数），明示给用户
+  // 仅 Stripe 通道的差额是真正的手续费；其他通道（价格系数/分组倍率产生的
+  // 差额）不能标注为"手续费"，否则与实际计费性质不符
+  const isStripe = paymentMethod?.type === 'stripe'
   const feeAmount = paymentAmount - topupAmount
-  const hasFee = topupAmount > 0 && feeAmount > 0.005
+  const hasFee = isStripe && topupAmount > 0 && feeAmount > 0.005
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>

@@ -32,6 +32,7 @@ import {
 import { IconBadge } from '@/components/ui/icon-badge'
 import { Switch } from '@/components/ui/switch'
 import { api } from '@/lib/api'
+import { ROLE } from '@/lib/roles'
 import { useAuthStore } from '@/stores/auth-store'
 
 type SidebarModuleConfig = {
@@ -54,35 +55,46 @@ export function SidebarModulesCard() {
   const [config, setConfig] = useState<SidebarModulesConfig>({})
   const currentUser = useAuthStore((s) => s.auth.user)
   const setUser = useAuthStore((s) => s.auth.setUser)
+  // 与 use-sidebar-data 的 requiredRole 对齐：Playground/Chat/仪表盘/绘图日志/
+  // 任务日志仅管理员可见，普通用户配置这些开关不会有任何效果，因此不展示
+  const isAdmin = (currentUser?.role ?? 0) >= ROLE.ADMIN
 
   const sectionDefs: SectionDef[] = [
-    {
-      key: 'chat',
-      title: t('Chat Area'),
-      description: t('Playground and chat functions'),
-      modules: [
-        {
-          key: 'playground',
-          title: t('Playground'),
-          description: t('AI model testing environment'),
-        },
-        {
-          key: 'chat',
-          title: t('Chat'),
-          description: t('Chat session management'),
-        },
-      ],
-    },
+    ...(isAdmin
+      ? [
+          {
+            key: 'chat',
+            title: t('Chat Area'),
+            description: t('Playground and chat functions'),
+            modules: [
+              {
+                key: 'playground',
+                title: t('Playground'),
+                description: t('AI model testing environment'),
+              },
+              {
+                key: 'chat',
+                title: t('Chat'),
+                description: t('Chat session management'),
+              },
+            ],
+          },
+        ]
+      : []),
     {
       key: 'console',
       title: t('Console Area'),
       description: t('Data management and log viewing'),
       modules: [
-        {
-          key: 'detail',
-          title: t('Dashboard'),
-          description: t('System data statistics'),
-        },
+        ...(isAdmin
+          ? [
+              {
+                key: 'detail',
+                title: t('Dashboard'),
+                description: t('System data statistics'),
+              },
+            ]
+          : []),
         {
           key: 'token',
           title: t('Token Management'),
@@ -93,16 +105,20 @@ export function SidebarModulesCard() {
           title: t('Usage Logs'),
           description: t('API usage records'),
         },
-        {
-          key: 'midjourney',
-          title: t('Drawing Logs'),
-          description: t('Drawing task records'),
-        },
-        {
-          key: 'task',
-          title: t('Task Logs'),
-          description: t('System task records'),
-        },
+        ...(isAdmin
+          ? [
+              {
+                key: 'midjourney',
+                title: t('Drawing Logs'),
+                description: t('Drawing task records'),
+              },
+              {
+                key: 'task',
+                title: t('Task Logs'),
+                description: t('System task records'),
+              },
+            ]
+          : []),
       ],
     },
     {

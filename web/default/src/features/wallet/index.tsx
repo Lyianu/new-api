@@ -20,6 +20,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { Receipt } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
 import { SectionPageLayout } from '@/components/layout'
 import { Button } from '@/components/ui/button'
@@ -115,9 +116,16 @@ export function Wallet() {
     setPaymentLoading(method.type)
 
     try {
-      // Validate minimum topup
-      const minTopup = getMinTopupAmount(topupInfo)
+      // 校验起充下限：全局最低充值与该支付方式自身的 min_topup 取较大者，
+      // 不满足时必须显式报错（静默 return 会让用户点了支付却毫无反馈）
+      const minTopup = Math.max(
+        getMinTopupAmount(topupInfo),
+        method.min_topup || 0
+      )
       if (topupAmount < minTopup) {
+        toast.error(
+          t('Minimum topup amount: {{amount}}', { amount: minTopup })
+        )
         return
       }
 

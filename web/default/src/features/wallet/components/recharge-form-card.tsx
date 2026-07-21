@@ -128,12 +128,12 @@ export function RechargeFormCard({
     setLocalAmount(topupAmount.toString())
   }, [topupAmount])
 
+  // 后端充值金额是整数（元，int64）：只放行数字字符，保证输入框显示值
+  // 与实际下单值严格一致（不允许出现小数被截断、负号残留等偏差）
   const handleAmountChange = (value: string) => {
-    setLocalAmount(value)
-    const numValue = Number.parseInt(value) || 0
-    if (numValue >= 0) {
-      onTopupAmountChange(numValue)
-    }
+    const digits = value.replace(/\D/g, '')
+    setLocalAmount(digits)
+    onTopupAmountChange(digits === '' ? 0 : Number.parseInt(digits, 10))
   }
 
   const hasConfigurableTopup =
@@ -163,7 +163,10 @@ export function RechargeFormCard({
   const hasStripeFee = feePercent > 0 || feeFixed > 0
   // 提示文案用的展示值：0.054 → 5.4
   const feePercentDisplay = Number((feePercent * 100).toFixed(2))
-  const stripeBelowMin = (stripeMethod?.min_topup || 0) > topupAmount
+  // 起充下限取"全局最低充值"与"Stripe 通道最低充值"的较大者，与
+  // 支付入口的校验口径保持一致（避免按钮可点但提交被静默拦下）
+  const stripeMinTopup = Math.max(minTopup, stripeMethod?.min_topup || 0)
+  const stripeBelowMin = topupAmount < stripeMinTopup
 
   if (loading) {
     return (
@@ -296,10 +299,11 @@ export function RechargeFormCard({
                 <div className='grid grid-cols-[minmax(0,1fr)_minmax(110px,0.55fr)] gap-2 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center'>
                   <Input
                     id='topup-amount'
-                    type='number'
+                    type='text'
+                    inputMode='numeric'
+                    autoComplete='off'
                     value={localAmount}
                     onChange={(e) => handleAmountChange(e.target.value)}
-                    min={minTopup}
                     placeholder={t('Minimum topup amount: {{amount}}', {
                       amount: minTopup,
                     })}
@@ -328,7 +332,7 @@ export function RechargeFormCard({
                     title={
                       stripeBelowMin
                         ? t('Minimum topup amount: {{amount}}', {
-                            amount: stripeMethod.min_topup,
+                            amount: stripeMinTopup,
                           })
                         : undefined
                     }

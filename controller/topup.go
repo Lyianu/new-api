@@ -308,6 +308,14 @@ func UnlockOrder(tradeNo string) {
 	createLock.Unlock()
 }
 
+// EpayNotify 处理易支付回调。
+//
+// 警示（Cerberus）：我们不使用易支付，此路径仅为保留上游功能而存在。
+// 该实现的入账不是数据库事务：LockOrder 是进程内 sync.Map 锁，多副本部署下
+// 两个实例同时收到重复回调会各自读到 Pending 状态并双重入账；且订单状态更新与
+// IncreaseUserQuota 是两次独立写，中途失败会造成状态不一致。
+// 若未来要启用易支付，必须先仿照 Stripe/Waffo 路径（model.Recharge：
+// 事务 + lockForUpdate 行锁 + Pending 状态门）重写此处的入账逻辑。
 func EpayNotify(c *gin.Context) {
 	if !isEpayWebhookEnabled() {
 		logger.LogWarn(c.Request.Context(), fmt.Sprintf("易支付 webhook 被拒绝 reason=webhook_disabled path=%q client_ip=%s", c.Request.RequestURI, c.ClientIP()))

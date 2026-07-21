@@ -112,7 +112,6 @@ export type SiteSettings = {
   SystemName: string
   Logo: string
   Footer: string
-  About: string
   HomePageContent: string
   ServerAddress: string
   'legal.user_agreement': string
@@ -330,7 +329,6 @@ export type BillingSettings = {
 }
 
 export type OperationsSettings = {
-  DefaultCollapseSidebar: boolean
   DemoSiteEnabled: boolean
   SelfUseModeEnabled: boolean
   QuotaRemindThreshold: string
