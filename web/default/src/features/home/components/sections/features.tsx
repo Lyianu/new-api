@@ -18,14 +18,14 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { useTranslation } from 'react-i18next'
 
-import { AnimateInView } from '@/components/animate-in-view'
+import { LineReveal, Reveal } from '../../motion/primitives'
 
 interface FeaturesProps {
   className?: string
 }
 
-// 省心段：sticky 布局——左侧"一把钥匙"卡片钉在视口中，
-// 右侧三段文案依次滚过。滚动本身成为叙事节奏（Apple 常用手法）。
+// 省心段：sticky 布局——左侧"一把钥匙"卡片钉在视口中，右侧三段文案
+// 依次滚过。滚动本身成为叙事节奏。
 
 function KeyCard() {
   const { t } = useTranslation()
@@ -53,9 +53,7 @@ function KeyCard() {
             <span>claude-sonnet-5</span>
             <span>claude-opus-4-8</span>
             <span>gpt-5</span>
-            <span>gpt-image</span>
             <span>gemini-2.5-pro</span>
-            <span>deepseek-v3</span>
             <span className='text-muted-foreground/50'>+ 40</span>
           </div>
         </div>
@@ -93,34 +91,30 @@ export function Features(_props: FeaturesProps) {
   ]
 
   return (
-    <section className='relative z-10 px-6 py-8 md:py-16'>
-      <div className='mx-auto max-w-6xl'>
-        <AnimateInView className='max-w-2xl'>
-          <h2 className='text-[clamp(1.75rem,3.6vw,2.75rem)] leading-[1.15] font-semibold tracking-[-0.025em]'>
-            {t('Everything between you and the model, handled.')}
-          </h2>
-        </AnimateInView>
+    <section className='relative z-10 px-6 py-16 md:py-24'>
+      <div className='mx-auto max-w-5xl'>
+        <h2 className='max-w-2xl text-[clamp(1.85rem,4vw,3rem)] leading-[1.12] font-semibold tracking-[-0.03em]'>
+          <LineReveal>{t('Everything between you')}</LineReveal>
+          <LineReveal delay={0.08}>{t('and the model, handled.')}</LineReveal>
+        </h2>
 
-        <div className='mt-14 grid gap-16 md:mt-20 lg:grid-cols-2 lg:gap-20'>
-          {/* 左：钥匙卡（lg 起 sticky） */}
+        <div className='mt-16 grid gap-16 md:mt-24 lg:grid-cols-2 lg:gap-20'>
           <div className='lg:self-start'>
-            <div className='lg:sticky lg:top-32'>
-              <AnimateInView animation='fade-up'>
+            <div className='lg:sticky lg:top-28'>
+              <Reveal>
                 <KeyCard />
-              </AnimateInView>
+              </Reveal>
             </div>
           </div>
 
-          {/* 右：三段叙事，各占一定纵深，滚动经过 sticky 卡片 */}
           <div>
             {points.map((p, i) => (
-              <AnimateInView
+              <Reveal
                 key={p.title}
-                animation='fade-up'
                 className={
                   i === 0
-                    ? 'pb-16 lg:pb-24'
-                    : 'border-border/70 border-t pt-16 pb-16 lg:pt-20 lg:pb-24'
+                    ? 'pb-16 lg:pb-28'
+                    : 'border-border/70 border-t pt-16 pb-16 lg:pt-24 lg:pb-28'
                 }
               >
                 <h3 className='max-w-md text-[22px] leading-snug font-semibold tracking-[-0.015em]'>
@@ -129,7 +123,7 @@ export function Features(_props: FeaturesProps) {
                 <p className='text-muted-foreground mt-4 max-w-md text-[15px] leading-[1.85]'>
                   {p.desc}
                 </p>
-              </AnimateInView>
+              </Reveal>
             ))}
           </div>
         </div>

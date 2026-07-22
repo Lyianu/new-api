@@ -18,10 +18,10 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { useTranslation } from 'react-i18next'
 
-import { AnimateInView } from '@/components/animate-in-view'
+import { LineReveal, Reveal, Stagger, StaggerItem } from '../../motion/primitives'
 
-// 接入段：三步横排在上，真实可跑的代码在下。
-// 代码是给开发者的最后一锤——base_url 用当前站点，复制即用。
+// 接入段：三步横排在上，真实可跑的代码在下。代码 base_url 取当前域名，
+// 复制即用。
 
 export function HowItWorks() {
   const { t } = useTranslation()
@@ -46,20 +46,16 @@ export function HowItWorks() {
   ]
 
   return (
-    <section className='relative z-10 px-6 py-8 md:py-16'>
-      <div className='mx-auto max-w-6xl'>
-        <AnimateInView className='max-w-2xl'>
-          <h2 className='text-[clamp(1.75rem,3.6vw,2.75rem)] leading-[1.15] font-semibold tracking-[-0.025em]'>
-            {t('Three steps to get started')}
-          </h2>
-        </AnimateInView>
+    <section className='relative z-10 px-6 py-16 md:py-24'>
+      <div className='mx-auto max-w-5xl'>
+        <h2 className='max-w-2xl text-[clamp(1.85rem,4vw,3rem)] leading-[1.12] font-semibold tracking-[-0.03em]'>
+          <LineReveal>{t('Three steps to get started')}</LineReveal>
+        </h2>
 
-        <div className='mt-12 grid gap-x-10 gap-y-8 md:mt-16 md:grid-cols-3'>
+        <Stagger className='mt-14 grid gap-x-10 gap-y-8 md:mt-20 md:grid-cols-3'>
           {steps.map((s, i) => (
-            <AnimateInView
+            <StaggerItem
               key={s.title}
-              delay={i * 90}
-              animation='fade-up'
               className='border-border/70 border-t pt-6'
             >
               <span className='text-muted-foreground/40 text-[13px] font-medium tabular-nums'>
@@ -71,15 +67,11 @@ export function HowItWorks() {
               <p className='text-muted-foreground mt-2 text-[14px] leading-[1.75]'>
                 {s.desc}
               </p>
-            </AnimateInView>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
 
-        <AnimateInView
-          animation='fade-up'
-          delay={120}
-          className='mx-auto mt-14 max-w-3xl md:mt-20'
-        >
+        <Reveal delay={0.1} className='mx-auto mt-16 max-w-3xl md:mt-24'>
           <div className='border-border/80 bg-card overflow-hidden rounded-2xl border shadow-[0_1px_1px_rgb(0_0_0/0.02),0_8px_16px_-8px_rgb(0_0_0/0.06),0_28px_56px_-24px_rgb(0_0_0/0.1)]'>
             <div className='border-border/60 text-muted-foreground/60 flex items-center justify-between border-b px-5 py-3 font-mono text-[11px]'>
               <span>main.py</span>
@@ -119,7 +111,7 @@ export function HowItWorks() {
               </code>
             </pre>
           </div>
-        </AnimateInView>
+        </Reveal>
       </div>
     </section>
   )

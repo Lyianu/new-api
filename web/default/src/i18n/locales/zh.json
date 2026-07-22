@@ -5296,6 +5296,11 @@
     "New version published": "新版本已发布",
     "Failed to publish": "发布失败",
     "Title and content are required": "标题与正文均为必填",
-    "Blocking": "是否阻断"
+    "Blocking": "是否阻断",
+    "Read the docs": "查看文档",
+    "Everything between you": "你与模型之间的一切，",
+    "and the model, handled.": "都替你打点好。",
+    "The frontier": "顶级模型，",
+    "is one key away.": "一钥之遥。"
   }
 }

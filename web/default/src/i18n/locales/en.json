@@ -5296,6 +5296,11 @@
     "New version published": "New version published",
     "Failed to publish": "Failed to publish",
     "Title and content are required": "Title and content are required",
-    "Blocking": "Blocking"
+    "Blocking": "Blocking",
+    "Read the docs": "Read the docs",
+    "Everything between you": "Everything between you",
+    "and the model, handled.": "and the model, handled.",
+    "The frontier": "The frontier",
+    "is one key away.": "is one key away."
   }
 }

@@ -18,10 +18,10 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { useTranslation } from 'react-i18next'
 
-import { AnimateInView } from '@/components/animate-in-view'
+import { LineReveal, Reveal, Stagger, StaggerItem } from '../../motion/primitives'
 
-// 立场段：一屏只讲一句话——绝不掺水。
-// 大字宣言承担全部视觉，三条事实用细线目录收尾，不配任何图形。
+// 立场段：一屏一句大字宣言——绝不掺水。行遮罩揭示承担全部视觉，
+// 三条事实以交错揭示收尾，不配任何图形。
 
 export function Provenance() {
   const { t } = useTranslation()
@@ -42,42 +42,39 @@ export function Provenance() {
   ]
 
   return (
-    <section className='relative z-10 px-6 py-28 md:py-40'>
-      <div className='mx-auto max-w-6xl'>
-        <AnimateInView className='mx-auto max-w-4xl text-center'>
-          <h2 className='text-[clamp(1.9rem,4.5vw,3.25rem)] leading-[1.15] font-semibold tracking-[-0.025em] text-balance'>
-            {t('The model you pay for')}
-            <br />
-            <span className='text-muted-foreground/70'>
+    <section className='relative z-10 px-6 py-32 md:py-48'>
+      <div className='mx-auto max-w-5xl'>
+        <div className='mx-auto max-w-3xl text-center'>
+          <h2 className='text-[clamp(2rem,5vw,3.5rem)] leading-[1.12] font-semibold tracking-[-0.03em]'>
+            <LineReveal>{t('The model you pay for')}</LineReveal>
+            <LineReveal delay={0.1} className='text-muted-foreground/60'>
               {t('is the model you get.')}
-            </span>
+            </LineReveal>
           </h2>
-          <p className='text-muted-foreground mx-auto mt-8 max-w-xl text-[15px] leading-[1.85] md:text-[16px]'>
-            {t(
-              'Many resellers quietly substitute cheaper models for the ones you ordered. We operate our own first-party supply for every API we sell — there is no third party in the chain, and nowhere for substitution to hide.'
-            )}
-          </p>
-        </AnimateInView>
-
-        <div className='mx-auto mt-20 max-w-5xl md:mt-28'>
-          <div className='grid gap-x-10 md:grid-cols-3'>
-            {facts.map((f, i) => (
-              <AnimateInView
-                key={f.title}
-                delay={i * 90}
-                animation='fade-up'
-                className='border-border/70 border-t pt-6 pb-4'
-              >
-                <h3 className='text-[15px] font-semibold tracking-tight'>
-                  {f.title}
-                </h3>
-                <p className='text-muted-foreground mt-2 text-[14px] leading-[1.75]'>
-                  {f.desc}
-                </p>
-              </AnimateInView>
-            ))}
-          </div>
+          <Reveal delay={0.2}>
+            <p className='text-muted-foreground mx-auto mt-8 max-w-xl text-[15px] leading-[1.85] md:text-[16px]'>
+              {t(
+                'Many resellers quietly substitute cheaper models for the ones you ordered. We operate our own first-party supply for every API we sell — there is no third party in the chain, and nowhere for substitution to hide.'
+              )}
+            </p>
+          </Reveal>
         </div>
+
+        <Stagger className='mx-auto mt-24 grid max-w-5xl gap-x-10 md:mt-32 md:grid-cols-3'>
+          {facts.map((f) => (
+            <StaggerItem
+              key={f.title}
+              className='border-border/70 border-t pt-6 pb-4'
+            >
+              <h3 className='text-[15px] font-semibold tracking-tight'>
+                {f.title}
+              </h3>
+              <p className='text-muted-foreground mt-2 text-[14px] leading-[1.75]'>
+                {f.desc}
+              </p>
+            </StaggerItem>
+          ))}
+        </Stagger>
       </div>
     </section>
   )
