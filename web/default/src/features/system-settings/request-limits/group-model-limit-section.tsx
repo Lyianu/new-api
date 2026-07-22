@@ -34,11 +34,19 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 
 import { SettingsForm } from '../components/settings-form-layout'
 import { SettingsPageFormActions } from '../components/settings-page-context'
 import { SettingsSection } from '../components/settings-section'
+import { useGroups } from '../hooks/use-groups'
 import { useUpdateOption } from '../hooks/use-update-option'
 
 // 分组×模型限流：JSON 形如
@@ -123,6 +131,9 @@ function GroupModelLimitVisualEditor({
   onChange: (value: string) => void
 }) {
   const { t } = useTranslation()
+  // 分组从系统分组列表中选择，避免手输出错；已保存但列表中不存在的
+  // 分组名（如分组被删除）仍展示，避免打开编辑器就丢配置
+  const { groups } = useGroups()
   const [rows, setRows] = useState<FlatRule[]>(() => parseToFlatRules(value))
 
   // 外部值变化（如表单 reset / JSON 模式编辑后切回）时重建行
@@ -162,12 +173,23 @@ function GroupModelLimitVisualEditor({
               key={index}
               className='grid grid-cols-[1fr_1.4fr_1fr_1fr_auto] items-center gap-2 px-3 py-2'
             >
-              <Input
-                value={row.group}
-                placeholder='default'
-                onChange={(e) => setRow(index, { group: e.target.value })}
-                className='h-8'
-              />
+              <Select
+                value={row.group || undefined}
+                onValueChange={(v) => setRow(index, { group: v ?? '' })}
+              >
+                <SelectTrigger className='h-8 w-full'>
+                  <SelectValue placeholder={t('Select a group')} />
+                </SelectTrigger>
+                <SelectContent alignItemWithTrigger={false}>
+                  {[...new Set([...groups, row.group])]
+                    .filter(Boolean)
+                    .map((g) => (
+                      <SelectItem key={g} value={g}>
+                        {g}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
               <Input
                 value={row.model}
                 placeholder='claude-*'

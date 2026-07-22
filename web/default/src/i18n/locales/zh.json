@@ -5207,7 +5207,7 @@
     "1 = original price, 0 = unset (not free)": "1 = 原价，0 = 未设置（不是免费）",
     "Delete policy": "删除策略",
     "Delete this policy ({{dimensions}})? The billing discount from this rule will no longer apply.": "确定删除该策略（{{dimensions}}）？该规则的计费折扣将不再生效。",
-    "Group Model Limits": "分组模型限流",
+    "Group Model Limits": "分组并发与 RPM 限制",
     "Concurrency and RPM limits by group and model": "按分组 × 模型配置并发与 RPM 上限",
     "Add rule": "添加规则",
     "Save group model limits": "保存分组模型限流",

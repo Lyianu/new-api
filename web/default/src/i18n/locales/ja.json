@@ -5207,7 +5207,7 @@
     "1 = original price, 0 = unset (not free)": "1 = 定価、0 = 未設定（無料ではありません）",
     "Delete policy": "ポリシーを削除",
     "Delete this policy ({{dimensions}})? The billing discount from this rule will no longer apply.": "このポリシー（{{dimensions}}）を削除しますか？このルールの課金割引は適用されなくなります。",
-    "Group Model Limits": "グループ別モデル制限",
+    "Group Model Limits": "グループ別同時実行数・RPM 制限",
     "Concurrency and RPM limits by group and model": "グループ × モデル単位の同時実行数と RPM 上限",
     "Add rule": "ルールを追加",
     "Save group model limits": "グループ別モデル制限を保存",

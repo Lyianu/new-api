@@ -34,6 +34,15 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
+import { useGroups } from '../hooks/use-groups'
 
 const rateLimitDialogSchema = z.object({
   groupName: z.string().min(1, 'Group name is required'),
@@ -72,6 +81,7 @@ export function RateLimitDialog({
 }: RateLimitDialogProps) {
   const { t } = useTranslation()
   const isEditMode = !!editData
+  const { groups } = useGroups()
 
   const form = useForm<RateLimitDialogFormValues>({
     resolver: zodResolver(rateLimitDialogSchema),
@@ -141,11 +151,24 @@ export function RateLimitDialog({
               <FormItem>
                 <FormLabel>{t('Group Name')}</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder={t('e.g., default, vip, premium')}
-                    {...field}
+                  <Select
+                    value={field.value || undefined}
+                    onValueChange={(v) => field.onChange(v ?? '')}
                     disabled={isEditMode}
-                  />
+                  >
+                    <SelectTrigger className='w-full'>
+                      <SelectValue placeholder={t('Select a group')} />
+                    </SelectTrigger>
+                    <SelectContent alignItemWithTrigger={false}>
+                      {[...new Set([...groups, field.value])]
+                        .filter(Boolean)
+                        .map((g) => (
+                          <SelectItem key={g} value={g}>
+                            {g}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormDescription>
                   {isEditMode
