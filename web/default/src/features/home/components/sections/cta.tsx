@@ -40,11 +40,11 @@ export function CTA(props: CTAProps) {
       <div className='border-border/60 mx-auto max-w-6xl border-t pt-20 md:pt-28'>
         <AnimateInView className='mx-auto max-w-3xl text-center'>
           <h2 className='font-display text-3xl leading-[1.2] font-normal tracking-[-0.01em] text-balance md:text-[2.75rem]'>
-            {t('Ready to simplify')} {t('your AI integration?')}
+            {t('The frontier is one key away.')}
           </h2>
           <p className='text-muted-foreground mx-auto mt-6 max-w-md text-[15px] leading-[1.8]'>
             {t(
-              'Deploy your own gateway and start routing requests through your configured upstream services.'
+              'Straight from the source, honestly metered, ready in minutes.'
             )}
           </p>
           <div className='mt-10 flex items-center justify-center gap-4'>
@@ -52,7 +52,7 @@ export function CTA(props: CTAProps) {
               className='h-11 rounded-full px-7 text-sm font-medium'
               render={<Link to='/sign-up' />}
             >
-              {t('Get Started')}
+              {t('Get your API key')}
             </Button>
             <Button
               variant='ghost'

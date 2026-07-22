@@ -296,6 +296,10 @@ For commercial licensing, please contact support@quantumnous.com
     opacity: 1 !important;
     transform: none !important;
   }
+  /* 路由示意图的流动光点（SMIL 动画无法用 CSS 暂停，直接隐藏） */
+  .rb-pulse {
+    display: none;
+  }
 }
 
 /* 简约基调：无按钮按压缩放、无表格逐行入场动画；行悬停仅背景色过渡 */

@@ -24,8 +24,7 @@ interface FeaturesProps {
   className?: string
 }
 
-// 编辑式特性目录：编号 + 标题 + 描述，细线分隔。
-// 有意不用图标与色块——排版本身即是视觉。
+// 省心段：编号目录式。三条各自对应一种接入前的顾虑。
 
 export function Features(_props: FeaturesProps) {
   const { t } = useTranslation()
@@ -33,57 +32,44 @@ export function Features(_props: FeaturesProps) {
   const features = [
     {
       num: '01',
-      title: t('Lightning Fast'),
+      title: t('One key, every model'),
       desc: t(
-        'Optimized network architecture ensures millisecond response times'
+        'Integrate once with the OpenAI or Anthropic SDK you already use. Switch models by changing one string — no re-integration, ever.'
       ),
     },
     {
       num: '02',
-      title: t('Secure & Reliable'),
+      title: t('No overseas hassle'),
       desc: t(
-        'Enterprise-grade security with comprehensive permission management'
+        'No foreign phone numbers, credit cards or account reviews. Sign up, top up in CNY, and start calling frontier models in minutes.'
       ),
     },
     {
       num: '03',
-      title: t('Global Coverage'),
-      desc: t('Multi-region deployment for stable global access'),
-    },
-    {
-      num: '04',
-      title: t('Developer Friendly'),
-      desc: t('Compatible API routes for common AI application workflows'),
-    },
-    {
-      num: '05',
-      title: t('Transparent Billing'),
-      desc: t('Pay-as-you-go with real-time usage monitoring'),
-    },
-    {
-      num: '06',
-      title: t('Team Collaboration'),
-      desc: t('Multi-user management with flexible permission allocation'),
+      title: t('Stability we answer for'),
+      desc: t(
+        'Owning the supply means owning the uptime. Failures are ours to fix at the source, not to forward as excuses.'
+      ),
     },
   ]
 
   return (
-    <section className='relative z-10 px-6 py-24 md:py-32'>
-      <div className='mx-auto max-w-6xl'>
+    <section className='relative z-10 px-6 pb-24 md:pb-32'>
+      <div className='border-border/60 mx-auto max-w-6xl border-t pt-14 md:pt-20'>
         <AnimateInView className='mb-14 md:mb-20'>
           <p className='text-muted-foreground/60 mb-4 text-[11px] font-medium tracking-[0.22em] uppercase'>
-            {t('Core Features')}
+            {t('Peace of mind')}
           </p>
           <h2 className='font-display max-w-xl text-3xl leading-[1.15] font-normal tracking-[-0.01em] md:text-[2.5rem]'>
-            {t('Built for developers,')} {t('designed for scale')}
+            {t('Everything between you and the model, handled.')}
           </h2>
         </AnimateInView>
 
-        <div className='grid gap-x-12 md:grid-cols-2 lg:grid-cols-3'>
+        <div className='grid gap-x-12 md:grid-cols-3'>
           {features.map((f, i) => (
             <AnimateInView
               key={f.num}
-              delay={Math.min(i * 60, 240)}
+              delay={Math.min(i * 80, 240)}
               animation='fade-up'
               className='border-border/60 border-t py-8 md:py-10'
             >
@@ -93,7 +79,7 @@ export function Features(_props: FeaturesProps) {
               <h3 className='font-display mt-4 text-xl font-normal tracking-[-0.005em]'>
                 {f.title}
               </h3>
-              <p className='text-muted-foreground mt-2.5 max-w-[36ch] text-sm leading-[1.75]'>
+              <p className='text-muted-foreground mt-2.5 max-w-[38ch] text-sm leading-[1.8]'>
                 {f.desc}
               </p>
             </AnimateInView>
