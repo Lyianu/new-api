@@ -137,7 +137,10 @@ func Relay(c *gin.Context, relayFormat types.RelayFormat) {
 		contains, words := service.CheckSensitiveText(meta.CombineText)
 		if contains {
 			logger.LogWarn(c, fmt.Sprintf("user sensitive words detected: %s", strings.Join(words, ", ")))
-			newAPIError = types.NewError(err, types.ErrorCodeSensitiveWordsDetected)
+			// 给客户端的报文不包含命中词，防止探测词库；命中词只落错误日志
+			newAPIError = types.NewErrorWithStatusCode(errors.New("sensitive words detected"),
+				types.ErrorCodeSensitiveWordsDetected, http.StatusBadRequest, types.ErrOptionWithSkipRetry())
+			recordSensitiveBlockLog(c, newAPIError, words)
 			return
 		}
 	}
@@ -399,6 +402,32 @@ func processChannelError(c *gin.Context, channelError types.ChannelError, err *t
 		model.RecordErrorLog(c, userId, channelId, modelName, tokenName, err.MaskSensitiveErrorWithStatusCode(), tokenId, useTimeSeconds, common.GetContextKeyBool(c, constant.ContextKeyIsStream), userGroup, other)
 	}
 
+}
+
+// recordSensitiveBlockLog 将敏感词拦截写入错误日志表，使管理端日志页可按
+// 用户/令牌检索到被拦截的请求。此时尚未选择渠道、未预扣费，channelId 记 0。
+// 命中的敏感词仅出现在日志内容与 other 字段中，不会回传给客户端。
+func recordSensitiveBlockLog(c *gin.Context, err *types.NewAPIError, words []string) {
+	if !constant.ErrorLogEnabled || !types.IsRecordErrorLog(err) {
+		return
+	}
+	other := map[string]interface{}{
+		"error_type":      err.GetErrorType(),
+		"error_code":      err.GetErrorCode(),
+		"status_code":     err.StatusCode,
+		"sensitive_words": words,
+	}
+	if c.Request != nil && c.Request.URL != nil {
+		other["request_path"] = c.Request.URL.Path
+	}
+	startTime := common.GetContextKeyTime(c, constant.ContextKeyRequestStartTime)
+	if startTime.IsZero() {
+		startTime = time.Now()
+	}
+	content := fmt.Sprintf("检测到敏感词，请求已拦截：%s", strings.Join(words, ", "))
+	model.RecordErrorLog(c, c.GetInt("id"), 0, c.GetString("original_model"), c.GetString("token_name"),
+		content, c.GetInt("token_id"), int(time.Since(startTime).Seconds()),
+		common.GetContextKeyBool(c, constant.ContextKeyIsStream), c.GetString("group"), other)
 }
 
 func RelayMidjourney(c *gin.Context) {
