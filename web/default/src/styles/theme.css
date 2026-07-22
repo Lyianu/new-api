@@ -20,6 +20,11 @@ For commercial licensing, please contact support@quantumnous.com
 
 @theme inline {
   --font-sans: 'Public Sans', sans-serif;
+  /* 展示级衬线：用于落地页/登录页大标题（Anthropic 式排印），
+     全系统字体栈避免引入 webfont 体积 */
+  --font-display:
+    'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Songti SC',
+    'SimSun', 'Times New Roman', serif;
   --font-inter:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -81,27 +86,29 @@ For commercial licensing, please contact support@quantumnous.com
 }
 
 :root {
-  /* Vercel 式简约基调：圆角收紧、墨色主调（P0 视觉翻新） */
+  /* 暖纸基调：光模式中性色整体带极轻微暖色相（参照 anthropic.com 的
+     ivory 纸感），卡片略亮于画布形成"纸上浮纸"的层次；圆角收紧、
+     墨色主调延续 P0。色相统一取 84，肉眼不觉其为"米色"，只觉温润。 */
   --radius: 0.625rem;
   --app-header-height: 3rem;
   /* Static build-channel fallback consumed when JS hasn't booted yet. */
   --app-rev: '2k6e8r7p';
   /* 全站正文字体。主题定制（字体轴/颜色预设）已下线，固定为项目 sans。 */
   --font-body: var(--font-sans);
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.95 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.49 0 0);
+  --background: oklch(0.988 0.0035 84);
+  --foreground: oklch(0.185 0.004 80);
+  --card: oklch(0.997 0.002 84);
+  --card-foreground: oklch(0.185 0.004 80);
+  --popover: oklch(0.997 0.002 84);
+  --popover-foreground: oklch(0.185 0.004 80);
+  --primary: oklch(0.225 0.004 80);
+  --primary-foreground: oklch(0.985 0.002 84);
+  --secondary: oklch(0.952 0.004 84);
+  --secondary-foreground: oklch(0.225 0.004 80);
+  --muted: oklch(0.965 0.0045 84);
+  --muted-foreground: oklch(0.49 0.008 78);
   --accent: color-mix(in oklch, var(--foreground) 5%, var(--background));
-  --accent-foreground: oklch(0.145 0 0);
+  --accent-foreground: oklch(0.185 0.004 80);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
   --success: oklch(0.596 0.145 163.225);
@@ -110,11 +117,11 @@ For commercial licensing, please contact support@quantumnous.com
   --warning-foreground: oklch(0.145 0 0);
   --info: oklch(0.588 0.158 241.966);
   --info-foreground: oklch(0.985 0 0);
-  --neutral: oklch(0.708 0 0);
-  --neutral-foreground: oklch(0.145 0 0);
-  --border: oklch(0.93 0 0);
-  --input: oklch(0.93 0 0);
-  --ring: oklch(0.708 0 0);
+  --neutral: oklch(0.708 0.004 84);
+  --neutral-foreground: oklch(0.185 0.004 80);
+  --border: oklch(0.926 0.005 84);
+  --input: oklch(0.926 0.005 84);
+  --ring: oklch(0.708 0.004 84);
   /* 低饱和图表序列：色相保持可区分，明度/饱和度压低以贴合简约基调 */
   --chart-1: oklch(0.62 0.1 250);
   --chart-2: oklch(0.65 0.09 200);
@@ -125,15 +132,15 @@ For commercial licensing, please contact support@quantumnous.com
   --overview-accent-2: oklch(0.65 0.09 200);
   --overview-accent-3: oklch(0.65 0.08 285);
   --sidebar: color-mix(in oklch, var(--foreground) 0.5%, var(--background));
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.185 0.004 80);
+  --sidebar-primary: oklch(0.225 0.004 80);
+  --sidebar-primary-foreground: oklch(0.985 0.002 84);
   --sidebar-accent: color-mix(in oklch, var(--foreground) 5%, var(--background));
-  --sidebar-accent-foreground: oklch(0.145 0 0);
-  --sidebar-border: oklch(0.93 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-  --skeleton-base: oklch(0.97 0 0);
-  --skeleton-highlight: oklch(0.985 0 0);
+  --sidebar-accent-foreground: oklch(0.185 0.004 80);
+  --sidebar-border: oklch(0.926 0.005 84);
+  --sidebar-ring: oklch(0.708 0.004 84);
+  --skeleton-base: oklch(0.965 0.0045 84);
+  --skeleton-highlight: oklch(0.985 0.002 84);
   --table-row: var(--background);
   --table-header: color-mix(
     in oklch,

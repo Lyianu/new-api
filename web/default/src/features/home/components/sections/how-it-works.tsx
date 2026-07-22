@@ -56,7 +56,7 @@ export function HowItWorks() {
           <p className='text-muted-foreground mb-3 text-xs font-medium tracking-widest uppercase'>
             {t('How It Works')}
           </p>
-          <h2 className='text-2xl font-bold tracking-tight md:text-3xl'>
+          <h2 className='font-display text-[1.75rem] font-medium tracking-[-0.01em] md:text-4xl'>
             {t('Three steps to get started')}
           </h2>
         </AnimateInView>

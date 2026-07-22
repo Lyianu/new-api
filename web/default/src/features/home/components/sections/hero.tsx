@@ -81,25 +81,19 @@ export function Hero(props: HeroProps) {
 
   return (
     <section className='relative z-10 overflow-hidden px-6 pt-24 pb-16 md:pt-32 md:pb-24 lg:pt-36 lg:pb-28'>
-      {/* Grid pattern */}
-      <div
-        aria-hidden
-        className='absolute inset-0 -z-10 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_30%,black_20%,transparent_100%)] bg-[size:4rem_4rem] opacity-[0.08]'
-      />
-
       <div className='mx-auto grid max-w-6xl grid-cols-1 items-start gap-12 lg:grid-cols-12 lg:gap-8'>
         {/* Left Column: Title, description, action buttons and application support */}
         <div className='flex flex-col items-start text-left lg:col-span-6'>
-          {/* Top Pill Badge */}
+          {/* Eyebrow：小字宽字距引题（Anthropic 式），替代原胶囊徽章 */}
           <div
-            className='landing-animate-fade-up border-border bg-muted/40 text-muted-foreground mb-5 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-medium opacity-0'
+            className='landing-animate-fade-up text-muted-foreground/70 mb-6 text-[11px] font-medium tracking-[0.18em] uppercase opacity-0'
             style={{ animationDelay: '0ms' }}
           >
-            <span>{t('AI Application Infrastructure Foundation')}</span>
+            {t('AI Application Infrastructure Foundation')}
           </div>
 
           <h1
-            className='landing-animate-fade-up text-[clamp(2.25rem,4.5vw,3.25rem)] leading-[1.15] font-bold tracking-tight'
+            className='landing-animate-fade-up font-display text-[clamp(2.5rem,5vw,3.5rem)] leading-[1.12] font-medium tracking-[-0.01em]'
             style={{ animationDelay: '60ms' }}
           >
             {t('Unified API Gateway for')}

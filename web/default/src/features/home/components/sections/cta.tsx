@@ -41,7 +41,7 @@ export function CTA(props: CTAProps) {
         className='mx-auto max-w-2xl text-center'
         animation='scale-in'
       >
-        <h2 className='text-2xl leading-tight font-bold tracking-tight md:text-4xl'>
+        <h2 className='font-display text-[1.75rem] leading-tight font-medium tracking-[-0.01em] md:text-4xl'>
           {t('Ready to simplify')}
           <br />
           <span className='text-muted-foreground'>
