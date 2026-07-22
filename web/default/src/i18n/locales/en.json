@@ -5254,6 +5254,23 @@
     "Change the base URL, keep your code": "Change the base URL, keep your code",
     "OpenAI SDK compatible": "OpenAI SDK compatible",
     "The frontier is one key away.": "The frontier is one key away.",
-    "Straight from the source, honestly metered, ready in minutes.": "Straight from the source, honestly metered, ready in minutes."
+    "Straight from the source, honestly metered, ready in minutes.": "Straight from the source, honestly metered, ready in minutes.",
+    "Usage this month": "Usage this month",
+    "Last 14 days": "Last 14 days",
+    "By model": "By model",
+    "All routes first-party": "All routes first-party",
+    "Serving models from": "Serving models from",
+    "The model you pay for": "The model you pay for",
+    "is the model you get.": "is the model you get.",
+    "No middlemen, no markup": "No middlemen, no markup",
+    "One hop between you and the model — and it is ours": "One hop between you and the model — and it is ours",
+    "Nowhere for substitution to hide": "Nowhere for substitution to hide",
+    "No third party in the chain that could swap your model": "No third party in the chain that could swap your model",
+    "Callable models": "Callable models",
+    "Pay as you go": "Pay as you go",
+    "CNY billing": "CNY billing",
+    "Supply": "Supply",
+    "First-party": "First-party",
+    "And more — sign in for the full catalog and per-token pricing.": "And more — sign in for the full catalog and per-token pricing."
   }
 }

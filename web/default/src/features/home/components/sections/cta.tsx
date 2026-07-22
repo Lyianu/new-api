@@ -34,36 +34,29 @@ export function CTA(props: CTAProps) {
     return null
   }
 
-  // 收束段：一句衬线独白 + 一颗按钮。留白即是姿态。
+  // 收束：与首屏呼应的大字宣言 + 单一动作。
   return (
-    <section className='relative z-10 px-6 pb-28 md:pb-36'>
-      <div className='border-border/60 mx-auto max-w-6xl border-t pt-20 md:pt-28'>
-        <AnimateInView className='mx-auto max-w-3xl text-center'>
-          <h2 className='font-display text-3xl leading-[1.2] font-normal tracking-[-0.01em] text-balance md:text-[2.75rem]'>
-            {t('The frontier is one key away.')}
-          </h2>
-          <p className='text-muted-foreground mx-auto mt-6 max-w-md text-[15px] leading-[1.8]'>
-            {t(
-              'Straight from the source, honestly metered, ready in minutes.'
-            )}
-          </p>
-          <div className='mt-10 flex items-center justify-center gap-4'>
-            <Button
-              className='h-11 rounded-full px-7 text-sm font-medium'
-              render={<Link to='/sign-up' />}
-            >
-              {t('Get your API key')}
-            </Button>
-            <Button
-              variant='ghost'
-              className='text-muted-foreground hover:text-foreground h-11 rounded-full px-5 text-sm font-medium'
-              render={<Link to='/sign-in' />}
-            >
-              {t('Sign in')}
-            </Button>
-          </div>
-        </AnimateInView>
-      </div>
+    <section className='relative z-10 overflow-hidden px-6 py-32 md:py-44'>
+      <div
+        aria-hidden
+        className='absolute inset-x-0 bottom-0 -z-10 h-[28rem] bg-[radial-gradient(50%_100%_at_50%_100%,color-mix(in_oklch,var(--accent-warm)_4%,transparent),transparent_75%)]'
+      />
+      <AnimateInView className='mx-auto max-w-3xl text-center'>
+        <h2 className='text-[clamp(2rem,5vw,3.5rem)] leading-[1.1] font-semibold tracking-[-0.03em] text-balance'>
+          {t('The frontier is one key away.')}
+        </h2>
+        <p className='text-muted-foreground mx-auto mt-6 max-w-md text-[15px] leading-[1.8] md:text-[16px]'>
+          {t('Straight from the source, honestly metered, ready in minutes.')}
+        </p>
+        <div className='mt-10'>
+          <Button
+            className='h-12 rounded-full px-8 text-[15px] font-medium shadow-[0_1px_2px_rgb(0_0_0/0.12)] transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:shadow-[0_4px_12px_-2px_rgb(0_0_0/0.18)] active:translate-y-0 active:scale-[0.98]'
+            render={<Link to='/sign-up' />}
+          >
+            {t('Get your API key')}
+          </Button>
+        </div>
+      </AnimateInView>
     </section>
   )
 }

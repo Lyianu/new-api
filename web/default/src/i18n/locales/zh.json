@@ -5254,6 +5254,23 @@
     "Change the base URL, keep your code": "只改 base_url，代码原样保留",
     "OpenAI SDK compatible": "兼容 OpenAI SDK",
     "The frontier is one key away.": "顶级模型，一钥之遥。",
-    "Straight from the source, honestly metered, ready in minutes.": "源头直供、透明计费，几分钟即可就绪。"
+    "Straight from the source, honestly metered, ready in minutes.": "源头直供、透明计费，几分钟即可就绪。",
+    "Usage this month": "本月用量",
+    "Last 14 days": "近 14 天",
+    "By model": "按模型",
+    "All routes first-party": "全部线路源头直连",
+    "Serving models from": "在售模型来自",
+    "The model you pay for": "你付费的是什么模型，",
+    "is the model you get.": "得到的就是什么模型。",
+    "No middlemen, no markup": "没有中间商，没有差价",
+    "One hop between you and the model — and it is ours": "你与模型之间只有一跳，而这一跳由我们自己运营",
+    "Nowhere for substitution to hide": "掺水无处藏身",
+    "No third party in the chain that could swap your model": "链路中不存在任何可能偷换模型的第三方",
+    "Callable models": "可调用模型",
+    "Pay as you go": "按量计费",
+    "CNY billing": "人民币结算",
+    "Supply": "供给",
+    "First-party": "源头直连",
+    "And more — sign in for the full catalog and per-token pricing.": "不止这些——登录后可查看完整目录与按 token 计的实时价格。"
   }
 }

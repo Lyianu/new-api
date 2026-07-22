@@ -221,14 +221,18 @@ For commercial licensing, please contact support@quantumnous.com
 
 
 /* ── Landing page scroll-triggered animations ── */
+/* 入场动效：位移 + 轻微失焦到清晰，接近 Apple 营销页的"浮现"质感。
+   时长偏长、缓动前快后极缓（quint-out），赋予重量感。 */
 @keyframes landing-fade-up {
   from {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(32px);
+    filter: blur(10px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+    filter: blur(0);
   }
 }
 @keyframes landing-fade-in {
@@ -271,7 +275,7 @@ For commercial licensing, please contact support@quantumnous.com
 }
 
 .landing-animate-fade-up {
-  animation: landing-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: landing-fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .landing-animate-fade-in {
   animation: landing-fade-in 0.6s ease-out both;
@@ -295,10 +299,6 @@ For commercial licensing, please contact support@quantumnous.com
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
-  }
-  /* 路由示意图的流动光点（SMIL 动画无法用 CSS 暂停，直接隐藏） */
-  .rb-pulse {
-    display: none;
   }
 }
 

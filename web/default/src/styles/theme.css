@@ -20,11 +20,6 @@ For commercial licensing, please contact support@quantumnous.com
 
 @theme inline {
   --font-sans: 'Public Sans', sans-serif;
-  /* 展示级衬线：用于落地页/登录页大标题（Anthropic 式排印），
-     全系统字体栈避免引入 webfont 体积 */
-  --font-display:
-    'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Songti SC',
-    'SimSun', 'Times New Roman', serif;
   --font-inter:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
