@@ -24,6 +24,7 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { LayoutProvider } from '@/context/layout-provider'
+import { PolicyReconsentGate } from '@/features/legal/components/policy-reconsent-gate'
 import { cn } from '@/lib/utils'
 
 import { AppSidebar } from './app-sidebar'
@@ -61,6 +62,8 @@ export function AuthenticatedLayout(props: AuthenticatedLayoutProps) {
               {props.children ?? <AnimatedOutlet />}
             </SidebarInset>
           </div>
+          {/* 协议更新后的强制重确认弹窗（登录态全局） */}
+          <PolicyReconsentGate />
       </SidebarProvider>
     </LayoutProvider>
   )

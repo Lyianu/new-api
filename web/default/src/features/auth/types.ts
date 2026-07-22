@@ -39,6 +39,8 @@ export interface RegisterPayload {
   verification_code?: string
   aff_code?: string
   turnstile?: string
+  // 合规文档逐项确认结果：{ [doc_type]: true }
+  policy_accepted?: Record<string, boolean>
 }
 
 export interface PasswordResetPayload {

@@ -386,6 +386,14 @@ func TokenAuth() func(c *gin.Context) {
 			return
 		}
 
+		// 合规门禁：存在"未确认前暂停服务"的协议版本且用户未确认时，
+		// 暂停其 API 调用（网页控制台不受影响，用户须登录网页完成确认）
+		if service.IsUserPolicyBlocked(token.UserId) {
+			abortWithOpenAiMessage(c, http.StatusForbidden,
+				"服务条款已更新，请登录网页控制台确认最新协议后继续使用 API", types.ErrorCodeAccessDenied)
+			return
+		}
+
 		allowIps := token.GetIpLimits()
 		if len(allowIps) > 0 {
 			clientIp := c.ClientIP()

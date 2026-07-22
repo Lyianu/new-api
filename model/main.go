@@ -298,6 +298,8 @@ func migrateDB() error {
 		&SystemTask{},
 		&SystemTaskLock{},
 		&CasbinRule{},
+		&PolicyVersion{},
+		&PolicyAcceptance{},
 		&AuthzRole{},
 		&CustomerPolicy{},
 	)

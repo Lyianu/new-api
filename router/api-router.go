@@ -28,6 +28,15 @@ func SetApiRouter(router *gin.Engine) {
 		apiRouter.GET("/notice", controller.GetNotice)
 		apiRouter.GET("/user-agreement", controller.GetUserAgreement)
 		apiRouter.GET("/privacy-policy", controller.GetPrivacyPolicy)
+		// 合规文档（版本化）：匿名可读最新版本，注册页与政策页共用
+		apiRouter.GET("/policy", controller.GetPolicies)
+		policyRoute := apiRouter.Group("/policy")
+		{
+			policyRoute.GET("/status", middleware.UserAuth(), controller.GetPolicyStatus)
+			policyRoute.POST("/accept", middleware.UserAuth(), middleware.CriticalRateLimit(), controller.AcceptPolicies)
+			policyRoute.GET("/versions", middleware.RootAuth(), controller.GetPolicyVersionHistory)
+			policyRoute.POST("/publish", middleware.RootAuth(), controller.PublishPolicy)
+		}
 		apiRouter.GET("/about", controller.GetAbout)
 		//apiRouter.GET("/midjourney", controller.GetMidjourney)
 		apiRouter.GET("/home_page_content", controller.GetHomePageContent)

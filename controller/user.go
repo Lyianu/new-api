@@ -189,12 +189,17 @@ func Register(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgUserPasswordRegisterDisabled)
 		return
 	}
-	var user model.User
-	err := json.NewDecoder(c.Request.Body).Decode(&user)
+	var req struct {
+		model.User
+		// 合规文档确认：注册时须对已发布的每一份文档逐项确认
+		PolicyAccepted map[string]bool `json:"policy_accepted"`
+	}
+	err := json.NewDecoder(c.Request.Body).Decode(&req)
 	if err != nil {
 		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
 		return
 	}
+	user := req.User
 	user.Username = strings.TrimSpace(user.Username)
 	user.Email = model.NormalizeEmail(user.Email)
 	if user.Username == "" {
@@ -237,6 +242,20 @@ func Register(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgUserExists)
 		return
 	}
+	// 已发布合规文档时，注册必须逐项确认（前端逐个勾选，后端逐项校验）
+	publishedPolicies, err := model.GetLatestPolicyVersions()
+	if err != nil {
+		common.ApiErrorI18n(c, i18n.MsgDatabaseError)
+		return
+	}
+	acceptedPolicyTypes := make([]string, 0, len(publishedPolicies))
+	for _, pv := range publishedPolicies {
+		if !req.PolicyAccepted[pv.DocType] {
+			common.ApiErrorMsg(c, "请阅读并逐项同意各项服务协议后再注册")
+			return
+		}
+		acceptedPolicyTypes = append(acceptedPolicyTypes, pv.DocType)
+	}
 	affCode := user.AffCode // this code is the inviter's code, not the user's own code
 	inviterId, _ := model.GetUserIdByAffCode(affCode)
 	cleanUser := model.User{
@@ -263,6 +282,12 @@ func Register(c *gin.Context) {
 	if err := model.DB.Where("username = ?", cleanUser.Username).First(&insertedUser).Error; err != nil {
 		common.ApiErrorI18n(c, i18n.MsgUserRegisterFailed)
 		return
+	}
+	// 记录合规文档确认（含 IP，作为审计凭据）
+	if len(acceptedPolicyTypes) > 0 {
+		if err := model.AcceptPolicies(insertedUser.Id, c.ClientIP(), acceptedPolicyTypes); err != nil {
+			common.SysLog("failed to record policy acceptance on register: " + err.Error())
+		}
 	}
 	// 生成默认令牌
 	if constant.GenerateDefaultToken {

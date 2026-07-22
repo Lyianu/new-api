@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { SystemInfoSection } from '../general/system-info-section'
+import { PolicyManagerSection } from '../legal/policy-manager-section'
 import {
   parseSidebarModulesAdmin,
   serializeSidebarModulesAdmin,
@@ -55,6 +56,11 @@ const SITE_SECTIONS = [
     build: (settings: SiteSettings) => (
       <NoticeSection defaultValue={settings.Notice ?? ''} />
     ),
+  },
+  {
+    id: 'legal-documents',
+    titleKey: 'Legal documents',
+    build: () => <PolicyManagerSection />,
   },
   {
     id: 'sidebar-modules',
