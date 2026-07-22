@@ -56,6 +56,7 @@ For commercial licensing, please contact support@quantumnous.com
   --color-info-foreground: var(--info-foreground);
   --color-neutral: var(--neutral);
   --color-neutral-foreground: var(--neutral-foreground);
+  --color-accent-warm: var(--accent-warm);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -119,6 +120,9 @@ For commercial licensing, please contact support@quantumnous.com
   --info-foreground: oklch(0.985 0 0);
   --neutral: oklch(0.708 0.004 84);
   --neutral-foreground: oklch(0.185 0.004 80);
+  /* 陶土暖色：全站唯一的点缀色，只用于编号、极小的强调记号，
+     大面积使用即俗——克制是它存在的前提 */
+  --accent-warm: oklch(0.58 0.105 45);
   --border: oklch(0.926 0.005 84);
   --input: oklch(0.926 0.005 84);
   --ring: oklch(0.708 0.004 84);
@@ -193,6 +197,7 @@ For commercial licensing, please contact support@quantumnous.com
   --info-foreground: oklch(0.145 0 0);
   --neutral: oklch(0.76 0 0);
   --neutral-foreground: oklch(0.155 0 0);
+  --accent-warm: oklch(0.72 0.1 48);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 17%);
   --ring: oklch(0.556 0 0);

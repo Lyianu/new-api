@@ -104,19 +104,17 @@ export function Stats(_props: StatsProps) {
     { end: 10, suffix: '+', label: t('scheduling controls') },
   ]
 
+  // 编辑式数字行：细线分隔、左对齐、衬线数字——不做色块与边框装饰
   return (
-    <div className='border-border/40 bg-muted/10 relative z-10 border-y'>
-      <div className='mx-auto max-w-6xl px-6 py-10 md:py-12'>
-        <div className='grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-12'>
+    <div className='relative z-10 px-6'>
+      <div className='border-border/60 mx-auto max-w-6xl border-t'>
+        <div className='grid grid-cols-2 gap-x-8 gap-y-10 py-12 md:grid-cols-4 md:py-16'>
           {stats.map((s) => (
-            <div
-              key={s.label}
-              className='flex flex-col items-center text-center'
-            >
-              <span className='font-display text-3xl font-medium tracking-[-0.01em] md:text-4xl'>
+            <div key={s.label} className='flex flex-col'>
+              <span className='font-display text-4xl font-normal tracking-[-0.01em] md:text-5xl'>
                 <Counter end={s.end} suffix={s.suffix} decimals={s.decimals} />
               </span>
-              <span className='text-muted-foreground mt-1.5 text-xs'>
+              <span className='text-muted-foreground mt-3 max-w-[16ch] text-[13px] leading-relaxed'>
                 {s.label}
               </span>
             </div>
